@@ -1,0 +1,6 @@
+{
+  "package_name": "sentinel_mission_msgs",
+  "non_idl_tuples": [
+    "/home/ubuntu/Desktop/ROS2_sim/src/sentinel_mission_msgs:srv/GetMission.srv"
+  ]
+}

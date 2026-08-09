@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "sentinel_mission_msgs__rs",
+		"source" : "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_mission_msgs/sentinel_mission_msgs__rs"
+	}
+}

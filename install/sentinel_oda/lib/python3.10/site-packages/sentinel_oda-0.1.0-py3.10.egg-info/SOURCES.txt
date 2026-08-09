@@ -1,0 +1,13 @@
+package.xml
+setup.cfg
+setup.py
+../../build/sentinel_oda/sentinel_oda.egg-info/PKG-INFO
+../../build/sentinel_oda/sentinel_oda.egg-info/SOURCES.txt
+../../build/sentinel_oda/sentinel_oda.egg-info/dependency_links.txt
+../../build/sentinel_oda/sentinel_oda.egg-info/entry_points.txt
+../../build/sentinel_oda/sentinel_oda.egg-info/requires.txt
+../../build/sentinel_oda/sentinel_oda.egg-info/top_level.txt
+../../build/sentinel_oda/sentinel_oda.egg-info/zip-safe
+resource/sentinel_oda
+sentinel_oda/__init__.py
+sentinel_oda/mock_obstacle_publisher.py

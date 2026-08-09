@@ -1,0 +1,24 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from sentinel_mission_msgs/srv/GetMission.srv
+// generated code does not contain a copyright notice
+
+#include "mavros_msgs/msg/Waypoint.idl"
+
+module sentinel_mission_msgs {
+  module srv {
+    @verbatim (language="comment", text=
+      "Request: path to the .plan mission file (empty string = use default)")
+    struct GetMission_Request {
+      string mission_file;
+    };
+    @verbatim (language="comment", text=
+      "Response")
+    struct GetMission_Response {
+      boolean success;
+
+      string message;
+
+      sequence<mavros_msgs::msg::Waypoint> waypoints;
+    };
+  };
+};

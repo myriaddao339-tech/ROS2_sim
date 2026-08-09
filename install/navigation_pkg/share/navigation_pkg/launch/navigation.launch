@@ -1,0 +1,8 @@
+<launch>
+
+    <node pkg="navigation_pkg"
+      exec="navigation_node"
+      name="navigation_node"
+      output="screen"
+      args="$(var mf)"/>
+</launch>

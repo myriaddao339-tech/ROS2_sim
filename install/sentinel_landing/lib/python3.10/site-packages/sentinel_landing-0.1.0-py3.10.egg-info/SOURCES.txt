@@ -1,0 +1,13 @@
+package.xml
+setup.cfg
+setup.py
+../../build/sentinel_landing/sentinel_landing.egg-info/PKG-INFO
+../../build/sentinel_landing/sentinel_landing.egg-info/SOURCES.txt
+../../build/sentinel_landing/sentinel_landing.egg-info/dependency_links.txt
+../../build/sentinel_landing/sentinel_landing.egg-info/entry_points.txt
+../../build/sentinel_landing/sentinel_landing.egg-info/requires.txt
+../../build/sentinel_landing/sentinel_landing.egg-info/top_level.txt
+../../build/sentinel_landing/sentinel_landing.egg-info/zip-safe
+resource/sentinel_landing
+sentinel_landing/__init__.py
+sentinel_landing/mock_landing_node.py

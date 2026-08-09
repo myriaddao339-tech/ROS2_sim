@@ -1,0 +1,2 @@
+[console_scripts]
+mock_obstacle_publisher = sentinel_oda.mock_obstacle_publisher:main

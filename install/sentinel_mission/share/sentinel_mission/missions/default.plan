@@ -1,0 +1,43 @@
+{
+    "groundStation": "QGroundControl",
+    "mission": {
+        "version": 2,
+        "plannedHomePosition": [47.397742, 8.545594, 488.0],
+        "items": [
+            {
+                "autoContinue": true,
+                "command": 16,
+                "doJumpId": 1,
+                "frame": 3,
+                "params": [0.0, 0.0, 0.0, null, 47.397990, 8.545594, 20.0],
+                "type": "SimpleItem"
+            },
+            {
+                "autoContinue": true,
+                "command": 16,
+                "doJumpId": 2,
+                "frame": 3,
+                "params": [0.0, 0.0, 0.0, null, 47.397990, 8.545990, 20.0],
+                "type": "SimpleItem"
+            },
+            {
+                "autoContinue": true,
+                "command": 16,
+                "doJumpId": 3,
+                "frame": 3,
+                "params": [0.0, 0.0, 0.0, null, 47.397742, 8.545990, 20.0],
+                "type": "SimpleItem"
+            },
+            {
+                "autoContinue": true,
+                "command": 16,
+                "doJumpId": 4,
+                "frame": 3,
+                "params": [0.0, 0.0, 0.0, null, 47.397742, 8.545594, 20.0],
+                "type": "SimpleItem"
+            }
+        ]
+    },
+    "fileType": "Plan",
+    "version": 1
+}

@@ -1,0 +1,7 @@
+# Request: path to the .plan mission file (empty string = use default)
+string mission_file
+---
+# Response
+bool success
+string message
+mavros_msgs/Waypoint[] waypoints

@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: sentinel_oda
+Version: 0.1.0
+Summary: Sentinel V1 - ODA Package (stub)
+Maintainer: user
+Maintainer-email: user@example.com
+License: MIT
+Requires-Dist: setuptools
+Dynamic: license
+Dynamic: maintainer
+Dynamic: maintainer-email
+Dynamic: requires-dist
+Dynamic: summary

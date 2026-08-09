@@ -1,0 +1,65 @@
+def create_mission():
+    """
+    Build a list of mavros_msgs/Waypoint for a simple square mission.
+    Replace the coordinates with your real home position and waypoints.
+    """
+    # --- Change these values to match your flying location ---
+    home_lat = -35.3632621   
+    home_lon = 149.1652374
+    home_alt = 603.6386373242841       # AMSL altitude of the home point
+
+    # Square corners (relative altitudes)
+    wp1_lat, wp1_lon, wp1_alt = -35.3623638, 149.1641358, 10.0
+    wp2_lat, wp2_lon, wp2_alt = -35.3623638, 149.1663389, 10.0
+    wp3_lat, wp3_lon, wp3_alt = -35.3641604, 149.1663390, 10.0
+    wp4_lat, wp4_lon, wp4_alt = -35.3641604, 149.1641361, 10.0
+    # ---------------------------------------------------------
+
+    waypoints = [
+        # Home position (mandatory, must be GLOBAL frame)
+        Waypoint(
+            frame=Waypoint.FRAME_GLOBAL,
+            command=CommandCode.NAV_WAYPOINT,
+            is_current=True,
+            autocontinue=True,
+            param1=0.0, param2=0.0, param3=0.0, param4=0.0,
+            x_lat=home_lat, y_long=home_lon, z_alt=home_alt,
+        ),
+        # Waypoint 1
+        Waypoint(
+            frame=Waypoint.FRAME_GLOBAL_RELATIVE_ALT_INT,
+            command=CommandCode.NAV_WAYPOINT,
+            is_current=False,
+            autocontinue=True,
+            param1=0.0, param2=0.0, param3=0.0, param4=0.0,
+            x_lat=wp1_lat, y_long=wp1_lon, z_alt=wp1_alt,
+        ),
+        # Waypoint 2
+        Waypoint(
+            frame=Waypoint.FRAME_GLOBAL_RELATIVE_ALT_INT,
+            command=CommandCode.NAV_WAYPOINT,
+            is_current=False,
+            autocontinue=True,
+            param1=0.0, param2=0.0, param3=0.0, param4=0.0,
+            x_lat=wp2_lat, y_long=wp2_lon, z_alt=wp2_alt,
+        ),
+        # Waypoint 3
+        Waypoint(
+            frame=Waypoint.FRAME_GLOBAL_RELATIVE_ALT_INT,
+            command=CommandCode.NAV_WAYPOINT,
+            is_current=False,
+            autocontinue=True,
+            param1=0.0, param2=0.0, param3=0.0, param4=0.0,
+            x_lat=wp3_lat, y_long=wp3_lon, z_alt=wp3_alt,
+        ),
+        # Waypoint 4
+        Waypoint(
+            frame=Waypoint.FRAME_GLOBAL_RELATIVE_ALT_INT,
+            command=CommandCode.NAV_WAYPOINT,
+            is_current=False,
+            autocontinue=True,
+            param1=0.0, param2=0.0, param3=0.0, param4=0.0,
+            x_lat=wp4_lat, y_long=wp4_lon, z_alt=wp4_alt,
+        ),
+    ]
+    return waypoints

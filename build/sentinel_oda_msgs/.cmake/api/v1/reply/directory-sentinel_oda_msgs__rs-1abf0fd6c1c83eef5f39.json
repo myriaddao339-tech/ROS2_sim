@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "sentinel_oda_msgs__rs",
+		"source" : "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/sentinel_oda_msgs__rs"
+	}
+}

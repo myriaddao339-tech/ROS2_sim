@@ -10,4 +10,5 @@ setup.py
 ../../build/sentinel_oda/sentinel_oda.egg-info/zip-safe
 resource/sentinel_oda
 sentinel_oda/__init__.py
+sentinel_oda/depth_node.py
 sentinel_oda/oda_maneuvers.py

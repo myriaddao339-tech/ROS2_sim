@@ -1,0 +1,32 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from sentinel_oda_msgs/msg/ObstacleInfo.msg
+// generated code does not contain a copyright notice
+
+
+module sentinel_oda_msgs {
+  module msg {
+    @verbatim (language="comment", text=
+      "Obstacle report from Detection node to Inner Map." "\n"
+      "Published every time the depth model confirms an obstacle in view.")
+    struct ObstacleInfo {
+      @verbatim (language="comment", text=
+        "Closest distance to the obstacle (metres), measured along the drone's" "\n"
+        "forward axis from the depth map.")
+      float closest_distance;
+
+      @verbatim (language="comment", text=
+        "Horizontal width of the detected obstacle (metres).")
+      float obstacle_width;
+
+      @verbatim (language="comment", text=
+        "Drone's current yaw heading (radians, 0 = North, positive = East) at the" "\n"
+        "moment the frame was captured.  Sourced from /mavros/local_position/pose.")
+      float current_heading;
+
+      @verbatim (language="comment", text=
+        "Horizontal offset of the left edge of the obstacle's bounding box from the" "\n"
+        "drone's forward axis (metres, negative = left).")
+      float obstacle_left;
+    };
+  };
+};

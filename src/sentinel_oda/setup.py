@@ -21,7 +21,7 @@ setup(
     license="MIT",
     entry_points={
         "console_scripts": [
-            "mock_obstacle_publisher = sentinel_oda.mock_obstacle_publisher:main",
+            "depth_node = sentinel_oda.depth_node:main",
         ],
     },
 )

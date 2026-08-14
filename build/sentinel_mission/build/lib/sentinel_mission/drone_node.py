@@ -75,6 +75,7 @@ class DroneNode(Node):
         self._rtl_mode_future = None
         self._guided_ok_since = None
         self._takeoff_backoff_until = None
+        self._takeoff_accepted = False
 
         # --- Mission service client ---
         mission_srv_name = self.get_parameter("mission_service_name").value
@@ -251,6 +252,7 @@ class DroneNode(Node):
         self._init_timer.reset()
         self._landing_step = 0
         self._takeoff_guided_sent = False
+        self._takeoff_accepted = False
         # Reset trigger edge-detection flags so start can fire again
         for key in self._trigger_last:
             self._trigger_last[key] = False
@@ -266,6 +268,7 @@ class DroneNode(Node):
         self._set_state("mission")
         self._guided_ok_since = None
         self._takeoff_backoff_until = None
+        self._takeoff_accepted = False
         self.get_logger().info("Starting MISSION")
 
     def _advance_init_step(self):
@@ -486,6 +489,18 @@ class DroneNode(Node):
         # --- Send CommandTOL ---
         self._guided_mode_future = None  # reset guided mode future after successful switch
 
+        # Once the FCU has ACCEPTED a takeoff command, never re-send it:
+        # mavros aborts on duplicate COMMAND_ACKs (std::future_error) and
+        # re-sending every tick while climbing was triggering that race.
+        # Just monitor the climb instead.
+        if self._takeoff_accepted:
+            self.get_logger().info(
+                f"Takeoff accepted - climbing to {self._takeoff_alt}m "
+                f"(current {self.local_pose.pose.position.z:.1f}m)",
+                throttle_duration_sec=5.0,
+            )
+            return
+
         # Let the mode change settle before the first takeoff command:
         # ArduPilot rejects NAV_TAKEOFF while it is still settling, and the
         # old 0.4 s retry storm (one command per tick) made things worse.
@@ -543,6 +558,11 @@ class DroneNode(Node):
                 self.get_logger().error("Takeoff failed - timeout")
                 self._force_standby()
             return
+
+        # Accepted: latch it so we never spam NAV_TAKEOFF again while
+        # climbing (re-sends caused duplicate COMMAND_ACKs -> mavros crash).
+        self._takeoff_accepted = True
+        self.get_logger().info("Takeoff command accepted by FCU - monitoring climb")
 
         if elapsed > self._takeoff_timeout:
             self.get_logger().error(

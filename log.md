@@ -831,3 +831,52 @@ Finally, one more warning of a bug that you also created last time, because I'm 
   ros2 topic hz /depth_node/depth_map and
   ros2 topic echo /detection_node/obstacle_detected. Preview window needs
   show_preview:=true (launch default True).
+
+## Session 21 — 2026-08-14
+
+### Situation
+- User ran the full sim: mavros_node kept dying with
+  `std::future_error: Promise already satisfied` (exit -6), respawning in
+  a loop. Crashes lined up with (a) takeoff and (b) "HP: requesting home
+  position" ~10 s after every mavros (re)connect. User suspected the depth
+  preview / CPU load.
+- User also reminded me: the OS runs from a persistent USB drive so it can
+  move between PCs with different specs — code must stay portable, no
+  per-machine tuning baked in.
+
+### What I did
+- Read mavros 2.14.0 source (command.cpp, home_position.cpp) to pin the
+  crash: `CommandPlugin::handle_command_ack` matches ACKs by command id and
+  calls `promise.set_value()` unconditionally — a DUPLICATE COMMAND_ACK
+  from the FCU aborts mavros. Proof in user's log: "CMD: Unexpected
+  command 410, result 0" = second ACK of GET_HOME_POSITION arriving after
+  the transaction was erased; when it arrives before erase → crash.
+  home_position plugin polls GET_HOME_POSITION 10 s after every connect
+  (REQUEST_POLL_TIME = 10s) — hence the 10 s crash cycle.
+- Fixes (all portable):
+  - oda_live_test.launch.py: plugin_denylist override (same list as
+    apm_pluginlists.yaml + "home_position", listed LAST so it overrides
+    the yaml). We never use /mavros/home_position.
+  - drone_node.py: new `_takeoff_accepted` latch (reset on enter-mission
+    and standby) — NAV_TAKEOFF is sent ONCE after acceptance; previously
+    it was re-sent every 0.4 s tick while climbing, feeding the
+    duplicate-ACK race.
+  - depth_node.py: busy flag (`_infer_busy`) — timer ticks are skipped
+    while an inference runs, so the executor can no longer build a backlog
+    that pegs the CPU; new `cpu_threads` param (default 0 = auto:
+    ncores-2, min 1; N = fixed) caps PyTorch's CPU pool so MAVROS/Gazebo/
+    SITL keep cores on any shared machine (ignored on GPU).
+- Rebuilt sentinel_mission + sentinel_oda (clean). Runtime-verified the
+  denylist: launch log shows "Plugin home_position ignored".
+
+### What I answered
+- Depth preview is innocent — the crashes are mavros aborting on duplicate
+  COMMAND_ACKs from ArduPilot (GET_HOME_POSITION + repeated NAV_TAKEOFF),
+  made far more likely by CPU contention. All three triggers are now
+  removed: no HP polling, single-send takeoff, depth node no longer
+  saturates cores.
+- Test: same run as before (world_sim/start_sim.sh, then
+  ros2 launch sentinel_oda oda_live_test.launch.py). Expected: no more
+  future_error; mavros stays up; takeoff climbs to 15 m once.
+- Optional tuning: -p cpu_threads:=N (0 = auto), -p inference_rate:=N.
+  mavros respawn safety net remains in place.

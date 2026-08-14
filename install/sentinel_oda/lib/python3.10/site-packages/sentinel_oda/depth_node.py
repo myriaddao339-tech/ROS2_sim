@@ -26,6 +26,7 @@ depth map is in real metres – which the Detection node needs for its
 metre-based thresholds.
 """
 
+import os
 import time
 
 import rclpy
@@ -51,10 +52,13 @@ class DepthAnythingV2Model:
 
     def __init__(self, model_name: str = "depth-anything/Depth-Anything-V2-Metric-Outdoor-Small-hf",
                  device: str = "cpu",
-                 input_size: int = 308):
+                 input_size: int = 308,
+                 cpu_threads: int = 0):
         self._device = self._resolve_device(device)
         self._model_name = model_name
         self._input_size = input_size
+        self._cpu_threads = max(0, int(cpu_threads))
+        self._n_threads = 0
         self._loaded = False
 
     # -- device resolution --
@@ -71,6 +75,18 @@ class DepthAnythingV2Model:
 
         # pipeline device: -1 = CPU, 0 = cuda:0
         pipe_device = 0 if self._device.startswith("cuda") else -1
+
+        # Cap PyTorch's CPU thread pool so inference leaves cores free for
+        # MAVROS/Gazebo/SITL when they share the machine (GPU runs are
+        # unaffected).  Portable across machines: cpu_threads=0 means
+        # "auto" (all cores minus two, minimum one); set N for a fixed pool.
+        if not self._device.startswith("cuda"):
+            n_cores = os.cpu_count() or 2
+            self._n_threads = self._cpu_threads if self._cpu_threads > 0 else max(1, n_cores - 2)
+            torch.set_num_threads(self._n_threads)
+        else:
+            self._n_threads = 0
+
         self._pipe = pipeline(
             task="depth-estimation",
             model=self._model_name,
@@ -89,6 +105,11 @@ class DepthAnythingV2Model:
     def device(self) -> str:
         """Device the model is actually running on (resolved from 'auto')."""
         return self._device
+
+    @property
+    def cpu_threads(self) -> int:
+        """PyTorch CPU thread-pool size in effect (0 = not on CPU)."""
+        return self._n_threads
 
     # -- inference --
     def infer(self, rgb: np.ndarray) -> np.ndarray:
@@ -157,6 +178,7 @@ class DepthNode(Node):
         self.declare_parameter("heartbeat_rate", 1.0)     # Hz
         self.declare_parameter("model_name", "depth-anything/Depth-Anything-V2-Metric-Outdoor-Small-hf")
         self.declare_parameter("device", "cpu")           # "cuda", "cpu", "auto"
+        self.declare_parameter("cpu_threads", 0)          # PyTorch CPU thread pool: 0 = auto (cores-2), N = fixed
         self.declare_parameter("model_input_size", 308)   # 224|308|448|518 – smaller = faster on CPU
         self.declare_parameter("relative_depth", False)   # metric model – fixed colormap (vmin/vmax)
         self.declare_parameter("color_map_vmin", 0.0)     # used only when relative_depth=false
@@ -175,6 +197,7 @@ class DepthNode(Node):
         heartbeat_rate = self.get_parameter("heartbeat_rate").value
         model_name = self.get_parameter("model_name").value
         device = self.get_parameter("device").value
+        cpu_threads = self.get_parameter("cpu_threads").value
         model_input_size = self.get_parameter("model_input_size").value
         self._relative_depth = self.get_parameter("relative_depth").value
         self._cmap_vmin = self.get_parameter("color_map_vmin").value
@@ -215,9 +238,15 @@ class DepthNode(Node):
         self.get_logger().info(f"Loading model '{model_name}' on device '{device}'…")
         try:
             self._model = DepthAnythingV2Model(model_name=model_name, device=device,
-                                               input_size=model_input_size)
+                                               input_size=model_input_size,
+                                               cpu_threads=cpu_threads)
             self._model.load()
             self.get_logger().info(f"Model loaded successfully on device '{self._model.device}'")
+            if not self._model.device.startswith("cuda"):
+                self.get_logger().info(
+                    f"PyTorch CPU thread pool limited to {self._model.cpu_threads} threads "
+                    f"(override with -p cpu_threads:=N, 0 = auto)"
+                )
         except Exception as e:
             self.get_logger().error(f"Failed to load model: {e}")
             raise
@@ -228,6 +257,12 @@ class DepthNode(Node):
         self._depth_pub = self.create_publisher(Image, "~/depth_map", 10)
         self._viz_pub = self.create_publisher(Image, "~/depth_map_viz", 10)
         self._heartbeat_pub = self.create_publisher(Header, "~/heartbeat", 10)
+
+        # ---- busy flag: skip timer ticks while an inference pass is still
+        #      running.  Without it the executor queues a backlog of
+        #      callbacks and the node pegs the CPU, starving MAVROS/Gazebo/
+        #      SITL on the same machine. ----------------
+        self._infer_busy = False
 
         # ---- timers ----
         infer_period = 1.0 / inference_rate
@@ -251,6 +286,12 @@ class DepthNode(Node):
 
         Called by a ROS timer – NEVER call spin_until_future_complete here.
         """
+        # Non-blocking guard: if the previous inference pass is still
+        # running, skip this tick instead of queueing a backlog.
+        if self._infer_busy:
+            return
+        self._infer_busy = True
+
         # ---- grab the latest frame --
         if self._is_webcam:
             # V4L2 already returns the newest buffered frame on read();
@@ -270,6 +311,7 @@ class DepthNode(Node):
             ret, frame = self._cap.retrieve()
 
         if not ret or frame is None:
+            self._infer_busy = False
             self.get_logger().warn("Failed to retrieve frame from video stream", throttle_duration_sec=5.0)
             return
 
@@ -285,6 +327,7 @@ class DepthNode(Node):
         try:
             depth = self._model.infer(rgb)
         except Exception as e:
+            self._infer_busy = False
             self.get_logger().error(f"Inference failed: {e}", throttle_duration_sec=5.0)
             return
         dt = (self.get_clock().now() - t0).nanoseconds / 1e9
@@ -319,6 +362,8 @@ class DepthNode(Node):
         if self._show_preview:
             cv2.imshow("Depth map (TURBO)", coloured)
             cv2.waitKey(1)
+
+        self._infer_busy = False
 
     def _heartbeat_callback(self):
         """Publish a heartbeat at a fixed rate for the Emergency Node."""

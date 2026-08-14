@@ -109,6 +109,32 @@ def generate_launch_description():
             },
             os.path.join(mavros_share, "launch", "apm_pluginlists.yaml"),
             os.path.join(mavros_share, "launch", "apm_config.yaml"),
+            {
+                # Same denylist as apm_pluginlists.yaml, plus home_position.
+                # mavros's home_position plugin polls MAV_CMD_GET_HOME_POSITION
+                # 10 s after every FCU connect; ArduPilot ACKs that command
+                # TWICE, and mavros 2.x aborts on the duplicate ACK
+                # (std::future_error: Promise already satisfied).  We never
+                # use /mavros/home_position, so the plugin is dropped entirely.
+                # Listed last so it overrides the yaml files above.
+                "plugin_denylist": [
+                    # common
+                    "actuator_control",
+                    "ftp",
+                    "hil",
+                    # extras
+                    "altitude",
+                    "debug_value",
+                    "image_pub",
+                    "px4flow",
+                    "vibration",
+                    "vision_speed_estimate",
+                    "wheel_odometry",
+                    # project: unused, and its 10 s GET_HOME_POSITION poll
+                    # triggers the mavros duplicate-ACK crash
+                    "home_position",
+                ],
+            },
         ],
     )
 

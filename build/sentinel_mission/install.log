@@ -16,6 +16,7 @@
 /home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/share/sentinel_mission/package.xml
 /home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/share/sentinel_mission/launch/mission_package.launch.py
 /home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/share/sentinel_mission/missions/mission1.plan
+/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/share/sentinel_mission/missions/obstacle_course.plan
 /home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/share/sentinel_mission/missions/default.plan
 /home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/python3.10/site-packages/sentinel_mission-0.1.0-py3.10.egg-info/dependency_links.txt
 /home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/python3.10/site-packages/sentinel_mission-0.1.0-py3.10.egg-info/PKG-INFO

@@ -208,5 +208,9 @@ CMakeFiles/sentinel_oda_msgs__rosidl_generator_py.dir/rosidl_generator_py/sentin
  /usr/include/python3.10/numpy/__multiarray_api.h \
  /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/visibility_control.h \
  /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__struct.h \
+ /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__struct.h \
  /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.h \
- /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/rosidl_generator_c__visibility_control.h
+ /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/rosidl_generator_c__visibility_control.h \
+ /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/primitives_sequence.h \
+ /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/primitives_sequence_functions.h \
+ /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.h

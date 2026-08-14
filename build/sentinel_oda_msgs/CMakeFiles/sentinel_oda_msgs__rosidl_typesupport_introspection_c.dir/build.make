@@ -78,6 +78,7 @@ rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__r
 rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__rosidl_typesupport_introspection_c.h: /opt/ros/humble/share/rosidl_typesupport_introspection_c/resource/srv__rosidl_typesupport_introspection_c.h.em
 rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__rosidl_typesupport_introspection_c.h: /opt/ros/humble/share/rosidl_typesupport_introspection_c/resource/srv__type_support.c.em
 rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__rosidl_typesupport_introspection_c.h: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleInfo.idl
+rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__rosidl_typesupport_introspection_c.h: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleBlock.idl
 rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__rosidl_typesupport_introspection_c.h: /opt/ros/humble/share/std_msgs/msg/Bool.idl
 rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__rosidl_typesupport_introspection_c.h: /opt/ros/humble/share/std_msgs/msg/Byte.idl
 rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__rosidl_typesupport_introspection_c.h: /opt/ros/humble/share/std_msgs/msg/ByteMultiArray.idl
@@ -113,8 +114,14 @@ rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__r
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C introspection for ROS interfaces"
 	/usr/bin/python3 /opt/ros/humble/lib/rosidl_typesupport_introspection_c/rosidl_typesupport_introspection_c --generator-arguments-file /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_typesupport_introspection_c__arguments.json
 
+rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__rosidl_typesupport_introspection_c.h: rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__rosidl_typesupport_introspection_c.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__rosidl_typesupport_introspection_c.h
+
 rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.c: rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__rosidl_typesupport_introspection_c.h
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.c
+
+rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c: rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__rosidl_typesupport_introspection_c.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c
 
 CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.c.o: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/flags.make
 CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.c.o: rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.c
@@ -130,14 +137,30 @@ CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_type
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.c.s"
 	/usr/lib/ccache/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.c -o CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.c.s
 
+CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.o: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/flags.make
+CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.o: rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c
+CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.o: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.o"
+	/usr/lib/ccache/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.o -MF CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.o.d -o CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.o -c /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c
+
+CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.i"
+	/usr/lib/ccache/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c > CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.i
+
+CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.s"
+	/usr/lib/ccache/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c -o CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.s
+
 # Object files for target sentinel_oda_msgs__rosidl_typesupport_introspection_c
 sentinel_oda_msgs__rosidl_typesupport_introspection_c_OBJECTS = \
-"CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.c.o"
+"CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.c.o" \
+"CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.o"
 
 # External object files for target sentinel_oda_msgs__rosidl_typesupport_introspection_c
 sentinel_oda_msgs__rosidl_typesupport_introspection_c_EXTERNAL_OBJECTS =
 
 libsentinel_oda_msgs__rosidl_typesupport_introspection_c.so: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.c.o
+libsentinel_oda_msgs__rosidl_typesupport_introspection_c.so: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c.o
 libsentinel_oda_msgs__rosidl_typesupport_introspection_c.so: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/build.make
 libsentinel_oda_msgs__rosidl_typesupport_introspection_c.so: libsentinel_oda_msgs__rosidl_generator_c.so
 libsentinel_oda_msgs__rosidl_typesupport_introspection_c.so: /opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_introspection_c.so
@@ -148,7 +171,7 @@ libsentinel_oda_msgs__rosidl_typesupport_introspection_c.so: /opt/ros/humble/lib
 libsentinel_oda_msgs__rosidl_typesupport_introspection_c.so: /opt/ros/humble/lib/librosidl_runtime_c.so
 libsentinel_oda_msgs__rosidl_typesupport_introspection_c.so: /opt/ros/humble/lib/librcutils.so
 libsentinel_oda_msgs__rosidl_typesupport_introspection_c.so: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C shared library libsentinel_oda_msgs__rosidl_typesupport_introspection_c.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C shared library libsentinel_oda_msgs__rosidl_typesupport_introspection_c.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -159,6 +182,8 @@ CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/clean:
 	$(CMAKE_COMMAND) -P CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/cmake_clean.cmake
 .PHONY : CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/clean
 
+CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/depend: rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__rosidl_typesupport_introspection_c.h
+CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/depend: rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.c
 CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/depend: rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__rosidl_typesupport_introspection_c.h
 CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/depend: rosidl_typesupport_introspection_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.c
 	cd /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs /home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c.dir/DependInfo.cmake --color=$(COLOR)

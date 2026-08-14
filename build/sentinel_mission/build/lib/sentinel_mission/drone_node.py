@@ -14,6 +14,7 @@ import rclpy
 from rclpy.node import Node
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from rclpy.qos import qos_profile_sensor_data
+from rclpy.time import Duration
 
 from std_msgs.msg import Bool, Int32, String
 from geometry_msgs.msg import PoseStamped
@@ -22,21 +23,6 @@ from mavros_msgs.srv import CommandBool, SetMode, CommandTOL, WaypointPush
 from sentinel_mission_msgs.srv import GetMission
 
 from transitions import Machine
-
-
-# ---------------------------------------------------------------------------
-# Helper: async service call with timeout (spin-aware)
-# ---------------------------------------------------------------------------
-
-def _call_service(node, client, request, timeout_sec=5.0):
-    """Call a ROS 2 service synchronously while spinning."""
-    if not client.wait_for_service(timeout_sec=timeout_sec):
-        node.get_logger().error(f"Service {client.srv_name} not available")
-        return None
-
-    future = client.call_async(request)
-    rclpy.spin_until_future_complete(node, future, timeout_sec=timeout_sec)
-    return future.result()
 
 
 # ---------------------------------------------------------------------------
@@ -62,6 +48,8 @@ class DroneNode(Node):
         self.declare_parameter("connection_timeout", 5.0)
         self.declare_parameter("waypoint_upload_timeout", 10.0)
         self.declare_parameter("state_publish_rate", 1.0)
+        self.declare_parameter("takeoff_settle_sec", 2.0)
+        self.declare_parameter("takeoff_retry_interval", 2.0)
 
         self._takeoff_alt = self.get_parameter("takeoff_altitude").value
         self._prearm_timeout = self.get_parameter("prearm_check_timeout").value
@@ -69,6 +57,8 @@ class DroneNode(Node):
         self._takeoff_timeout = self.get_parameter("takeoff_timeout").value
         self._conn_timeout = self.get_parameter("connection_timeout").value
         self._wp_upload_timeout = self.get_parameter("waypoint_upload_timeout").value
+        self._takeoff_settle_sec = self.get_parameter("takeoff_settle_sec").value
+        self._takeoff_retry_interval = self.get_parameter("takeoff_retry_interval").value
 
         # --- MAVROS service clients ---
         self._arm_cli = self.create_client(CommandBool, "/mavros/cmd/arming")
@@ -83,6 +73,8 @@ class DroneNode(Node):
         self._guided_mode_future = None
         self._auto_mode_future = None
         self._rtl_mode_future = None
+        self._guided_ok_since = None
+        self._takeoff_backoff_until = None
 
         # --- Mission service client ---
         mission_srv_name = self.get_parameter("mission_service_name").value
@@ -110,7 +102,7 @@ class DroneNode(Node):
         self.create_subscription(Bool, "~/end", self._make_trigger_cb("end"), 10)
         self.create_subscription(Bool, "/emergency_node/emergency", self._make_trigger_cb("emergency"), 10)
         self.create_subscription(Bool, "/mission_node/mission_finished", self._make_trigger_cb("mission_finished"), 10)
-        self.create_subscription(Bool, "~/obstacle_detected", self._make_trigger_cb("obstacle_detected"), 10)
+        self.create_subscription(Bool, "/detection_node/obstacle_detected", self._make_trigger_cb("obstacle_detected"), 10)
         self.create_subscription(Int32, "/mission_node/waypoint_reached", self._wp_reached_cb, 10)
 
         # --- Publisher: drone_state ---
@@ -272,6 +264,8 @@ class DroneNode(Node):
 
     def _on_enter_mission(self, event):
         self._set_state("mission")
+        self._guided_ok_since = None
+        self._takeoff_backoff_until = None
         self.get_logger().info("Starting MISSION")
 
     def _advance_init_step(self):
@@ -491,11 +485,26 @@ class DroneNode(Node):
 
         # --- Send CommandTOL ---
         self._guided_mode_future = None  # reset guided mode future after successful switch
+
+        # Let the mode change settle before the first takeoff command:
+        # ArduPilot rejects NAV_TAKEOFF while it is still settling, and the
+        # old 0.4 s retry storm (one command per tick) made things worse.
+        now = self.get_clock().now()
+        if self._guided_ok_since is None:
+            self._guided_ok_since = now
+        settle_secs = (now - self._guided_ok_since).nanoseconds / 1e9
+        if settle_secs < self._takeoff_settle_sec:
+            return
+
         if not self._takeoff_future:
             if not self._takeoff_cli.service_is_ready():
                 if elapsed > self._takeoff_timeout:
                     self.get_logger().error("Takeoff service unavailable")
                     self._force_standby()
+                return
+
+            # Back off after a rejected command instead of spamming the FCU.
+            if self._takeoff_backoff_until is not None and now < self._takeoff_backoff_until:
                 return
 
             self.get_logger().info(f"Step 6: Takeoff to {self._takeoff_alt}m...")
@@ -522,8 +531,16 @@ class DroneNode(Node):
         self._takeoff_future = None
 
         if res2 is None or not res2.success:
+            self.get_logger().warn(
+                "Takeoff command rejected by FCU — backing off and retrying",
+                throttle_duration_sec=5.0,
+            )
+            self._takeoff_backoff_until = (
+                self.get_clock().now()
+                + Duration(seconds=self._takeoff_retry_interval)
+            )
             if elapsed > self._takeoff_timeout:
-                self.get_logger().error(f"Takeoff command failed {str(res2.success)}")
+                self.get_logger().error("Takeoff failed - timeout")
                 self._force_standby()
             return
 
@@ -600,7 +617,9 @@ class DroneNode(Node):
         return 
 
     def rtl_landing(self):
-        elapsed = self.get_clock().now()
+        # elapsed is a Duration-derived float, NOT a Time – the old code
+        # compared a Time against 10 and crashed with a TypeError.
+        elapsed = (self.get_clock().now() - self._landing_timer_start).nanoseconds / 1e9
         self.get_logger().info("Switching to RTL mode...")
 
         if not self._rtl_mode_future:
@@ -617,7 +636,7 @@ class DroneNode(Node):
             return
 
         if not self._rtl_mode_future.done():
-            if elapsed > 10:
+            if elapsed > 10.0:
                 self.get_logger().error("RTL mode request timed out — no response")
                 self._rtl_mode_future = None
                 self._force_standby()
@@ -637,7 +656,7 @@ class DroneNode(Node):
             self.landing_timer.cancel()
             return
         elif elapsed > 10.0:
-            self.get_logger().error("AUTO mode confirmation timeout")
+            self.get_logger().error("RTL mode confirmation timeout")
             self._force_standby()
 
     # ==================================================================
@@ -648,17 +667,13 @@ class DroneNode(Node):
         self._set_state("mission")
         self.get_logger().info("=== Resuming MISSION (from ODA) ===")
 
-        # Switch back to AUTO mode
-        if self.fcu_state.mode != "AUTO":
-            self.get_logger().info("Re-engaging AUTO mode...")
-            if self._mode_cli.wait_for_service(timeout_sec=2.0):
-                mode_req = SetMode.Request()
-                mode_req.base_mode = 0
-                mode_req.custom_mode = "AUTO"
-                future = self._mode_cli.call_async(mode_req)
-                rclpy.spin_until_future_complete(self, future, timeout_sec=3.0)
-                if self.fcu_state.mode == "AUTO":
-                    self.get_logger().info("AUTO mode re-engaged")
+        # Re-engage AUTO via the async init step machine.  NEVER call
+        # spin_until_future_complete here – this runs inside a topic
+        # callback, which would deadlock the executor.
+        self._auto_mode_future = None
+        self._init_step = 7
+        self._init_step_start_time = self.get_clock().now()
+        self._init_timer.reset()
 
 
 # ---------------------------------------------------------------------------

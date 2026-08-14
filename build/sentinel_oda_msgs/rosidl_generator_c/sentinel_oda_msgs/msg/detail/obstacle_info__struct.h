@@ -1,3 +1,4 @@
+﻿// NOLINT: This file starts with a BOM since it contain non-ASCII characters
 // generated from rosidl_generator_c/resource/idl__struct.h.em
 // with input from sentinel_oda_msgs:msg/ObstacleInfo.idl
 // generated code does not contain a copyright notice
@@ -17,23 +18,34 @@ extern "C"
 
 // Constants defined in the message
 
+// Include directives for member types
+// Member 'blocks'
+#include "sentinel_oda_msgs/msg/detail/obstacle_block__struct.h"
+
 /// Struct defined in msg/ObstacleInfo in the package sentinel_oda_msgs.
 /**
   * Obstacle report from Detection node to Inner Map.
-  * Published every time the depth model confirms an obstacle in view.
+  * Published on every processed frame while an obstacle has been validated
+  * (obstacles are NEVER cleared – validation is one-way until the drone
+  * leaves mission/oda state).
  */
 typedef struct sentinel_oda_msgs__msg__ObstacleInfo
 {
-  /// Closest distance to the obstacle (metres), measured along the drone's
-  /// forward axis from the depth map.
+  /// All obstacle blocks currently in view (may be empty).  Width/left of each
+  /// block are already inflated by box_margin on both sides, so consumers can
+  /// mark tiles directly.
+  sentinel_oda_msgs__msg__ObstacleBlock__Sequence blocks;
+  /// Legacy single-obstacle fields – mirror the closest block (or 0.0 when no
+  /// block is in view).  Kept for compatibility with earlier subscribers.
+  /// Median-smoothed distance to the closest point of the closest block (m).
   float closest_distance;
-  /// Horizontal width of the detected obstacle (metres).
+  /// Horizontal width of the closest block (metres, margin-inflated).
   float obstacle_width;
   /// Drone's current yaw heading (radians, 0 = North, positive = East) at the
   /// moment the frame was captured.  Sourced from /mavros/local_position/pose.
   float current_heading;
-  /// Horizontal offset of the left edge of the obstacle's bounding box from the
-  /// drone's forward axis (metres, negative = left).
+  /// Horizontal offset of the left edge of the closest block from the drone's
+  /// forward axis (metres, negative = left, margin-inflated).
   float obstacle_left;
 } sentinel_oda_msgs__msg__ObstacleInfo;
 

@@ -1,6 +1,7 @@
 {
   "package_name": "sentinel_oda_msgs",
   "non_idl_tuples": [
-    "/home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs:msg/ObstacleInfo.msg"
+    "/home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs:msg/ObstacleInfo.msg",
+    "/home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs:msg/ObstacleBlock.msg"
   ]
 }

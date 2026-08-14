@@ -1,8 +1,12 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support_c.cpp.o"
+  "CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support_c.cpp.o.d"
   "CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support_c.cpp.o"
   "CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support_c.cpp.o.d"
   "libsentinel_oda_msgs__rosidl_typesupport_fastrtps_c.pdb"
   "libsentinel_oda_msgs__rosidl_typesupport_fastrtps_c.so"
+  "rosidl_typesupport_fastrtps_c/sentinel_oda_msgs/msg/detail/obstacle_block__rosidl_typesupport_fastrtps_c.h"
+  "rosidl_typesupport_fastrtps_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support_c.cpp"
   "rosidl_typesupport_fastrtps_c/sentinel_oda_msgs/msg/detail/obstacle_info__rosidl_typesupport_fastrtps_c.h"
   "rosidl_typesupport_fastrtps_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support_c.cpp"
 )

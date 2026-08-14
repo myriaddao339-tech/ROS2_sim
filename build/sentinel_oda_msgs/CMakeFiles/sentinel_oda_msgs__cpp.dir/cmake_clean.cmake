@@ -1,9 +1,14 @@
 file(REMOVE_RECURSE
   "CMakeFiles/sentinel_oda_msgs__cpp"
+  "rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__builder.hpp"
+  "rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__struct.hpp"
+  "rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__traits.hpp"
+  "rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.hpp"
   "rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__builder.hpp"
   "rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__struct.hpp"
   "rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__traits.hpp"
   "rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.hpp"
+  "rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_block.hpp"
   "rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp"
 )
 

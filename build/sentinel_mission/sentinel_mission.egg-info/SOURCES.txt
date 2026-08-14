@@ -11,6 +11,7 @@ setup.py
 launch/mission_package.launch.py
 missions/default.plan
 missions/mission1.plan
+missions/obstacle_course.plan
 resource/sentinel_mission
 sentinel_mission/__init__.py
 sentinel_mission/drone_node.py

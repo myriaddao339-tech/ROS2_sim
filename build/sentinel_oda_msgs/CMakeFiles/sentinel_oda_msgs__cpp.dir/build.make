@@ -71,6 +71,11 @@ CMakeFiles/sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/de
 CMakeFiles/sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__struct.hpp
 CMakeFiles/sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__traits.hpp
 CMakeFiles/sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.hpp
+CMakeFiles/sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_block.hpp
+CMakeFiles/sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__builder.hpp
+CMakeFiles/sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__struct.hpp
+CMakeFiles/sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__traits.hpp
+CMakeFiles/sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.hpp
 CMakeFiles/sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
 
 rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp: /opt/ros/humble/lib/rosidl_generator_cpp/rosidl_generator_cpp
@@ -89,6 +94,7 @@ rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp: /opt/ros/humble/sh
 rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp: /opt/ros/humble/share/rosidl_generator_cpp/resource/srv__struct.hpp.em
 rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp: /opt/ros/humble/share/rosidl_generator_cpp/resource/srv__traits.hpp.em
 rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleInfo.idl
+rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleBlock.idl
 rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp: /opt/ros/humble/share/std_msgs/msg/Bool.idl
 rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp: /opt/ros/humble/share/std_msgs/msg/Byte.idl
 rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp: /opt/ros/humble/share/std_msgs/msg/ByteMultiArray.idl
@@ -136,11 +142,31 @@ rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__traits.hpp: ros
 rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.hpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.hpp
 
+rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_block.hpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_block.hpp
+
+rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__builder.hpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__builder.hpp
+
+rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__struct.hpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__struct.hpp
+
+rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__traits.hpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__traits.hpp
+
+rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.hpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.hpp
+
 sentinel_oda_msgs__cpp: CMakeFiles/sentinel_oda_msgs__cpp
+sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__builder.hpp
+sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__struct.hpp
+sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__traits.hpp
+sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.hpp
 sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__builder.hpp
 sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__struct.hpp
 sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__traits.hpp
 sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.hpp
+sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_block.hpp
 sentinel_oda_msgs__cpp: rosidl_generator_cpp/sentinel_oda_msgs/msg/obstacle_info.hpp
 sentinel_oda_msgs__cpp: CMakeFiles/sentinel_oda_msgs__cpp.dir/build.make
 .PHONY : sentinel_oda_msgs__cpp

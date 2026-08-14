@@ -85,7 +85,9 @@ rosidl_generator_rs/sentinel_oda_msgs/rust/src/lib.rs: /opt/ros/humble/share/ros
 rosidl_generator_rs/sentinel_oda_msgs/rust/src/lib.rs: /opt/ros/humble/share/rosidl_generator_rs/resource/templates/srv_idiomatic.rs.em
 rosidl_generator_rs/sentinel_oda_msgs/rust/src/lib.rs: /opt/ros/humble/share/rosidl_generator_rs/resource/templates/srv_rmw.rs.em
 rosidl_generator_rs/sentinel_oda_msgs/rust/src/lib.rs: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleInfo.idl
+rosidl_generator_rs/sentinel_oda_msgs/rust/src/lib.rs: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleBlock.idl
 rosidl_generator_rs/sentinel_oda_msgs/rust/src/lib.rs: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleInfo.idl
+rosidl_generator_rs/sentinel_oda_msgs/rust/src/lib.rs: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleBlock.idl
 rosidl_generator_rs/sentinel_oda_msgs/rust/src/lib.rs: /opt/ros/humble/share/std_msgs/msg/Bool.idl
 rosidl_generator_rs/sentinel_oda_msgs/rust/src/lib.rs: /opt/ros/humble/share/std_msgs/msg/Byte.idl
 rosidl_generator_rs/sentinel_oda_msgs/rust/src/lib.rs: /opt/ros/humble/share/std_msgs/msg/ByteMultiArray.idl

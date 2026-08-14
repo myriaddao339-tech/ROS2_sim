@@ -83,6 +83,7 @@ rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h: /opt/ros/humble/share/
 rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h: /opt/ros/humble/share/rosidl_generator_c/resource/msg__type_support.h.em
 rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h: /opt/ros/humble/share/rosidl_generator_c/resource/srv__type_support.h.em
 rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleInfo.idl
+rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleBlock.idl
 rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h: /opt/ros/humble/share/std_msgs/msg/Bool.idl
 rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h: /opt/ros/humble/share/std_msgs/msg/Byte.idl
 rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h: /opt/ros/humble/share/std_msgs/msg/ByteMultiArray.idl
@@ -127,8 +128,23 @@ rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__struct.h: rosidl_
 rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.h: rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.h
 
+rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_block.h: rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_block.h
+
+rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.h: rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.h
+
+rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__struct.h: rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__struct.h
+
+rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.h: rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.h
+
 rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c: rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c
+
+rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c: rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c
 
 CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c.o: CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/flags.make
 CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c.o: rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c
@@ -144,21 +160,37 @@ CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c.s"
 	/usr/lib/ccache/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c -o CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c.s
 
+CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.o: CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/flags.make
+CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.o: rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c
+CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.o: CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.o"
+	/usr/lib/ccache/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.o -MF CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.o.d -o CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.o -c /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c
+
+CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.i"
+	/usr/lib/ccache/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c > CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.i
+
+CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.s"
+	/usr/lib/ccache/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c -o CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.s
+
 # Object files for target sentinel_oda_msgs__rosidl_generator_c
 sentinel_oda_msgs__rosidl_generator_c_OBJECTS = \
-"CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c.o"
+"CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c.o" \
+"CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.o"
 
 # External object files for target sentinel_oda_msgs__rosidl_generator_c
 sentinel_oda_msgs__rosidl_generator_c_EXTERNAL_OBJECTS =
 
 libsentinel_oda_msgs__rosidl_generator_c.so: CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c.o
+libsentinel_oda_msgs__rosidl_generator_c.so: CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.o
 libsentinel_oda_msgs__rosidl_generator_c.so: CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/build.make
 libsentinel_oda_msgs__rosidl_generator_c.so: /opt/ros/humble/lib/libstd_msgs__rosidl_generator_c.so
 libsentinel_oda_msgs__rosidl_generator_c.so: /opt/ros/humble/lib/libbuiltin_interfaces__rosidl_generator_c.so
 libsentinel_oda_msgs__rosidl_generator_c.so: /opt/ros/humble/lib/librosidl_runtime_c.so
 libsentinel_oda_msgs__rosidl_generator_c.so: /opt/ros/humble/lib/librcutils.so
 libsentinel_oda_msgs__rosidl_generator_c.so: CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C shared library libsentinel_oda_msgs__rosidl_generator_c.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C shared library libsentinel_oda_msgs__rosidl_generator_c.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -169,10 +201,15 @@ CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/clean:
 	$(CMAKE_COMMAND) -P CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/cmake_clean.cmake
 .PHONY : CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/clean
 
+CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c
+CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.h
+CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__struct.h
+CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.h
 CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c
 CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.h
 CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__struct.h
 CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.h
+CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_block.h
 CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/depend: rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h
 	cd /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs /home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/depend

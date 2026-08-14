@@ -11,10 +11,19 @@
 #include "rcutils/allocator.h"
 
 
+// Include directives for member types
+// Member `blocks`
+#include "sentinel_oda_msgs/msg/detail/obstacle_block__functions.h"
+
 bool
 sentinel_oda_msgs__msg__ObstacleInfo__init(sentinel_oda_msgs__msg__ObstacleInfo * msg)
 {
   if (!msg) {
+    return false;
+  }
+  // blocks
+  if (!sentinel_oda_msgs__msg__ObstacleBlock__Sequence__init(&msg->blocks, 0)) {
+    sentinel_oda_msgs__msg__ObstacleInfo__fini(msg);
     return false;
   }
   // closest_distance
@@ -30,6 +39,8 @@ sentinel_oda_msgs__msg__ObstacleInfo__fini(sentinel_oda_msgs__msg__ObstacleInfo 
   if (!msg) {
     return;
   }
+  // blocks
+  sentinel_oda_msgs__msg__ObstacleBlock__Sequence__fini(&msg->blocks);
   // closest_distance
   // obstacle_width
   // current_heading
@@ -40,6 +51,12 @@ bool
 sentinel_oda_msgs__msg__ObstacleInfo__are_equal(const sentinel_oda_msgs__msg__ObstacleInfo * lhs, const sentinel_oda_msgs__msg__ObstacleInfo * rhs)
 {
   if (!lhs || !rhs) {
+    return false;
+  }
+  // blocks
+  if (!sentinel_oda_msgs__msg__ObstacleBlock__Sequence__are_equal(
+      &(lhs->blocks), &(rhs->blocks)))
+  {
     return false;
   }
   // closest_distance
@@ -67,6 +84,12 @@ sentinel_oda_msgs__msg__ObstacleInfo__copy(
   sentinel_oda_msgs__msg__ObstacleInfo * output)
 {
   if (!input || !output) {
+    return false;
+  }
+  // blocks
+  if (!sentinel_oda_msgs__msg__ObstacleBlock__Sequence__copy(
+      &(input->blocks), &(output->blocks)))
+  {
     return false;
   }
   // closest_distance

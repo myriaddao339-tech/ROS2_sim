@@ -67,6 +67,7 @@ include CMakeFiles/sentinel_oda_msgs.dir/compiler_depend.make
 include CMakeFiles/sentinel_oda_msgs.dir/progress.make
 
 CMakeFiles/sentinel_oda_msgs: /home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs/msg/ObstacleInfo.msg
+CMakeFiles/sentinel_oda_msgs: /home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs/msg/ObstacleBlock.msg
 CMakeFiles/sentinel_oda_msgs: /opt/ros/humble/share/std_msgs/msg/Bool.idl
 CMakeFiles/sentinel_oda_msgs: /opt/ros/humble/share/std_msgs/msg/Byte.idl
 CMakeFiles/sentinel_oda_msgs: /opt/ros/humble/share/std_msgs/msg/ByteMultiArray.idl

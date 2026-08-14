@@ -1,0 +1,258 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-c39121a0d73e2d6c3063.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						17,
+						18
+					]
+				},
+				{
+					"build" : "sentinel_oda_msgs__py",
+					"jsonFile" : "directory-sentinel_oda_msgs__py-1882840f1df0130cde29.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/sentinel_oda_msgs__py",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "sentinel_oda_msgs__rs",
+					"jsonFile" : "directory-sentinel_oda_msgs__rs-1abf0fd6c1c83eef5f39.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/sentinel_oda_msgs__rs",
+					"targetIndexes" : 
+					[
+						16
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2
+					],
+					"name" : "sentinel_oda_msgs",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ament_cmake_python_build_sentinel_oda_msgs_egg::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ament_cmake_python_build_sentinel_oda_msgs_egg-8a46f5ed3a0ae7df0163.json",
+					"name" : "ament_cmake_python_build_sentinel_oda_msgs_egg",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ament_cmake_python_copy_sentinel_oda_msgs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ament_cmake_python_copy_sentinel_oda_msgs-fc2b0593b78bdfb6c372.json",
+					"name" : "ament_cmake_python_copy_sentinel_oda_msgs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs-4871dd122bb32e7b3f80.json",
+					"name" : "sentinel_oda_msgs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs__cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs__cpp-da4ef79cff7e044505c7.json",
+					"name" : "sentinel_oda_msgs__cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "sentinel_oda_msgs__py::@12057ec24c15a1e29fa8",
+					"jsonFile" : "target-sentinel_oda_msgs__py-b1338d620802d8bf9520.json",
+					"name" : "sentinel_oda_msgs__py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs__rosidl_generator_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs__rosidl_generator_c-d910797b2e01900de92b.json",
+					"name" : "sentinel_oda_msgs__rosidl_generator_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs__rosidl_generator_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs__rosidl_generator_py-e5f73eb422d33a21db46.json",
+					"name" : "sentinel_oda_msgs__rosidl_generator_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs__rosidl_typesupport_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs__rosidl_typesupport_c-08921513e73ffc511328.json",
+					"name" : "sentinel_oda_msgs__rosidl_typesupport_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs__rosidl_typesupport_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs__rosidl_typesupport_c__pyext-0c8a706c867762906431.json",
+					"name" : "sentinel_oda_msgs__rosidl_typesupport_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs__rosidl_typesupport_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs__rosidl_typesupport_cpp-78e3314b2af8cfa7b0b3.json",
+					"name" : "sentinel_oda_msgs__rosidl_typesupport_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs__rosidl_typesupport_fastrtps_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs__rosidl_typesupport_fastrtps_c-7cda4c399d84dadc8edb.json",
+					"name" : "sentinel_oda_msgs__rosidl_typesupport_fastrtps_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs__rosidl_typesupport_fastrtps_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs__rosidl_typesupport_fastrtps_c__pyext-e897c5da0956c260382d.json",
+					"name" : "sentinel_oda_msgs__rosidl_typesupport_fastrtps_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs__rosidl_typesupport_fastrtps_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs__rosidl_typesupport_fastrtps_cpp-bc93ed6b026f0a262315.json",
+					"name" : "sentinel_oda_msgs__rosidl_typesupport_fastrtps_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs__rosidl_typesupport_introspection_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs__rosidl_typesupport_introspection_c-6668cf08b5cb572858eb.json",
+					"name" : "sentinel_oda_msgs__rosidl_typesupport_introspection_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs__rosidl_typesupport_introspection_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs__rosidl_typesupport_introspection_c__pyext-544a29879b9ba95a34fe.json",
+					"name" : "sentinel_oda_msgs__rosidl_typesupport_introspection_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs__rosidl_typesupport_introspection_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs__rosidl_typesupport_introspection_cpp-1b07c6c3e0c990d4f697.json",
+					"name" : "sentinel_oda_msgs__rosidl_typesupport_introspection_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "sentinel_oda_msgs__rs::@7d825aaeb9b993d16bb7",
+					"jsonFile" : "target-sentinel_oda_msgs__rs-31445a8dd59d248ea011.json",
+					"name" : "sentinel_oda_msgs__rs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sentinel_oda_msgs_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sentinel_oda_msgs_uninstall-9787ffc0bd2de89320e0.json",
+					"name" : "sentinel_oda_msgs_uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-8d25057e8b285955fc36.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs",
+		"source" : "/home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

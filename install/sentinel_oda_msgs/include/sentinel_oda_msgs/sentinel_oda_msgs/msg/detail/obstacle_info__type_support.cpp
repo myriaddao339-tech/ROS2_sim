@@ -37,7 +37,69 @@ void ObstacleInfo_fini_function(void * message_memory)
   typed_message->~ObstacleInfo();
 }
 
-static const ::rosidl_typesupport_introspection_cpp::MessageMember ObstacleInfo_message_member_array[4] = {
+size_t size_function__ObstacleInfo__blocks(const void * untyped_member)
+{
+  const auto * member = reinterpret_cast<const std::vector<sentinel_oda_msgs::msg::ObstacleBlock> *>(untyped_member);
+  return member->size();
+}
+
+const void * get_const_function__ObstacleInfo__blocks(const void * untyped_member, size_t index)
+{
+  const auto & member =
+    *reinterpret_cast<const std::vector<sentinel_oda_msgs::msg::ObstacleBlock> *>(untyped_member);
+  return &member[index];
+}
+
+void * get_function__ObstacleInfo__blocks(void * untyped_member, size_t index)
+{
+  auto & member =
+    *reinterpret_cast<std::vector<sentinel_oda_msgs::msg::ObstacleBlock> *>(untyped_member);
+  return &member[index];
+}
+
+void fetch_function__ObstacleInfo__blocks(
+  const void * untyped_member, size_t index, void * untyped_value)
+{
+  const auto & item = *reinterpret_cast<const sentinel_oda_msgs::msg::ObstacleBlock *>(
+    get_const_function__ObstacleInfo__blocks(untyped_member, index));
+  auto & value = *reinterpret_cast<sentinel_oda_msgs::msg::ObstacleBlock *>(untyped_value);
+  value = item;
+}
+
+void assign_function__ObstacleInfo__blocks(
+  void * untyped_member, size_t index, const void * untyped_value)
+{
+  auto & item = *reinterpret_cast<sentinel_oda_msgs::msg::ObstacleBlock *>(
+    get_function__ObstacleInfo__blocks(untyped_member, index));
+  const auto & value = *reinterpret_cast<const sentinel_oda_msgs::msg::ObstacleBlock *>(untyped_value);
+  item = value;
+}
+
+void resize_function__ObstacleInfo__blocks(void * untyped_member, size_t size)
+{
+  auto * member =
+    reinterpret_cast<std::vector<sentinel_oda_msgs::msg::ObstacleBlock> *>(untyped_member);
+  member->resize(size);
+}
+
+static const ::rosidl_typesupport_introspection_cpp::MessageMember ObstacleInfo_message_member_array[5] = {
+  {
+    "blocks",  // name
+    ::rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE,  // type
+    0,  // upper bound of string
+    ::rosidl_typesupport_introspection_cpp::get_message_type_support_handle<sentinel_oda_msgs::msg::ObstacleBlock>(),  // members of sub message
+    true,  // is array
+    0,  // array size
+    false,  // is upper bound
+    offsetof(sentinel_oda_msgs::msg::ObstacleInfo, blocks),  // bytes offset in struct
+    nullptr,  // default value
+    size_function__ObstacleInfo__blocks,  // size() function pointer
+    get_const_function__ObstacleInfo__blocks,  // get_const(index) function pointer
+    get_function__ObstacleInfo__blocks,  // get(index) function pointer
+    fetch_function__ObstacleInfo__blocks,  // fetch(index, &value) function pointer
+    assign_function__ObstacleInfo__blocks,  // assign(index, value) function pointer
+    resize_function__ObstacleInfo__blocks  // resize(index) function pointer
+  },
   {
     "closest_distance",  // name
     ::rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT,  // type
@@ -111,7 +173,7 @@ static const ::rosidl_typesupport_introspection_cpp::MessageMember ObstacleInfo_
 static const ::rosidl_typesupport_introspection_cpp::MessageMembers ObstacleInfo_message_members = {
   "sentinel_oda_msgs::msg",  // message namespace
   "ObstacleInfo",  // message name
-  4,  // number of fields
+  5,  // number of fields
   sizeof(sentinel_oda_msgs::msg::ObstacleInfo),
   ObstacleInfo_message_member_array,  // message members
   ObstacleInfo_init_function,  // function to initialize message memory (memory has to be allocated)

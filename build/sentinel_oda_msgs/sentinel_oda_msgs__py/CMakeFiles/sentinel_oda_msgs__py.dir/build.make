@@ -70,8 +70,10 @@ sentinel_oda_msgs__py/CMakeFiles/sentinel_oda_msgs__py: rosidl_generator_py/sent
 sentinel_oda_msgs__py/CMakeFiles/sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_introspection_c.c
 sentinel_oda_msgs__py/CMakeFiles/sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_c.c
 sentinel_oda_msgs__py/CMakeFiles/sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_info.py
+sentinel_oda_msgs__py/CMakeFiles/sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_block.py
 sentinel_oda_msgs__py/CMakeFiles/sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/msg/__init__.py
 sentinel_oda_msgs__py/CMakeFiles/sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_info_s.c
+sentinel_oda_msgs__py/CMakeFiles/sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_block_s.c
 
 rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/lib/rosidl_generator_py/rosidl_generator_py
 rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/local/lib/python3.10/dist-packages/rosidl_generator_py/__init__.py
@@ -87,6 +89,7 @@ rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport
 rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/rosidl_generator_py/resource/_srv_pkg_typesupport_entry_point.c.em
 rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/rosidl_generator_py/resource/_srv.py.em
 rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleInfo.idl
+rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleBlock.idl
 rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/std_msgs/msg/Bool.idl
 rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/std_msgs/msg/Byte.idl
 rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/std_msgs/msg/ByteMultiArray.idl
@@ -131,16 +134,24 @@ rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport
 rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_info.py: rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_info.py
 
+rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_block.py: rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_block.py
+
 rosidl_generator_py/sentinel_oda_msgs/msg/__init__.py: rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/sentinel_oda_msgs/msg/__init__.py
 
 rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_info_s.c: rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
 	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_info_s.c
 
+rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_block_s.c: rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_block_s.c
+
 sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_c.c
 sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
 sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/_sentinel_oda_msgs_s.ep.rosidl_typesupport_introspection_c.c
 sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/msg/__init__.py
+sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_block.py
+sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_block_s.c
 sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_info.py
 sentinel_oda_msgs__py: rosidl_generator_py/sentinel_oda_msgs/msg/_obstacle_info_s.c
 sentinel_oda_msgs__py: sentinel_oda_msgs__py/CMakeFiles/sentinel_oda_msgs__py

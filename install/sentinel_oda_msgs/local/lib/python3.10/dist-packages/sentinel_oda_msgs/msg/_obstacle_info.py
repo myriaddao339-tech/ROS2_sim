@@ -44,6 +44,10 @@ class Metaclass_ObstacleInfo(type):
             cls._TYPE_SUPPORT = module.type_support_msg__msg__obstacle_info
             cls._DESTROY_ROS_MESSAGE = module.destroy_ros_message_msg__msg__obstacle_info
 
+            from sentinel_oda_msgs.msg import ObstacleBlock
+            if ObstacleBlock.__class__._TYPE_SUPPORT is None:
+                ObstacleBlock.__class__.__import_type_support__()
+
     @classmethod
     def __prepare__(cls, name, bases, **kwargs):
         # list constant names here so that they appear in the help text of
@@ -57,6 +61,7 @@ class ObstacleInfo(metaclass=Metaclass_ObstacleInfo):
     """Message class 'ObstacleInfo'."""
 
     __slots__ = [
+        '_blocks',
         '_closest_distance',
         '_obstacle_width',
         '_current_heading',
@@ -64,6 +69,7 @@ class ObstacleInfo(metaclass=Metaclass_ObstacleInfo):
     ]
 
     _fields_and_field_types = {
+        'blocks': 'sequence<sentinel_oda_msgs/ObstacleBlock>',
         'closest_distance': 'float',
         'obstacle_width': 'float',
         'current_heading': 'float',
@@ -71,6 +77,7 @@ class ObstacleInfo(metaclass=Metaclass_ObstacleInfo):
     }
 
     SLOT_TYPES = (
+        rosidl_parser.definition.UnboundedSequence(rosidl_parser.definition.NamespacedType(['sentinel_oda_msgs', 'msg'], 'ObstacleBlock')),  # noqa: E501
         rosidl_parser.definition.BasicType('float'),  # noqa: E501
         rosidl_parser.definition.BasicType('float'),  # noqa: E501
         rosidl_parser.definition.BasicType('float'),  # noqa: E501
@@ -81,6 +88,7 @@ class ObstacleInfo(metaclass=Metaclass_ObstacleInfo):
         assert all('_' + key in self.__slots__ for key in kwargs.keys()), \
             'Invalid arguments passed to constructor: %s' % \
             ', '.join(sorted(k for k in kwargs.keys() if '_' + k not in self.__slots__))
+        self.blocks = kwargs.get('blocks', [])
         self.closest_distance = kwargs.get('closest_distance', float())
         self.obstacle_width = kwargs.get('obstacle_width', float())
         self.current_heading = kwargs.get('current_heading', float())
@@ -115,6 +123,8 @@ class ObstacleInfo(metaclass=Metaclass_ObstacleInfo):
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
+        if self.blocks != other.blocks:
+            return False
         if self.closest_distance != other.closest_distance:
             return False
         if self.obstacle_width != other.obstacle_width:
@@ -129,6 +139,30 @@ class ObstacleInfo(metaclass=Metaclass_ObstacleInfo):
     def get_fields_and_field_types(cls):
         from copy import copy
         return copy(cls._fields_and_field_types)
+
+    @builtins.property
+    def blocks(self):
+        """Message field 'blocks'."""
+        return self._blocks
+
+    @blocks.setter
+    def blocks(self, value):
+        if __debug__:
+            from sentinel_oda_msgs.msg import ObstacleBlock
+            from collections.abc import Sequence
+            from collections.abc import Set
+            from collections import UserList
+            from collections import UserString
+            assert \
+                ((isinstance(value, Sequence) or
+                  isinstance(value, Set) or
+                  isinstance(value, UserList)) and
+                 not isinstance(value, str) and
+                 not isinstance(value, UserString) and
+                 all(isinstance(v, ObstacleBlock) for v in value) and
+                 True), \
+                "The 'blocks' field must be a set or sequence and each value of type 'ObstacleBlock'"
+        self._blocks = value
 
     @builtins.property
     def closest_distance(self):

@@ -1,2 +1,4 @@
+msg/ObstacleBlock.idl
+msg/ObstacleBlock.msg
 msg/ObstacleInfo.idl
 msg/ObstacleInfo.msg

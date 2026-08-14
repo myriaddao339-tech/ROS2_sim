@@ -16,6 +16,10 @@
 #include "rosidl_runtime_cpp/message_initialization.hpp"
 
 
+// Include directives for member types
+// Member 'blocks'
+#include "sentinel_oda_msgs/msg/detail/obstacle_block__struct.hpp"
+
 #ifndef _WIN32
 # define DEPRECATED__sentinel_oda_msgs__msg__ObstacleInfo __attribute__((deprecated))
 #else
@@ -60,6 +64,9 @@ struct ObstacleInfo_
   }
 
   // field types and members
+  using _blocks_type =
+    std::vector<sentinel_oda_msgs::msg::ObstacleBlock_<ContainerAllocator>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<sentinel_oda_msgs::msg::ObstacleBlock_<ContainerAllocator>>>;
+  _blocks_type blocks;
   using _closest_distance_type =
     float;
   _closest_distance_type closest_distance;
@@ -74,6 +81,12 @@ struct ObstacleInfo_
   _obstacle_left_type obstacle_left;
 
   // setters for named parameter idiom
+  Type & set__blocks(
+    const std::vector<sentinel_oda_msgs::msg::ObstacleBlock_<ContainerAllocator>, typename std::allocator_traits<ContainerAllocator>::template rebind_alloc<sentinel_oda_msgs::msg::ObstacleBlock_<ContainerAllocator>>> & _arg)
+  {
+    this->blocks = _arg;
+    return *this;
+  }
   Type & set__closest_distance(
     const float & _arg)
   {
@@ -141,6 +154,9 @@ struct ObstacleInfo_
   // comparison operators
   bool operator==(const ObstacleInfo_ & other) const
   {
+    if (this->blocks != other.blocks) {
+      return false;
+    }
     if (this->closest_distance != other.closest_distance) {
       return false;
     }

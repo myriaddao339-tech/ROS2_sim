@@ -76,6 +76,7 @@ rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp: /opt
 rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp: /opt/ros/humble/share/rosidl_typesupport_c/resource/msg__type_support.cpp.em
 rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp: /opt/ros/humble/share/rosidl_typesupport_c/resource/srv__type_support.cpp.em
 rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleInfo.idl
+rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp: rosidl_adapter/sentinel_oda_msgs/msg/ObstacleBlock.idl
 rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp: /opt/ros/humble/share/std_msgs/msg/Bool.idl
 rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp: /opt/ros/humble/share/std_msgs/msg/Byte.idl
 rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp: /opt/ros/humble/share/std_msgs/msg/ByteMultiArray.idl
@@ -111,6 +112,9 @@ rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp: /opt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating C type support dispatch for ROS interfaces"
 	/usr/bin/python3 /opt/ros/humble/lib/rosidl_typesupport_c/rosidl_typesupport_c --generator-arguments-file /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_typesupport_c__arguments.json --typesupports rosidl_typesupport_fastrtps_c rosidl_typesupport_introspection_c
 
+rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp: rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp
+	@$(CMAKE_COMMAND) -E touch_nocreate rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp
+
 CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp.o: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/flags.make
 CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp.o: rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp
 CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp.o: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/compiler_depend.ts
@@ -125,14 +129,30 @@ CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sent
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp.s"
 	/usr/lib/ccache/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp -o CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp.s
 
+CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.o: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/flags.make
+CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.o: rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp
+CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.o: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.o"
+	/usr/lib/ccache/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.o -MF CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.o.d -o CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.o -c /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp
+
+CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.i"
+	/usr/lib/ccache/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp > CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.i
+
+CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.s"
+	/usr/lib/ccache/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp -o CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.s
+
 # Object files for target sentinel_oda_msgs__rosidl_typesupport_c
 sentinel_oda_msgs__rosidl_typesupport_c_OBJECTS = \
-"CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp.o"
+"CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp.o" \
+"CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.o"
 
 # External object files for target sentinel_oda_msgs__rosidl_typesupport_c
 sentinel_oda_msgs__rosidl_typesupport_c_EXTERNAL_OBJECTS =
 
 libsentinel_oda_msgs__rosidl_typesupport_c.so: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp.o
+libsentinel_oda_msgs__rosidl_typesupport_c.so: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp.o
 libsentinel_oda_msgs__rosidl_typesupport_c.so: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/build.make
 libsentinel_oda_msgs__rosidl_typesupport_c.so: libsentinel_oda_msgs__rosidl_generator_c.so
 libsentinel_oda_msgs__rosidl_typesupport_c.so: /opt/ros/humble/lib/libstd_msgs__rosidl_typesupport_c.so
@@ -143,7 +163,7 @@ libsentinel_oda_msgs__rosidl_typesupport_c.so: /opt/ros/humble/lib/libbuiltin_in
 libsentinel_oda_msgs__rosidl_typesupport_c.so: /opt/ros/humble/lib/librosidl_runtime_c.so
 libsentinel_oda_msgs__rosidl_typesupport_c.so: /opt/ros/humble/lib/librcutils.so
 libsentinel_oda_msgs__rosidl_typesupport_c.so: CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX shared library libsentinel_oda_msgs__rosidl_typesupport_c.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX shared library libsentinel_oda_msgs__rosidl_typesupport_c.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -154,6 +174,7 @@ CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/clean:
 	$(CMAKE_COMMAND) -P CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/cmake_clean.cmake
 .PHONY : CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/clean
 
+CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/depend: rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_block__type_support.cpp
 CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/depend: rosidl_typesupport_c/sentinel_oda_msgs/msg/obstacle_info__type_support.cpp
 	cd /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs /home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c.dir/depend

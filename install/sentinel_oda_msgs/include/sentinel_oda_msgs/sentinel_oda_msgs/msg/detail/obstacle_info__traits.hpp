@@ -14,6 +14,10 @@
 #include "sentinel_oda_msgs/msg/detail/obstacle_info__struct.hpp"
 #include "rosidl_runtime_cpp/traits.hpp"
 
+// Include directives for member types
+// Member 'blocks'
+#include "sentinel_oda_msgs/msg/detail/obstacle_block__traits.hpp"
+
 namespace sentinel_oda_msgs
 {
 
@@ -25,6 +29,24 @@ inline void to_flow_style_yaml(
   std::ostream & out)
 {
   out << "{";
+  // member: blocks
+  {
+    if (msg.blocks.size() == 0) {
+      out << "blocks: []";
+    } else {
+      out << "blocks: [";
+      size_t pending_items = msg.blocks.size();
+      for (auto item : msg.blocks) {
+        to_flow_style_yaml(item, out);
+        if (--pending_items > 0) {
+          out << ", ";
+        }
+      }
+      out << "]";
+    }
+    out << ", ";
+  }
+
   // member: closest_distance
   {
     out << "closest_distance: ";
@@ -58,6 +80,25 @@ inline void to_block_style_yaml(
   const ObstacleInfo & msg,
   std::ostream & out, size_t indentation = 0)
 {
+  // member: blocks
+  {
+    if (indentation > 0) {
+      out << std::string(indentation, ' ');
+    }
+    if (msg.blocks.size() == 0) {
+      out << "blocks: []\n";
+    } else {
+      out << "blocks:\n";
+      for (auto item : msg.blocks) {
+        if (indentation > 0) {
+          out << std::string(indentation, ' ');
+        }
+        out << "-\n";
+        to_block_style_yaml(item, out, indentation + 2);
+      }
+    }
+  }
+
   // member: closest_distance
   {
     if (indentation > 0) {
@@ -145,11 +186,11 @@ inline const char * name<sentinel_oda_msgs::msg::ObstacleInfo>()
 
 template<>
 struct has_fixed_size<sentinel_oda_msgs::msg::ObstacleInfo>
-  : std::integral_constant<bool, true> {};
+  : std::integral_constant<bool, false> {};
 
 template<>
 struct has_bounded_size<sentinel_oda_msgs::msg::ObstacleInfo>
-  : std::integral_constant<bool, true> {};
+  : std::integral_constant<bool, false> {};
 
 template<>
 struct is_message<sentinel_oda_msgs::msg::ObstacleInfo>

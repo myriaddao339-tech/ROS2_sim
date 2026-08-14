@@ -368,7 +368,15 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/sentinel_oda_msgs/msg" TYPE FILE FILES "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_adapter/sentinel_oda_msgs/msg/ObstacleBlock.idl")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/sentinel_oda_msgs/msg" TYPE FILE FILES "/home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs/msg/ObstacleInfo.msg")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/sentinel_oda_msgs/msg" TYPE FILE FILES "/home/ubuntu/Desktop/ROS2_sim/src/sentinel_oda_msgs/msg/ObstacleBlock.msg")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)

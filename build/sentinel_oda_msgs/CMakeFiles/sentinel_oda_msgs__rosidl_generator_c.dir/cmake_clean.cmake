@@ -1,12 +1,19 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.o"
+  "CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c.o.d"
   "CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c.o"
   "CMakeFiles/sentinel_oda_msgs__rosidl_generator_c.dir/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c.o.d"
   "libsentinel_oda_msgs__rosidl_generator_c.pdb"
   "libsentinel_oda_msgs__rosidl_generator_c.so"
+  "rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.c"
+  "rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.h"
+  "rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__struct.h"
+  "rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.h"
   "rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.c"
   "rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.h"
   "rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__struct.h"
   "rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.h"
+  "rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_block.h"
   "rosidl_generator_c/sentinel_oda_msgs/msg/obstacle_info.h"
 )
 

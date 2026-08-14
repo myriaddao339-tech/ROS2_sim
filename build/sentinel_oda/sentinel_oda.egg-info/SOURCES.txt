@@ -8,7 +8,9 @@ setup.py
 ../../build/sentinel_oda/sentinel_oda.egg-info/requires.txt
 ../../build/sentinel_oda/sentinel_oda.egg-info/top_level.txt
 ../../build/sentinel_oda/sentinel_oda.egg-info/zip-safe
+launch/oda_live_test.launch.py
 resource/sentinel_oda
 sentinel_oda/__init__.py
 sentinel_oda/depth_node.py
+sentinel_oda/detection_node.py
 sentinel_oda/oda_maneuvers.py

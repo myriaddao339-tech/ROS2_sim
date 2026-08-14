@@ -4,10 +4,10 @@ depth_node.py – Monocular depth estimation using Depth Anything V2 (light).
 
 Reads frames from the drone's UDP MPEG‑TS stream (default 127.0.0.1:5600),
 or from the PC webcam / a video file, and runs the small Depth Anything V2
-checkpoint on the CPU (default) or GPU.
+Metric-Outdoor checkpoint on the CPU (default) or GPU.
 
 Publishes:
-  /depth_node/depth_map     – sensor_msgs/Image  (32FC1, relative depth)
+  /depth_node/depth_map     – sensor_msgs/Image  (32FC1, metric metres)
   /depth_node/depth_map_viz – sensor_msgs/Image  (rgb8,  colour-mapped for rviz2)
   /depth_node/heartbeat     – std_msgs/Header     (1 Hz, for Emergency Node)
 
@@ -16,14 +16,17 @@ camera may be pushing frames faster – stale frames are dropped by
 reading the latest available buffer before each inference pass.
 
 NOTE: the timer is not the real limit – effective fps = 1/inference-time.
-On this machine's CPU the Small checkpoint measures ~1.2 fps @ 518px,
-~5.6 fps @ 308px, ~8.0 fps @ 224px (input size set via model_input_size).
-The GPU is several times faster once power is sorted out.
+The stale-frame drain is time-bounded (drain_budget), so it can never
+drag the fps below the model's own speed.  On this machine's CPU the
+Small checkpoint measures ~1.2 fps @ 518px, ~5.6 fps @ 308px, ~8.0 fps
+@ 224px (input size set via model_input_size).  True 20 Hz needs the GPU.
 
-NOTE: the Small checkpoint outputs *relative* depth (arbitrary scale),
-not metric metres.  The colour-map for rviz2 is therefore auto-scaled
-per frame (2nd–98th percentile) unless relative_depth:=false.
+NOTE: this node runs the Metric-Outdoor checkpoint, so the published
+depth map is in real metres – which the Detection node needs for its
+metre-based thresholds.
 """
+
+import time
 
 import rclpy
 from rclpy.node import Node
@@ -46,7 +49,7 @@ class DepthAnythingV2Model:
     HuggingFace transformers depth-estimation pipeline.
     """
 
-    def __init__(self, model_name: str = "depth-anything/Depth-Anything-V2-Small-hf",
+    def __init__(self, model_name: str = "depth-anything/Depth-Anything-V2-Metric-Outdoor-Small-hf",
                  device: str = "cpu",
                  input_size: int = 308):
         self._device = self._resolve_device(device)
@@ -92,9 +95,8 @@ class DepthAnythingV2Model:
         """
         Run depth estimation on an RGB numpy image (H×W×3, uint8).
 
-        Returns a float32 numpy array (H×W) with depth values.  Note that
-        the Small checkpoint outputs *relative* depth (arbitrary scale),
-        not metric depth in metres.
+        Returns a float32 numpy array (H×W) with metric depth values in
+        metres (the Metric-Outdoor checkpoint).
         """
         if not self._loaded:
             raise RuntimeError("Model not loaded – call .load() first")
@@ -150,12 +152,13 @@ class DepthNode(Node):
         self.declare_parameter("webcam_height", 480)
         self.declare_parameter("webcam_fps", 30)          # requested capture fps (webcam only)
         self.declare_parameter("show_preview", False)     # pop-up OpenCV window
-        self.declare_parameter("inference_rate", 20.0)    # Hz (timer cap; effective fps limited by model speed on CPU)
+        self.declare_parameter("inference_rate", 20.0)    # Hz target (timer cap; effective fps limited by model speed on CPU)
+        self.declare_parameter("drain_budget", 0.1)       # s, max time spent draining stale frames per pass
         self.declare_parameter("heartbeat_rate", 1.0)     # Hz
-        self.declare_parameter("model_name", "depth-anything/Depth-Anything-V2-Small-hf")
+        self.declare_parameter("model_name", "depth-anything/Depth-Anything-V2-Metric-Outdoor-Small-hf")
         self.declare_parameter("device", "cpu")           # "cuda", "cpu", "auto"
         self.declare_parameter("model_input_size", 308)   # 224|308|448|518 – smaller = faster on CPU
-        self.declare_parameter("relative_depth", True)    # Small = relative depth, auto-scale viz
+        self.declare_parameter("relative_depth", False)   # metric model – fixed colormap (vmin/vmax)
         self.declare_parameter("color_map_vmin", 0.0)     # used only when relative_depth=false
         self.declare_parameter("color_map_vmax", 50.0)
         self.declare_parameter("frame_id", "depth_camera")
@@ -168,6 +171,7 @@ class DepthNode(Node):
         self._is_webcam = video_source == "webcam"
         self._show_preview = self.get_parameter("show_preview").value
         inference_rate = self.get_parameter("inference_rate").value
+        self._drain_budget = float(self.get_parameter("drain_budget").value)
         heartbeat_rate = self.get_parameter("heartbeat_rate").value
         model_name = self.get_parameter("model_name").value
         device = self.get_parameter("device").value
@@ -254,10 +258,14 @@ class DepthNode(Node):
             # at 7 fps = 7 s stalls between inferences).
             ret, frame = self._cap.read()
         else:
-            # UDP / file sources: drain stale frames – keep only the newest
-            # (bounded so a live stream can never make this loop spin forever)
+            # UDP / file sources: drain stale frames – keep only the newest.
+            # Bounded by count AND wall time (drain_budget) so a live stream
+            # can never stall the inference loop while waiting for frames.
+            deadline = time.monotonic() + self._drain_budget
             for _ in range(50):
                 if not self._cap.grab():
+                    break
+                if time.monotonic() >= deadline:
                     break
             ret, frame = self._cap.retrieve()
 

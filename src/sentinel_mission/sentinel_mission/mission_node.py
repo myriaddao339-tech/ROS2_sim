@@ -72,7 +72,7 @@ class MissionNode(Node):
             from ament_index_python.packages import get_package_share_directory
             mission_file = os.path.join(
                 get_package_share_directory("sentinel_mission"),
-                "missions", "mission1.plan",
+                "missions", "obstacle_course.plan",
             )
 
         if not os.path.isfile(mission_file):

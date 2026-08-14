@@ -22,6 +22,7 @@ setup(
     entry_points={
         "console_scripts": [
             "depth_node = sentinel_oda.depth_node:main",
+            "detection_node = sentinel_oda.detection_node:main",
         ],
     },
 )

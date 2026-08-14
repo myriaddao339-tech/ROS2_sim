@@ -3,10 +3,12 @@
   "output_dir": "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_rs/sentinel_oda_msgs",
   "template_dir": "/opt/ros/humble/share/rosidl_generator_rs/cmake/../resource",
   "idl_tuples": [
-    "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_adapter/sentinel_oda_msgs:msg/ObstacleInfo.idl"
+    "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_adapter/sentinel_oda_msgs:msg/ObstacleInfo.idl",
+    "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_adapter/sentinel_oda_msgs:msg/ObstacleBlock.idl"
   ],
   "ros_interface_files": [
-    "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_adapter/sentinel_oda_msgs/msg/ObstacleInfo.idl"
+    "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_adapter/sentinel_oda_msgs/msg/ObstacleInfo.idl",
+    "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_adapter/sentinel_oda_msgs/msg/ObstacleBlock.idl"
   ],
   "ros_interface_dependencies": [
     "std_msgs:/opt/ros/humble/share/std_msgs/msg/Bool.idl",
@@ -56,7 +58,9 @@
     "/opt/ros/humble/share/rosidl_generator_rs/cmake/../resource/templates/srv_idiomatic.rs.em",
     "/opt/ros/humble/share/rosidl_generator_rs/cmake/../resource/templates/srv_rmw.rs.em",
     "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_adapter/sentinel_oda_msgs/msg/ObstacleInfo.idl",
+    "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_adapter/sentinel_oda_msgs/msg/ObstacleBlock.idl",
     "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_adapter/sentinel_oda_msgs/msg/ObstacleInfo.idl",
+    "/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_adapter/sentinel_oda_msgs/msg/ObstacleBlock.idl",
     "/opt/ros/humble/share/std_msgs/msg/Bool.idl",
     "/opt/ros/humble/share/std_msgs/msg/Byte.idl",
     "/opt/ros/humble/share/std_msgs/msg/ByteMultiArray.idl",

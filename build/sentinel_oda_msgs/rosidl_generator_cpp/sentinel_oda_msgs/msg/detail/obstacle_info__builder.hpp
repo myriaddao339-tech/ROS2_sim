@@ -72,13 +72,29 @@ private:
 class Init_ObstacleInfo_closest_distance
 {
 public:
-  Init_ObstacleInfo_closest_distance()
-  : msg_(::rosidl_runtime_cpp::MessageInitialization::SKIP)
+  explicit Init_ObstacleInfo_closest_distance(::sentinel_oda_msgs::msg::ObstacleInfo & msg)
+  : msg_(msg)
   {}
   Init_ObstacleInfo_obstacle_width closest_distance(::sentinel_oda_msgs::msg::ObstacleInfo::_closest_distance_type arg)
   {
     msg_.closest_distance = std::move(arg);
     return Init_ObstacleInfo_obstacle_width(msg_);
+  }
+
+private:
+  ::sentinel_oda_msgs::msg::ObstacleInfo msg_;
+};
+
+class Init_ObstacleInfo_blocks
+{
+public:
+  Init_ObstacleInfo_blocks()
+  : msg_(::rosidl_runtime_cpp::MessageInitialization::SKIP)
+  {}
+  Init_ObstacleInfo_closest_distance blocks(::sentinel_oda_msgs::msg::ObstacleInfo::_blocks_type arg)
+  {
+    msg_.blocks = std::move(arg);
+    return Init_ObstacleInfo_closest_distance(msg_);
   }
 
 private:
@@ -96,7 +112,7 @@ template<>
 inline
 auto build<::sentinel_oda_msgs::msg::ObstacleInfo>()
 {
-  return sentinel_oda_msgs::msg::builder::Init_ObstacleInfo_closest_distance();
+  return sentinel_oda_msgs::msg::builder::Init_ObstacleInfo_blocks();
 }
 
 }  // namespace sentinel_oda_msgs

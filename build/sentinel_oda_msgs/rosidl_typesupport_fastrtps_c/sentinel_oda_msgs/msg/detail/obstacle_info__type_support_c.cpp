@@ -34,8 +34,20 @@ extern "C"
 {
 #endif
 
+#include "sentinel_oda_msgs/msg/detail/obstacle_block__functions.h"  // blocks
 
 // forward declare type support functions
+size_t get_serialized_size_sentinel_oda_msgs__msg__ObstacleBlock(
+  const void * untyped_ros_message,
+  size_t current_alignment);
+
+size_t max_serialized_size_sentinel_oda_msgs__msg__ObstacleBlock(
+  bool & full_bounded,
+  bool & is_plain,
+  size_t current_alignment);
+
+const rosidl_message_type_support_t *
+  ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, sentinel_oda_msgs, msg, ObstacleBlock)();
 
 
 using _ObstacleInfo__ros_msg_type = sentinel_oda_msgs__msg__ObstacleInfo;
@@ -49,6 +61,25 @@ static bool _ObstacleInfo__cdr_serialize(
     return false;
   }
   const _ObstacleInfo__ros_msg_type * ros_message = static_cast<const _ObstacleInfo__ros_msg_type *>(untyped_ros_message);
+  // Field name: blocks
+  {
+    const message_type_support_callbacks_t * callbacks =
+      static_cast<const message_type_support_callbacks_t *>(
+      ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
+        rosidl_typesupport_fastrtps_c, sentinel_oda_msgs, msg, ObstacleBlock
+      )()->data);
+    size_t size = ros_message->blocks.size;
+    auto array_ptr = ros_message->blocks.data;
+    cdr << static_cast<uint32_t>(size);
+    for (size_t i = 0; i < size; ++i) {
+      if (!callbacks->cdr_serialize(
+          &array_ptr[i], cdr))
+      {
+        return false;
+      }
+    }
+  }
+
   // Field name: closest_distance
   {
     cdr << ros_message->closest_distance;
@@ -81,6 +112,43 @@ static bool _ObstacleInfo__cdr_deserialize(
     return false;
   }
   _ObstacleInfo__ros_msg_type * ros_message = static_cast<_ObstacleInfo__ros_msg_type *>(untyped_ros_message);
+  // Field name: blocks
+  {
+    const message_type_support_callbacks_t * callbacks =
+      static_cast<const message_type_support_callbacks_t *>(
+      ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(
+        rosidl_typesupport_fastrtps_c, sentinel_oda_msgs, msg, ObstacleBlock
+      )()->data);
+    uint32_t cdrSize;
+    cdr >> cdrSize;
+    size_t size = static_cast<size_t>(cdrSize);
+
+    // Check there are at least 'size' remaining bytes in the CDR stream before resizing
+    auto old_state = cdr.getState();
+    bool correct_size = cdr.jump(size);
+    cdr.setState(old_state);
+    if (!correct_size) {
+      fprintf(stderr, "sequence size exceeds remaining buffer\n");
+      return false;
+    }
+
+    if (ros_message->blocks.data) {
+      sentinel_oda_msgs__msg__ObstacleBlock__Sequence__fini(&ros_message->blocks);
+    }
+    if (!sentinel_oda_msgs__msg__ObstacleBlock__Sequence__init(&ros_message->blocks, size)) {
+      fprintf(stderr, "failed to create array for field 'blocks'");
+      return false;
+    }
+    auto array_ptr = ros_message->blocks.data;
+    for (size_t i = 0; i < size; ++i) {
+      if (!callbacks->cdr_deserialize(
+          cdr, &array_ptr[i]))
+      {
+        return false;
+      }
+    }
+  }
+
   // Field name: closest_distance
   {
     cdr >> ros_message->closest_distance;
@@ -118,6 +186,18 @@ size_t get_serialized_size_sentinel_oda_msgs__msg__ObstacleInfo(
   (void)padding;
   (void)wchar_size;
 
+  // field.name blocks
+  {
+    size_t array_size = ros_message->blocks.size;
+    auto array_ptr = ros_message->blocks.data;
+    current_alignment += padding +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, padding);
+
+    for (size_t index = 0; index < array_size; ++index) {
+      current_alignment += get_serialized_size_sentinel_oda_msgs__msg__ObstacleBlock(
+        &array_ptr[index], current_alignment);
+    }
+  }
   // field.name closest_distance
   {
     size_t item_size = sizeof(ros_message->closest_distance);
@@ -171,6 +251,29 @@ size_t max_serialized_size_sentinel_oda_msgs__msg__ObstacleInfo(
   full_bounded = true;
   is_plain = true;
 
+  // member: blocks
+  {
+    size_t array_size = 0;
+    full_bounded = false;
+    is_plain = false;
+    current_alignment += padding +
+      eprosima::fastcdr::Cdr::alignment(current_alignment, padding);
+
+
+    last_member_size = 0;
+    for (size_t index = 0; index < array_size; ++index) {
+      bool inner_full_bounded;
+      bool inner_is_plain;
+      size_t inner_size;
+      inner_size =
+        max_serialized_size_sentinel_oda_msgs__msg__ObstacleBlock(
+        inner_full_bounded, inner_is_plain, current_alignment);
+      last_member_size += inner_size;
+      current_alignment += inner_size;
+      full_bounded &= inner_full_bounded;
+      is_plain &= inner_is_plain;
+    }
+  }
   // member: closest_distance
   {
     size_t array_size = 1;

@@ -117,6 +117,17 @@ Honest answer: no, I wouldn't count on the model to handle this for you. Depth A
 
 For a danger-tile map specifically, the pattern that works well is **hysteresis/debounce** rather than a plain low-pass filter: require N consecutive "obstacle here" reads before marking a tile dangerous, and M consecutive clear reads before un-marking it (M can be larger than N — "quick to flag danger, slow to clear it" is the safer asymmetry). A low-pass/EMA on the raw distance value is worth adding too if you want smoother distance estimates feeding into that decision, but the debounce is what actually protects you from single noisy frames flickering a tile in and out of "dangerous."
 
+### UPDATED RULE (2026-08-13, pre-testing) — one-way danger, but validation counts expire
+- Tiles marked dangerous STAY dangerous forever (no clear debounce).
+- The per-tile validation counter that decides whether a tile BECOMES
+  dangerous must NOT accumulate over the whole flight: if the tile is not
+  re-validated within `danger_count_timeout` (suggested default 1.0 s,
+  ~2x the 10-frame validation at 20 fps), its counter resets to 0.
+  Scattered mistakes can never add up to a false "dangerous" verdict —
+  only sustained, recent evidence validates a tile.
+- The Detection node's own confirm counter already resets to 0 on a
+  single miss frame, so no accumulation there either.
+
 ## "Downsampled full frame," clarified
 
 Given what you just told me — that Detection barely touches the depth map beyond reading a few values in a small region — this mostly resolves itself, and I should be more direct about why: **dense prediction models like Depth Anything don't support partial computation.** A single forward pass produces the whole output map at once; there's no way to tell the model "only compute depth for these 50x50 pixels" and have it do less work — cropping the *input* to just your bounding-box region would still cost a full forward pass, just over a smaller image. So "restrict computation to the bounding box" doesn't actually save anything at the model level. The only two real levers for inference cost are **input resolution** (smaller frame in → faster pass, coarser output) and **inference rate** (you don't need to run this at 30fps if flight-relevant reaction time doesn't require it — 5-10Hz is plenty for gentle probing maneuvers). Since you're not doing further processing on the map, this mostly becomes a non-issue for you either way.

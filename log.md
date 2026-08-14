@@ -492,3 +492,342 @@ Finally, one more warning of a bug that you also created last time, because I'm 
 - Reminder: UDP had a huge-delay issue in the past; node already drops stale
   frames (only newest is processed), so if delay returns it is upstream buffering
   on the relay/camera side. Webcam still available via -p video_source:=webcam.
+
+## Session 12 — 2026-08-13
+
+### Situation
+- User ready to start the Detection node (node 2 of the ODA package).
+
+### What I did
+- Switched depth node model to depth-anything/Depth-Anything-V2-Metric-Outdoor-Small-hf
+  (metric metres, same Small architecture => same CPU speed). relative_depth default False.
+  Smoke-tested: ~5.1 fps @ 308px on CPU, output metric. Weights cached locally.
+- Created src/sentinel_oda/sentinel_oda/detection_node.py:
+  - subs: /depth_node/depth_map, /drone_node/drone_state, /mavros/local_position/pose
+  - pubs: ~/obstacle_detected (Bool), ~/obstacle_info (ObstacleInfo), ~/heartbeat (Header, 1 Hz)
+  - virtual bounding box via pinhole (focal from camera_hfov_deg), two thresholds
+    (mission 10.0 m / oda 0.80 m, + depth_margin 0.5), confirm/clear hysteresis (3/5),
+    median window (5) on closest_distance, width/left in metres from pixel span.
+- Registered detection_node entry point in setup.py.
+- Mission package mods (allowed):
+  - drone_node.py: obstacle_detected subscription fixed "~/obstacle_detected" ->
+    absolute "/detection_node/obstacle_detected" (the ~ bug pattern from AGENTS.md).
+  - emergency_node.py: subscribes to /depth_node/heartbeat and /detection_node/heartbeat,
+    new param pc_heartbeat_timeout (5 s), triggers emergency when a PC node goes silent
+    while state is mission/oda (only if it was heard at least once).
+- Built sentinel_oda + sentinel_mission. py_compile OK.
+- Functional test with synthetic depth map: 3 frames confirm, info fields correct
+  (closest 3.0 m, width 0.163 m, left -0.085 m), 5 clear frames debounce back to False.
+  Fixed a debounce bug found by the test (clear side needed confirm+clear misses).
+
+### What I answered
+- Detection node done and tested. Run: ros2 run sentinel_oda detection_node
+  (depth node must be running and publishing metric depth).
+- Note: drone_node now expects /detection_node/obstacle_detected (absolute).
+- Next: ODA Maneuvers (drone) or Inner Map (drone).
+
+## Session 13 — 2026-08-13
+
+### Situation
+- User resumed work and asked for a recap of what was done with the Detection node.
+
+### What I did
+- Re-read log.md Session 12 (latest entry) and confirmed detection_node.py exists in
+  src/sentinel_oda/sentinel_oda/.
+- No code changes this session (recap only).
+
+### What I answered
+- Recap: detection_node.py created (subs: depth_map, drone_state, local pose; pubs:
+  ~/obstacle_detected, ~/obstacle_info, ~/heartbeat; pinhole virtual bbox, 10m/0.8m
+  thresholds +0.5m margin, 3/5 hysteresis, median 5). Mission pkg: drone_node absolute
+  topic fix + emergency_node heartbeat watchdog. Tested with synthetic depth, debounce
+  bug fixed. Run: ros2 run sentinel_oda detection_node.
+- Next up: ODA Maneuvers or Inner Map (drone-side).
+
+## Session 14 — 2026-08-13
+
+### Situation
+- Pre-testing tweaks requested by user:
+  1. Drone is 0.363 x 0.363 m; box safety margin 0.2 m.
+  2. Remove obstacle clearing entirely; danger-tile validation needs 10
+     frames; fps should target 20 (keep model input size 308).
+  3. Camera horizontal FOV is 53.5 degrees.
+  4. Verify left/width logic: two obstacles at the same distance, 5 m
+     apart, must be reported as two separate blocks (gap vs width).
+
+### What I did
+- detection_node.py:
+  - drone_width/drone_height 0.5 -> 0.363; box_margin 0.5 -> 0.2.
+  - camera_hfov_deg 62.0 -> 53.5.
+  - confirm_frames 3 -> 10; clear_frames param + clear-debounce logic
+    REMOVED: validation is one-way (a miss resets the consecutive-hit
+    counter but never clears a validated obstacle; only leaving
+    mission/oda state resets detection, Inner Map will keep tiles).
+  - New block segmentation (_extract_blocks): connected components of
+    near-threshold pixels across the FULL width of the virtual box's row
+    band; components are merged left-to-right unless the gap between them
+    is wider than the drone's passable width (drone_w + 2*box_margin,
+    evaluated at the gap's own depth). Width/left computed with per-edge
+    column depths and inflated by box_margin on both sides so tiles can be
+    marked directly. Legacy scalar fields = closest block.
+  - New param min_block_px=3 (ignore speck components).
+- sentinel_oda_msgs: new msg/ObstacleBlock.msg (distance, width, left);
+  ObstacleInfo.msg now carries ObstacleBlock[] blocks + legacy scalars.
+  CMakeLists.txt updated.
+- depth_node.py: inference_rate stays 20.0 (already raised in Session 10);
+  stale-frame drain for udp/file sources is now time-bounded by new
+  drain_budget param (0.1 s) instead of a fixed 50 grabs, so a live
+  stream can no longer throttle fps below the model's own speed.
+  model_input_size untouched (308).
+- Rebuilt sentinel_oda_msgs + sentinel_oda (needed source /opt/ros/humble
+  first - shell had no ROS env). py_compile clean.
+- Synthetic test of _extract_blocks (480x640, focal 634.9 px @ 53.5 deg):
+  - two 1 m obstacles at 10 m, 5 m apart -> 2 blocks (w=1.36 m incl.
+    margins, left=-3.18 / +1.80)  PASS
+  - same pair 0.3 m apart -> 1 block (gap impassable)  PASS
+  - single obstacle -> 1 block  PASS
+  - empty view -> 0 blocks  PASS
+
+### What I answered
+- Honest answer to Q4: the OLD code merged everything between the first
+  and last near column, so the 5 m gap would have been swallowed into one
+  bogus width. NEW code answers correctly: 2 blocks with own width/left.
+- Gap splitting rule: gap >= drone_w + 2*box_margin (0.763 m) = flyable ->
+  split; narrower = same obstacle. Gap metres measured at the gap's own
+  depth; depth noise holes inside one obstacle re-merge.
+- fps: timer already targets 20 Hz and drain can no longer throttle it,
+  BUT on CPU the Small model at 308px measures ~5-8 fps max regardless -
+  true 20 fps needs the GPU. Window size (model_input_size 308) kept as
+  requested.
+- Caveats for path planning: occlusion (one obstacle hiding another) is
+  still unsolvable from a single camera; block split also relies on the
+  gap being visible in the depth map.
+- Ready for the testing phase (launch scripts, Gazebo, obstacle courses).
+
+## Session 15 — 2026-08-13
+
+### Situation
+- User confirmed: danger tiles are one-way, BUT per-tile validation counts
+  must expire — scattered mistakes over time must never accumulate into a
+  tile being "magically" tagged dangerous.
+
+### What I did
+- No code changes needed:
+  - The only validation counter that exists today is the Detection node's
+    consecutive-hit counter, and it already resets to 0 on a single miss
+    frame (Session 14 change) — no accumulation possible.
+  - The per-tile grid/counters live in the Inner Map node, which is NOT
+    built yet (next: ODA Maneuvers → Inner Map → GUIDED).
+- Recorded the rule in src/sentinel_oda/context.md (Noise filtering
+  section): danger tiles are one-way permanent, but a tile's validation
+  counter resets to 0 if it is not re-validated within
+  `danger_count_timeout` (suggested default 1.0 s, ~2x the 10-frame
+  validation at 20 fps). This rule is now part of the Inner Map spec.
+
+### What I answered
+- Explained where the counter lives today vs where the tile counters will
+  live (Inner Map), and that the expiry rule is locked into the design doc
+  so it survives context loss and is enforced when Inner Map is built.
+- Ready for the testing phase.
+
+## Session 16 — 2026-08-13/14
+
+### Situation
+- User asked for: (1) a launch file in sentinel_oda for a live ODA test
+  (drone_node/mission_node/depth_node/mavros/etc, NO gazebo/sitl in the
+  launch), (2) a world_sim folder for simulation assets, (3) an obstacle
+  course world, (4) an F450-style drone model with an OV5647-like camera
+  (53.5 deg HFOV).
+
+### What I did
+- Created src/sentinel_oda/launch/oda_live_test.launch.py:
+  mavros apm.launch include (fcu_url arg, default udp://:14550@), mission
+  package nodes (mission/emergency/start_trigger/drone), depth_node
+  (video_source udp, port 5600, rate 20 Hz, size 308) and detection_node
+  (53.5 deg HFOV, 0.363 m drone, 0.2 m margin, confirm 10). Built + parses
+  OK (ros2 launch --show-args verified).
+- Created world_sim/:
+  - models/sentinel_f450/{model.config,model.sdf}: F450 X-quad (0.45 m
+    diagonal, 10" props), ArduPilotPlugin (ports 9002/9003, iris
+    conventions), fixed forward camera (HFOV 0.93375 rad = 53.5 deg,
+    640x480, 30 Hz, GstCameraPlugin -> udp://127.0.0.1:5600).
+  - worlds/obstacle_course.sdf: based on iris_runway.sdf; course: gap-test
+    walls (5 m gap) x=10, merge-test boxes (0.3 m gap) x=18, pylon slalom
+    x=24-36, detour wall x=44, box cluster x=52-56.
+  - README.md with run instructions (gz sim + sim_vehicle + ros2 launch).
+- Fixed plugin scoping errors found in headless test: flat model must use
+  unscoped names (rotor_0_joint, imu_link::imu_sensor), not
+  sentinel_f450::... (iris uses scoped names only because it nests models).
+  World now loads with zero errors.
+- Camera: sensor image topic streams fine, BUT GstCameraPlugin does not
+  start the UDP stream by itself - it waits for an enable_streaming=true
+  message on .../camera/image/enable_streaming (confirmed in plugin
+  source; same for iris gimbal, see ardupilot_gazebo README one-liner).
+  ffprobe on 5600 stayed silent -> root cause identified. Plan: add a
+  TriggeredPublisher system plugin to the world to auto-enable streaming
+  at startup (verified libgz-sim8-triggered-publisher-system.so exists).
+
+### What I answered
+- Explained the "stuck" state to the user: everything validated except the
+  camera UDP stream; root cause is GstCameraPlugin's enable_streaming
+  handshake, not the model/world/launch.
+- Next step (pending user go-ahead): auto-enable the camera stream via
+  TriggeredPublisher in obstacle_course.sdf, re-test with ffprobe, done.
+
+## Session 17 — 2026-08-14
+
+### Situation
+- User: instead of a TriggeredPublisher hack, put the enable_streaming
+  command in the launch file; also create bash scripts that launch gz sim
+  and SITL in SEPARATE terminals (one combined launch was too cluttered).
+  Provided the ArduPilot docs page (sitl-with-gazebo).
+
+### What I did
+- Read the official docs: confirms the enable_streaming handshake
+  (gz topic -t .../enable_streaming -m gz.msgs.Boolean -p "data: 1") and
+  the sim_vehicle/gz workflow.
+- oda_live_test.launch.py:
+  - new args camera_stream_topic (default
+    /world/obstacle_course/model/sentinel_f450/link/camera_link/sensor/
+    camera/image/enable_streaming) and enable_camera_stream (default true)
+  - ExecuteProcess (bash retry loop, 30 x 1 s) publishes data: 1 to the
+    camera topic; wrapped in IfCondition so real-drone runs can skip it
+    with enable_camera_stream:=false.
+  - rebuilt + --show-args verified.
+- world_sim scripts (chmod +x, bash -n clean):
+  - start_gazebo.sh: sets GZ_SIM_RESOURCE_PATH, exec gz sim -v4 -r
+    obstacle_course.sdf
+  - start_sitl.sh: cd ~/ardupilot/Tools/autotest, exec sim_vehicle.py
+    -v ArduCopter -f gazebo-iris --model JSON --console with the user's
+    --outs + extra --out=udp:127.0.0.1:14550 for MAVROS
+  - start_sim.sh: auto-detects gnome-terminal/konsole/xterm and opens the
+    two scripts in separate terminals
+  - README updated (Option A scripts / Option B manual).
+- Found + fixed a stream FORMAT bug during testing: with
+  use_basic_pipeline=true the plugin sends raw RTP H264 (ffprobe:
+  "Invalid data") — depth_node's FFmpeg opener needs a container.
+  use_basic_pipeline=false → mpegtsmux → MPEG-TS, same as the real drone
+  relay. model.sdf updated.
+- End-to-end verified (headless gz): enable message accepted in 1 s;
+  ffprobe: h264 640x480 MPEG-TS on 5600; cv2.VideoCapture with the exact
+  depth_node URL grabbed a 480x640x3 frame OK. Headless rendered ~5 fps;
+  GUI should be faster (update_rate 30 in model).
+
+### What I answered
+- Workflow: bash world_sim/start_sim.sh → two terminals (Gazebo, SITL) →
+  ros2 launch sentinel_oda oda_live_test.launch.py (also auto-enables the
+  camera stream). Real drone: fcu_url:=/dev/ttyACM0:57600
+  enable_camera_stream:=false.
+- Simulation pipeline is now fully smoke-tested: world loads, SITL plugin
+  connects (ports 9002/9003), camera streams MPEG-TS into depth_node.
+
+## Session 18 — 2026-08-14
+
+### Situation
+- User test run: world loaded fine the FIRST time, but the SECOND launch
+  gave an empty world (not even the runway). Also: arm was attempted
+  before EKF/GPS ready (acknowledged as user timing; checks deferred).
+- User asked: fix the empty world, and add a preview to the depth camera.
+
+### What I did
+- Reproduced the empty world: launching gz from a shell WITHOUT
+  GZ_SIM_RESOURCE_PATH → "Unable to find uri[model://runway]" and
+  "[model://sentinel_f450]" → world loads with nothing in it.
+- Made the world self-contained (obstacle_course.sdf):
+  - sentinel_f450 include now uses the absolute path
+    /home/ubuntu/Desktop/ROS2_sim/world_sim/models/sentinel_f450.
+  - dropped model://runway entirely (its internal mesh URIs also needed
+    the env var): added a built-in static ground plane (800x800x0.2) +
+    a runway-strip visual. No external model dependencies left.
+- Verified headless with env -u GZ_SIM_RESOURCE_PATH: world loads with no
+  errors, drone model topics present (camera+imu), camera streams h264
+  640x480 MPEG-TS to 5600 after the enable message.
+- Launch file: depth_node show_preview now True (typed bool) → depth map
+  preview window opens by default.
+- README updated (self-contained world note + empty-world troubleshooting;
+  preview note; layout now lists the scripts).
+- Rebuilt sentinel_oda.
+
+### What I answered
+- Empty world root cause: model:// URIs resolve via GZ_SIM_RESOURCE_PATH,
+  which is per-terminal; the second run was in a shell without it. Now the
+  world has no env dependencies for models (scripts still export paths).
+- Depth preview: opens automatically with the launch file; Gazebo-side
+  camera window still optional via <visualize>1</visualize>.
+- Arm/EKF: agreed to add readiness checks later; for now start the ROS
+  stack only after SITL reports GPS/ekf ok (wait ~30-60 s after takeoff
+  of SITL).
+
+
+
+
+
+## Session 19 — 2026-08-14
+
+### Situation
+- User reported the empty-world bug AGAIN: close Gazebo, re-run start_sim.sh -> empty map, 0 entities.
+- User also reported the active mission is wrong for the obstacle course and asked for a new 2-waypoint plan: WP1 just in front of the drone at LOW altitude (so it faces the obstacles), WP2 at the end of the course.
+
+### What I did
+- Found the real cause of the recurring empty world: FOUR orphaned `gz sim -r -s obstacle_course.sdf` server processes (100%+ CPU each, holding SITL plugin ports 9002/9003). Closing the GUI does not reliably kill the server child, so every restart piled up another one. Killed them all (0 remain).
+- start_gazebo.sh: removed `exec`, now pre-kills leftover obstacle_course instances, then runs `gz sim` with a cleanup trap (kill client + pkill servers) on exit/INT/TERM.
+- obstacle_course.sdf: spawn pose yaw 90 -> 0. In Gazebo convention (+x=east, +y=north) yaw 90 made the model face NORTH (+y), perpendicular to the course; yaw 0 faces +x (east) down the course, matching the file comment "facing +x". Camera/obstacles now aligned.
+- Created src/sentinel_mission/missions/obstacle_course.plan (QGC format, mirrors default.plan schema):
+  - plannedHomePosition = SITL home (-35.363262, 149.165237, 584.0)
+  - WP1: 5 m east of spawn (lon +0.00005501), alt 2.0 m rel — in front of the drone, at obstacle height
+  - WP2: 60 m east (lon +0.00066012), alt 2.0 m rel — past the box cluster (course end)
+- mission_node.py fallback mission: mission1.plan -> obstacle_course.plan.
+- oda_live_test.launch.py: mission_file default -> package share path of obstacle_course.plan.
+- world_sim/README.md: empty-world note updated to explain orphaned servers + manual pkill.
+- Rebuilt sentinel_mission + sentinel_oda (OK). Verified: .plan installed to share/missions, launch arg resolves, loader parses home + 2 WPs, bash -n clean.
+
+### What I answered
+- Empty world root cause = orphaned gz sim servers, now auto-cleaned on every start/exit.
+- New obstacle_course.plan is the default mission (2 WPs at 2 m alt, down the course).
+- Spawn yaw fixed so the drone faces the course from the start.
+- Note: drone still takes off to 15 m (takeoff_altitude default) in GUIDED, then AUTO descends to the 2 m waypoints.
+
+## Session 20 — 2026-08-14
+
+### Situation
+- User pasted two run logs. Run 1: mavros died with `std::future_error:
+  Promise already satisfied` during takeoff -> FCU heartbeats lost ->
+  EMERGENCY -> drone_node crashed in rtl_landing with
+  `TypeError: '>' not supported between 'Time' and 'int'`.
+- Run 2: mission flew and came home, but user unsure depth preview /
+  detection worked. User suspects CPU limits.
+
+### What I did
+- drone_node.py fixes:
+  - rtl_landing(): `elapsed` was `self.get_clock().now()` (a Time);
+    comparisons `elapsed > 10` crashed. Now a proper float duration from
+    `_landing_timer_start`. (This crash is why run 1's landing died; in
+    run 2 RTL was sent on the first tick before the crash, so the drone
+    still came home.)
+  - _step_takeoff(): added settle window after GUIDED confirmed
+    (param takeoff_settle_sec=2.0) and retry backoff after a rejected
+    takeoff (param takeoff_retry_interval=2.0) + warning log. Run 1 showed
+    a 0.4 s NAV_TAKEOFF retry storm while the FCU kept rejecting (no
+    "EKF3 IMU0 is using GPS" yet) right before mavros crashed.
+  - _on_resume_mission(): removed spin_until_future_complete from the
+    callback (AGENTS.md rule); now reuses the async init step machine
+    (step 7 -> AUTO) via _init_timer.reset().
+  - Removed dead _call_service helper (also used spin_until_future_complete).
+- oda_live_test.launch.py: replaced apm.launch include with a direct
+  mavros_node (same APM yamls, namespace /mavros) with respawn=True +
+  respawn_delay=3.0. Checked: apm.launch's respawn_mavros arg is declared
+  but NOT wired to respawn in this mavros build, so it did nothing.
+- Rebuilt sentinel_mission + sentinel_oda (OK). py_compile OK, launch
+  --show-args parses.
+
+### What I answered
+- Run 1 chain: takeoff rejection storm -> mavros crash (known race,
+  aggravated by CPU load - user's hunch is partly right) -> heartbeat
+  emergency -> drone_node Time/int crash. All links patched; mavros now
+  auto-respawns.
+- CPU mitigation already in place from Session 19 (orphaned gz servers
+  killed; start_gazebo.sh cleanup).
+- How to verify depth/detection in run 2-style test:
+  ros2 topic hz /depth_node/depth_map and
+  ros2 topic echo /detection_node/obstacle_detected. Preview window needs
+  show_preview:=true (launch default True).

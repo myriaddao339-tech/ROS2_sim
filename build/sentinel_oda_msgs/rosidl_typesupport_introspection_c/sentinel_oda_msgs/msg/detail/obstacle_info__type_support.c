@@ -12,6 +12,12 @@
 #include "sentinel_oda_msgs/msg/detail/obstacle_info__struct.h"
 
 
+// Include directives for member types
+// Member `blocks`
+#include "sentinel_oda_msgs/msg/obstacle_block.h"
+// Member `blocks`
+#include "sentinel_oda_msgs/msg/detail/obstacle_block__rosidl_typesupport_introspection_c.h"
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -31,7 +37,79 @@ void sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__O
   sentinel_oda_msgs__msg__ObstacleInfo__fini(message_memory);
 }
 
-static rosidl_typesupport_introspection_c__MessageMember sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__ObstacleInfo_message_member_array[4] = {
+size_t sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__size_function__ObstacleInfo__blocks(
+  const void * untyped_member)
+{
+  const sentinel_oda_msgs__msg__ObstacleBlock__Sequence * member =
+    (const sentinel_oda_msgs__msg__ObstacleBlock__Sequence *)(untyped_member);
+  return member->size;
+}
+
+const void * sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__get_const_function__ObstacleInfo__blocks(
+  const void * untyped_member, size_t index)
+{
+  const sentinel_oda_msgs__msg__ObstacleBlock__Sequence * member =
+    (const sentinel_oda_msgs__msg__ObstacleBlock__Sequence *)(untyped_member);
+  return &member->data[index];
+}
+
+void * sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__get_function__ObstacleInfo__blocks(
+  void * untyped_member, size_t index)
+{
+  sentinel_oda_msgs__msg__ObstacleBlock__Sequence * member =
+    (sentinel_oda_msgs__msg__ObstacleBlock__Sequence *)(untyped_member);
+  return &member->data[index];
+}
+
+void sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__fetch_function__ObstacleInfo__blocks(
+  const void * untyped_member, size_t index, void * untyped_value)
+{
+  const sentinel_oda_msgs__msg__ObstacleBlock * item =
+    ((const sentinel_oda_msgs__msg__ObstacleBlock *)
+    sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__get_const_function__ObstacleInfo__blocks(untyped_member, index));
+  sentinel_oda_msgs__msg__ObstacleBlock * value =
+    (sentinel_oda_msgs__msg__ObstacleBlock *)(untyped_value);
+  *value = *item;
+}
+
+void sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__assign_function__ObstacleInfo__blocks(
+  void * untyped_member, size_t index, const void * untyped_value)
+{
+  sentinel_oda_msgs__msg__ObstacleBlock * item =
+    ((sentinel_oda_msgs__msg__ObstacleBlock *)
+    sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__get_function__ObstacleInfo__blocks(untyped_member, index));
+  const sentinel_oda_msgs__msg__ObstacleBlock * value =
+    (const sentinel_oda_msgs__msg__ObstacleBlock *)(untyped_value);
+  *item = *value;
+}
+
+bool sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__resize_function__ObstacleInfo__blocks(
+  void * untyped_member, size_t size)
+{
+  sentinel_oda_msgs__msg__ObstacleBlock__Sequence * member =
+    (sentinel_oda_msgs__msg__ObstacleBlock__Sequence *)(untyped_member);
+  sentinel_oda_msgs__msg__ObstacleBlock__Sequence__fini(member);
+  return sentinel_oda_msgs__msg__ObstacleBlock__Sequence__init(member, size);
+}
+
+static rosidl_typesupport_introspection_c__MessageMember sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__ObstacleInfo_message_member_array[5] = {
+  {
+    "blocks",  // name
+    rosidl_typesupport_introspection_c__ROS_TYPE_MESSAGE,  // type
+    0,  // upper bound of string
+    NULL,  // members of sub message (initialized later)
+    true,  // is array
+    0,  // array size
+    false,  // is upper bound
+    offsetof(sentinel_oda_msgs__msg__ObstacleInfo, blocks),  // bytes offset in struct
+    NULL,  // default value
+    sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__size_function__ObstacleInfo__blocks,  // size() function pointer
+    sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__get_const_function__ObstacleInfo__blocks,  // get_const(index) function pointer
+    sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__get_function__ObstacleInfo__blocks,  // get(index) function pointer
+    sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__fetch_function__ObstacleInfo__blocks,  // fetch(index, &value) function pointer
+    sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__assign_function__ObstacleInfo__blocks,  // assign(index, value) function pointer
+    sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__resize_function__ObstacleInfo__blocks  // resize(index) function pointer
+  },
   {
     "closest_distance",  // name
     rosidl_typesupport_introspection_c__ROS_TYPE_FLOAT,  // type
@@ -105,7 +183,7 @@ static rosidl_typesupport_introspection_c__MessageMember sentinel_oda_msgs__msg_
 static const rosidl_typesupport_introspection_c__MessageMembers sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__ObstacleInfo_message_members = {
   "sentinel_oda_msgs__msg",  // message namespace
   "ObstacleInfo",  // message name
-  4,  // number of fields
+  5,  // number of fields
   sizeof(sentinel_oda_msgs__msg__ObstacleInfo),
   sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__ObstacleInfo_message_member_array,  // message members
   sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__ObstacleInfo_init_function,  // function to initialize message memory (memory has to be allocated)
@@ -123,6 +201,8 @@ static rosidl_message_type_support_t sentinel_oda_msgs__msg__ObstacleInfo__rosid
 ROSIDL_TYPESUPPORT_INTROSPECTION_C_EXPORT_sentinel_oda_msgs
 const rosidl_message_type_support_t *
 ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_introspection_c, sentinel_oda_msgs, msg, ObstacleInfo)() {
+  sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__ObstacleInfo_message_member_array[0].members_ =
+    ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_introspection_c, sentinel_oda_msgs, msg, ObstacleBlock)();
   if (!sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__ObstacleInfo_message_type_support_handle.typesupport_identifier) {
     sentinel_oda_msgs__msg__ObstacleInfo__rosidl_typesupport_introspection_c__ObstacleInfo_message_type_support_handle.typesupport_identifier =
       rosidl_typesupport_introspection_c__identifier;

@@ -160,6 +160,7 @@ CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/
  /usr/include/c++/11/stdexcept \
  /opt/ros/humble/include/rosidl_runtime_cpp/rosidl_runtime_cpp/message_initialization.hpp \
  /opt/ros/humble/include/rosidl_runtime_c/rosidl_runtime_c/message_initialization.h \
+ /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_cpp/sentinel_oda_msgs/msg/detail/obstacle_block__struct.hpp \
  /opt/ros/humble/include/rosidl_typesupport_cpp/rosidl_typesupport_cpp/identifier.hpp \
  /opt/ros/humble/include/rosidl_typesupport_cpp/rosidl_typesupport_cpp/visibility_control.h \
  /opt/ros/humble/include/rosidl_runtime_cpp/rosidl_typesupport_cpp/message_type_support.hpp \

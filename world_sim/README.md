@@ -32,12 +32,14 @@ world_sim/
 
 | x (m) | element                          | what it tests |
 |-------|----------------------------------|---------------|
-| 10    | two 1 m walls, **5 m gap**       | block split: two separate obstacle blocks |
-| 18    | two boxes **0.3 m apart**        | block merge: must be ONE block (gap unflyable) |
-| 24–36 | pylon slalom (4 pylons)          | ODA probing/sweep |
-| 42    | yellow corridor markers          | corridor guidance |
-| 44    | 10 m wall, only right side open  | detour / path planning |
-| 52–56 | box cluster + tall box           | cluttered area |
+| 5     | WP1                              | reached before the trigger range |
+| 200   | single giant "skyscraper" block  | detection + ODA stop & sweep |
+| 550   | WP2                              | past the block - never reached once ODA takes over |
+
+The block is 30 m wide (y -15..15), 50 m tall, front face at x = 199.  The
+drone cannot fly over, under or around it - it must detect it and stop.
+(Full obstacle course layout is kept for later phases; the previous
+multi-obstacle layout lived in git history / older versions of this file.)
 
 ## Running the full stack
 

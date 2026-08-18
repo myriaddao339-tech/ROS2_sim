@@ -703,3 +703,60 @@ Don't hesitate to mention if some message types are wrong or innapropriate and s
 Finally, scan ROS2_sim in order to fully understand the project, especially how other nodes are coded, the style that is used, the structure, so that you have a base to stand on when you start coding. You must fully understand what I am trying to do here, my intent, and the results that I want before starting to code.
 
 You can also look at the "instructions.md" file (the first mark down file that I used to code the mission package, it's inside navigation_pkg). However there may be a few things that are obsolete and there definitely are some new additions to the content that was planned originally.
+
+============================================================================================================================================
+## ODA MANEUVERS — implementation notes (2026-08-15, settled with the user)
+
+### Sweep triggering (final)
+- FIRST sweep: starts when the node enters ODA (right after the 10 m obstacle
+  trigger flips the state machine), once the FCU confirms GUIDED.
+- RE-sweeps: a fresh RISING EDGE of obstacle_detected while in ODA starts a
+  new sweep. In ODA, obstacle_detected only fires for obstacles within the
+  0.8 m threshold (between sweeps). Obstacles seen DURING a sweep never
+  restart it.
+- Sweep sequence (relative to ψ0 = yaw when the sweep starts):
+  +90 → hold → +45 → hold → 0 → hold → -45 → hold → -90 → hold → 0 (return).
+  Hold = heading_hold_duration (3.0 s) per heading. Yaw tolerance 5 deg,
+  per-step reach timeout 10 s, setpoint keepalive every 1 s.
+- ODA Maneuvers owns the switch to GUIDED mode (SetMode /mavros/set_mode,
+  custom_mode GUIDED, async). It never overrides RTL/LAND.
+- Sweep setpoints: /mavros/setpoint_raw/local, yaw-only PositionTarget
+  (coordinate_frame=1, type_mask 2559 in mavros constants). Position hold
+  comes from GUIDED mode itself.
+- Stops sending setpoints when the sweep ends AND when leaving ODA.
+
+### Yaw conventions (implemented)
+- Heading is read from /mavros/local_position/pose with the ENU-quaternion
+  formula (0 = East, CCW positive) — same as detection's current_heading.
+  Sweep offsets are applied in this ENU domain, so +90 deg = turn LEFT.
+- The yaw sent to the FCU is converted to NED: yaw_ned = pi/2 - yaw_enu.
+
+### Detection threshold scheme (updated accordingly)
+- mission: 10 m threshold → obstacle_detected → ODA.
+- oda during a sweep: 10 m threshold (registration at distance).
+- oda between sweeps: 0.8 m threshold → obstacle_detected → new sweep.
+- obstacle_info ALWAYS registers at the 10 m mission threshold, published
+  whenever blocks are seen (independent of the trigger latch).
+- ODA Maneuvers publishes /oda_maneuvers/sweeping (Bool); Detection
+  subscribes to it.
+- Detection resets its validated latch on every drone_state change and when
+  sweeping goes False in ODA, so each phase produces fresh rising edges.
+
+### Files
+- oda_maneuvers.py created; detection_node.py updated; setup.py entry point
+  added; oda_live_test.launch.py now starts oda_maneuvers.
+
+### Deferred idea: metric-scale self-calibration (2026-08-15, do later)
+- Measured in sim: Depth Anything V2 Metric-Outdoor-Small reports badly
+  wrong absolute metres on Gazebo's synthetic scenes (real 10 m wall →
+  ~15 m; real 1 m ground → ~9 m; dynamic range compressed to ~6-42 m).
+- Idea (parked per user request): rescale each depth map using the drone's
+  known altitude from /mavros/local_position/pose + the ground-plane
+  geometry (ground row must be at depth h/sin(elevation)); clamp factor to
+  a sane range, smooth with EMA. Would make fixed thresholds meaningful in
+  sim AND on the real drone without touching the model.
+- Until then: single tuning knob `mission_obstacle_threshold` (currently
+  5.0 in the sim launch, user-tuned).  Direction: LOWER = detect later
+  (obstacle must be closer), HIGHER = detect earlier/farther.  Plus the
+  detection node's throttled "virtual box: closest depth = ..." log line.
+  Tune against the preview.

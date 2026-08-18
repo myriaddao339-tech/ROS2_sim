@@ -1,0 +1,628 @@
+[INFO] [launch]: All log files can be found below /home/ubuntu/.ros/log/2026-08-18-19-08-07-924411-ubuntu-5247
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [mavros_node-1]: process started with pid [5248]
+[INFO] [bash-2]: process started with pid [5250]
+[INFO] [mission_node-3]: process started with pid [5252]
+[INFO] [emergency_node-4]: process started with pid [5254]
+[INFO] [start_trigger-5]: process started with pid [5257]
+[INFO] [drone_node-6]: process started with pid [5259]
+[INFO] [oda_maneuvers-7]: process started with pid [5261]
+[INFO] [depth_node-8]: process started with pid [5263]
+[INFO] [detection_node-9]: process started with pid [5265]
+[mavros_node-1] [INFO] [1787072888.516757268] [mavros.mavros_node]: Starting mavros_node container
+[mavros_node-1] [INFO] [1787072888.523912140] [mavros.mavros_node]: FCU URL: udp://:14550@
+[mavros_node-1] [INFO] [1787072888.524197176] [mavros.mavros_node]: GCS URL: 
+[mavros_node-1] [INFO] [1787072888.524208927] [mavros.mavros_node]: UAS Prefix: /uas1
+[mavros_node-1] [INFO] [1787072888.524218798] [mavros.mavros_node]: Starting mavros router node
+[mavros_node-1] [INFO] [1787072888.624018117] [mavros.mavros_router]: Built-in SIMD instructions: SSE, SSE2
+[mavros_node-1] [INFO] [1787072888.624064986] [mavros.mavros_router]: Built-in MAVLink package version: 2026.6.6
+[mavros_node-1] [INFO] [1787072888.624091466] [mavros.mavros_router]: Known MAVLink dialects: common ardupilotmega ASLUAV AVSSUAS all csAirLink cubepilot development icarous loweheiser marsh matrixpilot paparazzi standard stemstudios storm32 uAvionix ualberta
+[mavros_node-1] [INFO] [1787072888.624104285] [mavros.mavros_router]: MAVROS Router started
+[mavros_node-1] [INFO] [1787072888.624186535] [mavros.mavros_node]: Starting mavros uas node
+[mavros_node-1] [INFO] [1787072889.057023374] [mavros.mavros_router]: Requested to add endpoint: type: 0, url: udp://:14550@
+[mavros_node-1] [INFO] [1787072889.057130856] [mavros.mavros_router]: Endpoint link[1000] created
+[mavros_node-1] [INFO] [1787072889.057557710] [mavros.mavros_router]: link[1000] opened successfully
+[mavros_node-1] [INFO] [1787072889.057606865] [mavros.mavros_router]: Requested to add endpoint: type: 2, url: /uas1
+[mavros_node-1] [INFO] [1787072889.057648844] [mavros.mavros_router]: Endpoint link[1001] created
+[mavros_node-1] [INFO] [1787072889.114837487] [mavros.mavros]: UAS Executor started, threads: 12
+[mavros_node-1] [INFO] [1787072889.114881276] [mavros.mavros]: Plugin actuator_control ignored
+[mavros_node-1] [INFO] [1787072889.114968504] [mavros.mavros]: Plugin altitude ignored
+[start_trigger-5] [INFO] [1787072889.142445994] [start_trigger]: Start trigger ready – will fire 3.0s after detecting standby state
+[bash-2] [oda_live_test] Gazebo camera streaming enabled on udp://127.0.0.1:5600
+[INFO] [bash-2]: process has finished cleanly [pid 5250]
+[mavros_node-1] [INFO] [1787072889.294104642] [mavros.mavros_router]: link[1000] detected remote address 1.1
+[mavros_node-1] [INFO] [1787072889.376302181] [mavros.mavros_router]: link[1001] opened successfully
+[mavros_node-1] [INFO] [1787072889.422886112] [mavros.mavros]: Plugin command created
+[mavros_node-1] [INFO] [1787072889.422949869] [mavros.mavros]: Plugin command initialized
+[mavros_node-1] [INFO] [1787072889.422962584] [mavros.mavros]: Plugin ftp ignored
+[mavros_node-1] [INFO] [1787072889.440251337] [mavros.mavros]: Plugin geofence created
+[mavros_node-1] [INFO] [1787072889.440328664] [mavros.mavros]: Plugin geofence initialized
+[mavros_node-1] [INFO] [1787072889.529326111] [mavros.mavros]: Plugin global_position created
+[mavros_node-1] [INFO] [1787072889.529391607] [mavros.mavros]: Plugin global_position initialized
+[mavros_node-1] [INFO] [1787072889.529404769] [mavros.mavros]: Plugin home_position ignored
+[mavros_node-1] [INFO] [1787072889.546985365] [mavros.mavros]: Plugin imu created
+[mavros_node-1] [INFO] [1787072889.547075747] [mavros.mavros]: Plugin imu initialized
+[mavros_node-1] [INFO] [1787072889.566759745] [mavros.mavros]: Plugin local_position created
+[mavros_node-1] [INFO] [1787072889.566844596] [mavros.mavros]: Plugin local_position initialized
+[mavros_node-1] [INFO] [1787072889.582012533] [mavros.mavros]: Plugin manual_control created
+[mavros_node-1] [INFO] [1787072889.582195059] [mavros.mavros]: Plugin manual_control initialized
+[mavros_node-1] [INFO] [1787072889.600608122] [mavros.mavros]: Plugin nav_controller_output created
+[mavros_node-1] [INFO] [1787072889.604001388] [mavros.mavros]: Plugin nav_controller_output initialized
+[mavros_node-1] [INFO] [1787072889.623483966] [mavros.mavros]: Plugin param created
+[mavros_node-1] [INFO] [1787072889.623550132] [mavros.mavros]: Plugin param initialized
+[mavros_node-1] [INFO] [1787072889.640253466] [mavros.mavros]: Plugin rallypoint created
+[mavros_node-1] [INFO] [1787072889.640321279] [mavros.mavros]: Plugin rallypoint initialized
+[mission_node-3] [INFO] [1787072889.655416808] [mission_node]: Loaded 3 waypoints from '/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/share/sentinel_mission/missions/obstacle_course.plan'
+[mavros_node-1] [INFO] [1787072889.655849650] [mavros.mavros]: Plugin rc_io created
+[mavros_node-1] [INFO] [1787072889.655912503] [mavros.mavros]: Plugin rc_io initialized
+[mavros_node-1] [INFO] [1787072889.668934024] [mavros.mavros]: Plugin setpoint_accel created
+[mavros_node-1] [INFO] [1787072889.669089907] [mavros.mavros]: Plugin setpoint_accel initialized
+[mavros_node-1] [INFO] [1787072889.696571566] [mavros.mavros]: Plugin setpoint_attitude created
+[mavros_node-1] [INFO] [1787072889.696620360] [mavros.mavros]: Plugin setpoint_attitude initialized
+[mavros_node-1] [INFO] [1787072889.726061815] [mavros.mavros]: Plugin setpoint_position created
+[mavros_node-1] [INFO] [1787072889.726198408] [mavros.mavros]: Plugin setpoint_position initialized
+[mavros_node-1] [INFO] [1787072889.753928140] [mavros.mavros]: Plugin setpoint_raw created
+[mavros_node-1] [INFO] [1787072889.754082611] [mavros.mavros]: Plugin setpoint_raw initialized
+[mavros_node-1] [INFO] [1787072889.793577154] [mavros.mavros]: Plugin setpoint_trajectory created
+[mavros_node-1] [INFO] [1787072889.793629764] [mavros.mavros]: Plugin setpoint_trajectory initialized
+[mavros_node-1] [INFO] [1787072889.807109434] [mavros.mavros]: Plugin setpoint_velocity created
+[mavros_node-1] [INFO] [1787072889.807161532] [mavros.mavros]: Plugin setpoint_velocity initialized
+[mavros_node-1] [INFO] [1787072889.844674694] [mavros.mavros]: Plugin sys_status created
+[mavros_node-1] [INFO] [1787072889.844746786] [mavros.mavros]: Plugin sys_status initialized
+[mission_node-3] [INFO] [1787072889.853226719] [mission_node]: Mission node ready – 3 waypoints loaded
+[mavros_node-1] [INFO] [1787072889.872288922] [mavros.time]: TM: Timesync mode: MAVLINK
+[mavros_node-1] [INFO] [1787072889.875807129] [mavros.mavros]: Plugin sys_time created
+[mavros_node-1] [INFO] [1787072889.876020958] [mavros.mavros]: Plugin sys_time initialized
+[emergency_node-4] [INFO] [1787072889.894205104] [emergency_node]: Emergency node ready – battery < 20%, heartbeat timeout 15.0s
+[mavros_node-1] [INFO] [1787072889.988355308] [mavros.mavros]: Plugin waypoint created
+[mavros_node-1] [INFO] [1787072889.988679984] [mavros.mavros]: Plugin waypoint initialized
+[mavros_node-1] [INFO] [1787072890.014135442] [mavros.mavros]: Plugin wind_estimation created
+[mavros_node-1] [INFO] [1787072890.014190248] [mavros.mavros]: Plugin wind_estimation initialized
+[mavros_node-1] [INFO] [1787072890.015668281] [mavros.mavros]: Built-in SIMD instructions: SSE, SSE2
+[mavros_node-1] [INFO] [1787072890.015701185] [mavros.mavros]: Built-in MAVLink package version: 2026.6.6
+[mavros_node-1] [INFO] [1787072890.015713941] [mavros.mavros]: Known MAVLink dialects: common ardupilotmega ASLUAV AVSSUAS all csAirLink cubepilot development icarous loweheiser marsh matrixpilot paparazzi standard stemstudios storm32 uAvionix ualberta
+[mavros_node-1] [INFO] [1787072890.015723766] [mavros.mavros]: MAVROS UAS via /uas1 started. MY ID 1.191, TARGET ID 1.1
+[oda_maneuvers-7] [INFO] [1787072890.035776573] [oda_maneuvers]: ODA Maneuvers ready – position-hold yaw sweep: 180 deg fan at 3.0 deg/s, tolerance 5.0 deg, returning to ψ0
+[drone_node-6] [INFO] [1787072890.038985804] [drone_node]: Drone node ready – state = standby
+[mavros_node-1] [INFO] [1787072890.073559891] [mavros.mavros_router]: link[1001] detected remote address 1.191
+[mavros_node-1] [INFO] [1787072890.192473015] [mavros.rc]: RC_CHANNELS message detected!
+[mavros_node-1] [INFO] [1787072890.192747678] [mavros.imu]: IMU: Raw IMU message used.
+[mavros_node-1] [WARN] [1787072890.192786489] [mavros.imu]: IMU: linear acceleration on RAW_IMU known on APM only.
+[mavros_node-1] [WARN] [1787072890.192797067] [mavros.imu]: IMU: ~imu/data_raw stores unscaled raw acceleration report.
+[mission_node-3] [INFO] [1787072890.196569327] [mission_node]: GetMission: Served 3 waypoints from default mission
+[drone_node-6] [INFO] [1787072890.396399288] [drone_node]: Received 3 waypoints
+[drone_node-6] [INFO] [1787072890.595955222] [drone_node]: Step 2: Verifying FCU connection...
+[drone_node-6] [INFO] [1787072890.795908155] [drone_node]: Step 2: Verifying FCU connection...
+[mavros_node-1] [WARN] [1787072890.850412461] [mavros.cmd]: CMD: Unexpected command 520, result 0
+[mavros_node-1] [INFO] [1787072890.851902272] [mavros.geofence]: GF: Using MISSION_ITEM_INT
+[mavros_node-1] [INFO] [1787072890.852000370] [mavros.rallypoint]: RP: Using MISSION_ITEM_INT
+[mavros_node-1] [INFO] [1787072890.852020552] [mavros.mission]: WP: Using MISSION_ITEM_INT
+[mavros_node-1] [INFO] [1787072890.852037656] [mavros.sys]: VER: 1.1: Capabilities         0x000000000000fbef
+[mavros_node-1] [INFO] [1787072890.852056440] [mavros.sys]: VER: 1.1: Flight software:     04080000 (6339646566626239)
+[mavros_node-1] [INFO] [1787072890.852076211] [mavros.sys]: VER: 1.1: Middleware software: 00000000 (0000000000000000)
+[mavros_node-1] [INFO] [1787072890.852088767] [mavros.sys]: VER: 1.1: OS software:         00000000 (0000000000000000)
+[mavros_node-1] [INFO] [1787072890.852098914] [mavros.sys]: VER: 1.1: Board hardware:      00000000
+[mavros_node-1] [INFO] [1787072890.852105284] [mavros.sys]: VER: 1.1: VID/PID:             0000:0000
+[mavros_node-1] [INFO] [1787072890.852111170] [mavros.sys]: VER: 1.1: UID:                 0000000000000000
+[mavros_node-1] [INFO] [1787072890.852821361] [mavros.sys]: VER: 1.1: Capabilities         0x000000000000fbef
+[mavros_node-1] [INFO] [1787072890.852872659] [mavros.sys]: VER: 1.1: Flight software:     04080000 (6339646566626239)
+[mavros_node-1] [INFO] [1787072890.852886846] [mavros.sys]: VER: 1.1: Middleware software: 00000000 (0000000000000000)
+[mavros_node-1] [INFO] [1787072890.852896253] [mavros.sys]: VER: 1.1: OS software:         00000000 (0000000000000000)
+[mavros_node-1] [INFO] [1787072890.852938019] [mavros.sys]: VER: 1.1: Board hardware:      00000000
+[mavros_node-1] [INFO] [1787072890.852973086] [mavros.sys]: VER: 1.1: VID/PID:             0000:0000
+[mavros_node-1] [INFO] [1787072890.852982714] [mavros.sys]: VER: 1.1: UID:                 0000000000000000
+[start_trigger-5] [INFO] [1787072890.994950132] [start_trigger]: Drone in standby — starting auto-start timer
+[drone_node-6] [INFO] [1787072890.995911522] [drone_node]: Step 2: Verifying FCU connection...
+[mavros_node-1] [INFO] [1787072891.126603591] [mavros.mavros]: CON: Got HEARTBEAT, connected. FCU: ArduPilot
+[mavros_node-1] [INFO] [1787072891.126819924] [mavros.mission]: WP: detected enable_partial_push: 1
+[drone_node-6] [INFO] [1787072891.196183327] [drone_node]: Step 2: Verifying FCU connection...
+[drone_node-6] [INFO] [1787072891.196585648] [drone_node]: FCU connected
+[mavros_node-1] [INFO] [1787072891.270048625] [mavros.rc]: RC_CHANNELS message detected!
+[mavros_node-1] [INFO] [1787072891.270603610] [mavros.imu]: IMU: Raw IMU message used.
+[drone_node-6] [INFO] [1787072891.396214528] [drone_node]: Step 3: Uploading waypoints to FCU...
+[detection_node-9] [INFO] [1787072891.412640863] [detection_node]: Detection node ready – mission threshold 40.00 m, oda threshold 0.80 m (margin +0.50 m), validate after 10 consecutive frames, obstacles never cleared
+[detection_node-9] [INFO] [1787072891.413306251] [detection_node]: Altitude-plane filter ON: band [-2.0 .. +5.0] m around the drone altitude, 10.0 s grace after leaving standby
+[mavros_node-1] [INFO] [1787072891.425275289] [mavros.mission]: WP: mission sended
+[mavros_node-1] [INFO] [1787072891.426797622] [mavros.sys]: FCU: Flight plan received
+[mavros_node-1] [INFO] [1787072891.426925939] [mavros.sys]: FCU: Flight plan received
+[drone_node-6] [INFO] [1787072891.595889870] [drone_node]: Step 3: Uploading waypoints to FCU...
+[drone_node-6] [INFO] [1787072891.596336472] [drone_node]: Uploaded 3/3 waypoints
+[drone_node-6] [INFO] [1787072891.796150271] [drone_node]: Step 4: Pre-arm checks...
+[drone_node-6] [INFO] [1787072891.796572155] [drone_node]: Pre-arm checks passed
+[drone_node-6] [INFO] [1787072891.995834463] [drone_node]: Step 5: Arming...
+[mavros_node-1] [INFO] [1787072892.008944464] [mavros.sys]: FCU: Arming motors
+[mavros_node-1] [INFO] [1787072892.009128724] [mavros.sys]: FCU: Arming motors
+[mavros_node-1] [INFO] [1787072892.133319257] [mavros.sys]: VER: 1.1: Capabilities         0x000000000000fbef
+[mavros_node-1] [INFO] [1787072892.133389626] [mavros.sys]: VER: 1.1: Flight software:     04080000 (9bbfed9c)
+[mavros_node-1] [INFO] [1787072892.133404330] [mavros.sys]: VER: 1.1: Middleware software: 00000000 (        )
+[mavros_node-1] [INFO] [1787072892.133410459] [mavros.sys]: VER: 1.1: OS software:         00000000 (        )
+[mavros_node-1] [INFO] [1787072892.133416454] [mavros.sys]: VER: 1.1: Board hardware:      00000000
+[mavros_node-1] [INFO] [1787072892.133425989] [mavros.sys]: VER: 1.1: VID/PID:             0000:0000
+[mavros_node-1] [INFO] [1787072892.133432320] [mavros.sys]: VER: 1.1: UID:                 0000000000000000
+[mavros_node-1] [INFO] [1787072892.133517308] [mavros.sys]: VER: 1.1: Capabilities         0x000000000000fbef
+[mavros_node-1] [INFO] [1787072892.133545633] [mavros.sys]: VER: 1.1: Flight software:     04080000 (9bbfed9c)
+[mavros_node-1] [INFO] [1787072892.133557254] [mavros.sys]: VER: 1.1: Middleware software: 00000000 (        )
+[mavros_node-1] [INFO] [1787072892.133565079] [mavros.sys]: VER: 1.1: OS software:         00000000 (        )
+[mavros_node-1] [INFO] [1787072892.133573146] [mavros.sys]: VER: 1.1: Board hardware:      00000000
+[mavros_node-1] [INFO] [1787072892.133582757] [mavros.sys]: VER: 1.1: VID/PID:             0000:0000
+[mavros_node-1] [INFO] [1787072892.133591040] [mavros.sys]: VER: 1.1: UID:                 0000000000000000
+[drone_node-6] [INFO] [1787072892.195933185] [drone_node]: Step 5: Arming...
+[drone_node-6] [INFO] [1787072892.395889787] [drone_node]: Step 5: Arming...
+[drone_node-6] [INFO] [1787072892.595936080] [drone_node]: Armed
+[start_trigger-5] [INFO] [1787072893.995721269] [start_trigger]: START signal activated
+[drone_node-6] [INFO] [1787072894.496288168] [drone_node]: Trigger [start] fired
+[drone_node-6] [INFO] [1787072894.496695450] [drone_node]: Trigger [start] in state [standby]
+[drone_node-6] [INFO] [1787072894.497136036] [drone_node]: STATE → mission
+[drone_node-6] [INFO] [1787072894.497754071] [drone_node]: Starting MISSION
+[start_trigger-5] [INFO] [1787072894.497869874] [start_trigger]: Drone in mission state — stopping start trigger
+[drone_node-6] [INFO] [1787072894.595953950] [drone_node]: Step 6: Switching to GUIDED mode...
+[drone_node-6] [INFO] [1787072896.796418461] [drone_node]: Step 6: Takeoff to 15.0m...
+[drone_node-6] [INFO] [1787072896.995970232] [drone_node]: Takeoff command accepted by FCU - monitoring climb
+[drone_node-6] [INFO] [1787072897.196026401] [drone_node]: Takeoff accepted - climbing to 15.0m (current 0.1m)
+[depth_node-8] Couldn't find a preferred IP via the getifaddrs() call; I'm assuming that your IP address is 127.0.0.1.  This should work for local processes, but will almost certainly not work if you have remote processes.Report to the disc-zmq development team to seek a fix.
+[depth_node-8] Couldn't find a preferred IP via the getifaddrs() call; I'm assuming that your IP address is 127.0.0.1.  This should work for local processes, but will almost certainly not work if you have remote processes.Report to the disc-zmq development team to seek a fix.
+[depth_node-8] Couldn't find a preferred IP via the getifaddrs() call; I'm assuming that your IP address is 127.0.0.1.  This should work for local processes, but will almost certainly not work if you have remote processes.Report to the disc-zmq development team to seek a fix.
+[depth_node-8] Couldn't find a preferred IP via the getifaddrs() call; I'm assuming that your IP address is 127.0.0.1.  This should work for local processes, but will almost certainly not work if you have remote processes.Report to the disc-zmq development team to seek a fix.
+[depth_node-8] [INFO] [1787072897.881657241] [depth_node]: Native Gazebo depth camera mode – listening on /world/obstacle_course/model/sentinel_f450/link/camera_link/sensor/depth_camera/depth_image
+[depth_node-8] [INFO] [1787072897.892218425] [depth_node]: Depth node ready – republishing native depth @ 15.0 Hz, heartbeat @ 1.0 Hz
+[detection_node-9] [INFO] [1787072897.979848218] [detection_node]: plane filter: trigger suppressed (post-standby grace, 6.5 s left)
+[detection_node-9] [INFO] [1787072897.980368044] [detection_node]: virtual box: closest depth = 7.19 m (triggers below 40.5 m, plane-valid px = 0)
+[detection_node-9] [INFO] [1787072900.031177995] [detection_node]: plane filter: trigger suppressed (post-standby grace, 4.5 s left)
+[mavros_node-1] [INFO] [1787072900.488994146] [mavros.sys]: FCU: EKF3 IMU0 MAG0 in-flight yaw alignment complete
+[mavros_node-1] [INFO] [1787072900.489387839] [mavros.sys]: FCU: EKF3 IMU0 MAG0 in-flight yaw alignment complete
+[mavros_node-1] [INFO] [1787072900.492172968] [mavros.sys]: FCU: EKF3 IMU1 MAG0 in-flight yaw alignment complete
+[mavros_node-1] [INFO] [1787072900.492423659] [mavros.sys]: FCU: EKF3 IMU1 MAG0 in-flight yaw alignment complete
+[mavros_node-1] [INFO] [1787072901.130320813] [mavros.sys]: FCU: ArduCopter V4.8.0-dev (9bbfed9c)
+[mavros_node-1] [INFO] [1787072901.130539205] [mavros.sys]: FCU: ArduCopter V4.8.0-dev (9bbfed9c)
+[mavros_node-1] [INFO] [1787072901.131444476] [mavros.sys]: FCU: 5175070e76fe415cac0fa261c373648a
+[mavros_node-1] [INFO] [1787072901.131693870] [mavros.sys]: FCU: 5175070e76fe415cac0fa261c373648a
+[mavros_node-1] [INFO] [1787072901.131905119] [mavros.sys]: FCU: Frame: QUAD/X
+[mavros_node-1] [INFO] [1787072901.131994307] [mavros.sys]: FCU: Frame: QUAD/X
+[detection_node-9] [INFO] [1787072902.049035384] [detection_node]: plane filter: trigger suppressed (post-standby grace, 2.4 s left)
+[drone_node-6] [INFO] [1787072902.196449406] [drone_node]: Takeoff accepted - climbing to 15.0m (current 4.0m)
+[mavros_node-1] [WARN] [1787072903.660589848] [mavros.time]: TM: RTT too high for timesync: 1987.50 ms.
+[mavros_node-1] [WARN] [1787072903.662731417] [mavros.time]: TM: RTT too high for timesync: 1490.02 ms.
+[mavros_node-1] [WARN] [1787072903.671357498] [mavros.time]: TM: RTT too high for timesync: 798.61 ms.
+[mavros_node-1] [WARN] [1787072903.681387592] [mavros.time]: TM: RTT too high for timesync: 307.23 ms.
+[detection_node-9] [INFO] [1787072904.099429637] [detection_node]: plane filter: trigger suppressed (post-standby grace, 0.4 s left)
+[mavros_node-1] [WARN] [1787072904.652378261] [mavros.param]: PR: request param #568 timeout, retries left 2, and 108 params still missing
+[mavros_node-1] [INFO] [1787072906.130451653] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072906.131431555] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072906.139101049] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072906.139291145] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072906.142889380] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072906.143022503] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072906.148273804] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072906.148656460] [mavros.mission]: WP: mission received
+[drone_node-6] [INFO] [1787072907.197525480] [drone_node]: Takeoff accepted - climbing to 15.0m (current 13.7m)
+[drone_node-6] [INFO] [1787072908.197578608] [drone_node]: Takeoff altitude reached: 14.7m
+[drone_node-6] [INFO] [1787072908.397442038] [drone_node]: Step 7: Switching to AUTO mode...
+[mavros_node-1] [INFO] [1787072908.416195444] [mavros.sys]: FCU: Mission: 1 WP
+[mavros_node-1] [INFO] [1787072908.416296389] [mavros.sys]: FCU: Mission: 1 WP
+[drone_node-6] [INFO] [1787072908.597026507] [drone_node]: Step 7: Switching to AUTO mode...
+[drone_node-6] [INFO] [1787072908.597905169] [drone_node]: Already in AUTO mode
+[drone_node-6] [INFO] [1787072908.798518984] [drone_node]: === MISSION: flying AUTO, waiting for triggers ===
+[mavros_node-1] [INFO] [1787072911.145800334] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072911.146744629] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072911.146768373] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072911.147851379] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072911.147873168] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072911.153324158] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072911.154216164] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072911.157202583] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072911.157520336] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072911.169317228] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072911.170005090] [mavros.mission]: WP: mission received
+[mavros_node-1] [INFO] [1787072916.132534193] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072916.134785118] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072916.134870760] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072916.159191937] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072916.161388591] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072916.161462153] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072916.165886612] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072916.166054947] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072916.175955826] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072916.176121931] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072916.180579884] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072916.180707498] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072916.184899647] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072916.185495915] [mavros.mission]: WP: mission received
+[mavros_node-1] [INFO] [1787072916.686098461] [mavros.mission]: WP: reached #1
+[mavros_node-1] [INFO] [1787072916.690105973] [mavros.mission]: WP: reached #1
+[mavros_node-1] [INFO] [1787072916.690302328] [mavros.sys]: FCU: Reached command #1
+[mavros_node-1] [INFO] [1787072916.690378229] [mavros.sys]: FCU: Reached command #1
+[mavros_node-1] [INFO] [1787072916.690438193] [mavros.sys]: FCU: Mission: 2 WP
+[mavros_node-1] [INFO] [1787072916.690496118] [mavros.sys]: FCU: Mission: 2 WP
+[mission_node-3] [INFO] [1787072916.694668554] [mission_node]: FCU reports waypoint 1 reached
+[mission_node-3] [INFO] [1787072916.697457075] [mission_node]: Published waypoint_reached: 1
+[drone_node-6] [INFO] [1787072916.699442321] [drone_node]: Trigger [waypoint_reached] seq=1
+[drone_node-6] [INFO] [1787072916.704352511] [drone_node]: Trigger [waypoint_reached] in state [mission]
+[drone_node-6] [INFO] [1787072916.706920593] [drone_node]: Waypoint 1 reached (already in mission)
+[mission_node-3] [INFO] [1787072916.708341301] [mission_node]: FCU reports waypoint 1 reached
+[mavros_node-1] [INFO] [1787072921.151655102] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072921.151878267] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072921.151905504] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072921.167017951] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072921.170302488] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072921.170374117] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072921.177949244] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072921.177997450] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072921.184575653] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072921.184709801] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072921.189028469] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072921.189304071] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072921.192767679] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072921.192818973] [mavros.mission]: WP: mission received
+[mavros_node-1] [INFO] [1787072926.158668323] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072926.158870653] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072926.158898371] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072926.194205477] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072926.194487976] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072926.194512701] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072926.198364808] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072926.198408588] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072926.201949640] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072926.202089375] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072926.204449257] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072926.204676904] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072926.208854243] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072926.209034638] [mavros.mission]: WP: mission received
+[mavros_node-1] [ERROR] [1787072928.084328835] [mavros.time]: TM: Time jump detected. Resetting time synchroniser.
+[mavros_node-1] [INFO] [1787072931.177594935] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072931.177733668] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072931.177754436] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072931.208847723] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072931.209142808] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072931.209163567] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072931.209295725] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072931.209313275] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072931.238137329] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072931.238319789] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072931.254140094] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072931.254288402] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072931.266625884] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072931.266726651] [mavros.mission]: WP: mission received
+[mavros_node-1] [INFO] [1787072936.187390926] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072936.187859263] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072936.188016152] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072936.218732118] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072936.218779738] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072936.218983652] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072936.219085918] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072936.219107023] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072936.224451722] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072936.225133150] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072936.230912183] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072936.231477700] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072936.235577679] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072936.235654382] [mavros.mission]: WP: mission received
+[mavros_node-1] [INFO] [1787072941.194450933] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072941.195671929] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072941.195704795] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072941.234374788] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072941.234445384] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072941.235572333] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072941.236173042] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072941.236200005] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072941.242355926] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072941.242975190] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072941.247993337] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072941.248340780] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072941.260525592] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072941.260608749] [mavros.mission]: WP: mission received
+[detection_node-9] [INFO] [1787072944.924678444] [detection_node]: virtual box: closest depth = 59.48 m (triggers below 40.5 m, plane-valid px = 0)
+[mavros_node-1] [INFO] [1787072946.211145453] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072946.211242087] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072946.211259045] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072946.242366465] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072946.242415327] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072946.246294284] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072946.246395171] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072946.246412734] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072946.249276217] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072946.249710736] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072946.254283178] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072946.255212827] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072946.261128663] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072946.261194972] [mavros.mission]: WP: mission received
+[detection_node-9] [INFO] [1787072946.964354812] [detection_node]: virtual box: closest depth = 48.26 m (triggers below 40.5 m, plane-valid px = 0)
+[detection_node-9] [INFO] [1787072949.067315501] [detection_node]: virtual box: closest depth = 36.39 m (triggers below 40.5 m, plane-valid px = 64)
+[detection_node-9] [INFO] [1787072949.241345786] [detection_node]: obstacle_detected = True (latched until state change or sweep end)
+[drone_node-6] [INFO] [1787072949.253785647] [drone_node]: Trigger [obstacle_detected] fired
+[drone_node-6] [INFO] [1787072949.258313512] [drone_node]: Trigger [obstacle_detected] in state [mission]
+[drone_node-6] [INFO] [1787072949.261242948] [drone_node]: STATE → oda
+[drone_node-6] [INFO] [1787072949.263667861] [drone_node]: === ODA: obstacle avoidance active ===
+[drone_node-6] [INFO] [1787072949.264762009] [drone_node]: ODA package handles navigation; waiting for waypoint_reached...
+[oda_maneuvers-7] [INFO] [1787072949.264205101] [oda_maneuvers]: ODA entered – switching to GUIDED, then scouting sweep
+[oda_maneuvers-7] [INFO] [1787072949.300562660] [oda_maneuvers]: Requesting GUIDED mode from the FCU...
+[oda_maneuvers-7] [INFO] [1787072949.393976927] [oda_maneuvers]: GUIDED confirmed – initiating breaking sequence before starting the scouting sweep
+[oda_maneuvers-7] [INFO] [1787072949.493704320] [oda_maneuvers]: #####################################Breaking command sent !#####################################
+[detection_node-9] [INFO] [1787072951.111419334] [detection_node]: virtual box: closest depth = 23.72 m (triggers below 1.3 m, plane-valid px = 0)
+[mavros_node-1] [INFO] [1787072951.228062309] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072951.228539790] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072951.228575889] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072951.248582221] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072951.248650946] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072951.252474328] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072951.252819638] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072951.257400342] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072951.257562293] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072951.258244150] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072951.258482355] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072951.258502826] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072951.268749275] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072951.268990100] [mavros.mission]: WP: mission received
+[detection_node-9] [INFO] [1787072953.166204776] [detection_node]: virtual box: closest depth = 15.56 m (triggers below 1.3 m, plane-valid px = 0)
+[detection_node-9] [INFO] [1787072955.198016964] [detection_node]: virtual box: closest depth = 10.39 m (triggers below 1.3 m, plane-valid px = 0)
+[mavros_node-1] [INFO] [1787072956.241317032] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072956.241553796] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072956.241583512] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072956.258145876] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072956.258190838] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072956.264775016] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072956.265059339] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072956.271381243] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072956.271606137] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072956.271642988] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072956.275000804] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072956.276181021] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072956.281298986] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072956.281366503] [mavros.mission]: WP: mission received
+[detection_node-9] [INFO] [1787072957.229148848] [detection_node]: virtual box: closest depth = 8.40 m (triggers below 1.3 m, plane-valid px = 0)
+[detection_node-9] [INFO] [1787072959.243997266] [detection_node]: virtual box: closest depth = 8.53 m (triggers below 1.3 m, plane-valid px = 0)
+[oda_maneuvers-7] [INFO] [1787072959.498785376] [oda_maneuvers]: #####################################Published yaw setpoint !#####################################
+[oda_maneuvers-7] [INFO] [1787072959.499643257] [oda_maneuvers]: Scouting ongoing, current leg: 1.5707963267948966
+[detection_node-9] [INFO] [1787072960.755981591] [detection_node]: obstacle_detected = True (latched until state change or sweep end)
+[drone_node-6] [INFO] [1787072960.758068202] [drone_node]: Trigger [obstacle_detected] fired
+[drone_node-6] [INFO] [1787072960.759658415] [drone_node]: Trigger [obstacle_detected] in state [oda]
+[mavros_node-1] [INFO] [1787072961.246250790] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072961.247006830] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072961.247033226] [mavros.geofence]: GF: scheduling pull after GCS is done
+[detection_node-9] [INFO] [1787072961.273663805] [detection_node]: virtual box: closest depth = 9.10 m (triggers below 40.5 m, plane-valid px = 64)
+[mavros_node-1] [INFO] [1787072961.277015954] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072961.277054564] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072961.277895628] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072961.278000144] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072961.278018697] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072961.281184747] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072961.281448085] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072961.292304163] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072961.297030007] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072961.325377775] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072961.325432749] [mavros.mission]: WP: mission received
+[oda_maneuvers-7] [INFO] [1787072964.603574989] [oda_maneuvers]: #####################################Published yaw setpoint !#####################################
+[oda_maneuvers-7] [INFO] [1787072964.605676906] [oda_maneuvers]: Scouting ongoing, current leg: -0.7853981633974483
+[mavros_node-1] [WARN] [1787072965.612303551] [mavros.time]: TM: RTT too high for timesync: 37.36 ms.
+[mavros_node-1] [INFO] [1787072966.256285267] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072966.256470260] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072966.256493185] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072966.284859233] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072966.284902015] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072966.286085557] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072966.287946455] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072966.287978456] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072966.288201370] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072966.288489890] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072966.291305158] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072966.291967587] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072966.306820455] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072966.306887169] [mavros.mission]: WP: mission received
+[detection_node-9] [INFO] [1787072966.618746299] [detection_node]: virtual box: closest depth = 16.74 m (triggers below 40.5 m, plane-valid px = 64)
+[detection_node-9] [INFO] [1787072968.693345389] [detection_node]: virtual box: closest depth = 12.04 m (triggers below 40.5 m, plane-valid px = 64)
+[mavros_node-1] [WARN] [1787072968.993439826] [mavros.time]: TM: RTT too high for timesync: 10.67 ms.
+[oda_maneuvers-7] [INFO] [1787072969.696561337] [oda_maneuvers]: #####################################Published yaw setpoint !#####################################
+[oda_maneuvers-7] [INFO] [1787072969.703634216] [oda_maneuvers]: Scouting ongoing, current leg: -0.7853981633974483
+[mavros_node-1] [WARN] [1787072969.792772303] [mavros.time]: TM: RTT too high for timesync: 17.20 ms.
+[mavros_node-1] [ERROR] [1787072969.896209295] [mavros.time]: TM: Time jump detected. Resetting time synchroniser.
+[detection_node-9] [INFO] [1787072970.714367298] [detection_node]: virtual box: closest depth = 11.77 m (triggers below 40.5 m, plane-valid px = 64)
+[mavros_node-1] [INFO] [1787072971.266271144] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072971.266488954] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072971.266510559] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072971.297962989] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072971.298004701] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072971.298566851] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072971.298668610] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072971.298686671] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072971.301093289] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072971.302029195] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072971.310082963] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072971.310241188] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072971.316407929] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072971.316565417] [mavros.mission]: WP: mission received
+[detection_node-9] [INFO] [1787072972.774811373] [detection_node]: virtual box: closest depth = 8.54 m (triggers below 40.5 m, plane-valid px = 64)
+[oda_maneuvers-7] [INFO] [1787072974.806193514] [oda_maneuvers]: #####################################Published yaw setpoint !#####################################
+[detection_node-9] [INFO] [1787072974.810751718] [detection_node]: virtual box: closest depth = 8.52 m (triggers below 40.5 m, plane-valid px = 64)
+[oda_maneuvers-7] [INFO] [1787072974.815637734] [oda_maneuvers]: Scouting ongoing, current leg: -0.7853981633974483
+[mavros_node-1] [INFO] [1787072976.283095302] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072976.284179783] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072976.284265879] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072976.341075504] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072976.341122177] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072976.341216871] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072976.341314066] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072976.341334445] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072976.344890959] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072976.346788002] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072976.372135418] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072976.372747739] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072976.377880350] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072976.378230975] [mavros.mission]: WP: mission received
+[detection_node-9] [INFO] [1787072976.876867451] [detection_node]: virtual box: closest depth = 10.18 m (triggers below 40.5 m, plane-valid px = 64)
+[detection_node-9] [INFO] [1787072978.941474455] [detection_node]: virtual box: closest depth = 12.27 m (triggers below 40.5 m, plane-valid px = 64)
+[oda_maneuvers-7] [INFO] [1787072979.898777729] [oda_maneuvers]: #####################################Published yaw setpoint !#####################################
+[oda_maneuvers-7] [INFO] [1787072979.900792420] [oda_maneuvers]: Scouting ongoing, current leg: -0.7853981633974483
+[detection_node-9] [INFO] [1787072980.995841499] [detection_node]: virtual box: closest depth = 12.71 m (triggers below 40.5 m, plane-valid px = 64)
+[mavros_node-1] [INFO] [1787072981.291272922] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072981.292269714] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072981.292955827] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072981.347325051] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072981.347370979] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072981.348335454] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072981.348551961] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072981.348573583] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072981.353579399] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072981.353753591] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072981.358226009] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072981.358469233] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072981.363546724] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072981.363612396] [mavros.mission]: WP: mission received
+[oda_maneuvers-7] [INFO] [1787072984.899048936] [oda_maneuvers]: #####################################Published yaw setpoint !#####################################
+[oda_maneuvers-7] [INFO] [1787072984.899986792] [oda_maneuvers]: Scouting ongoing, current leg: 1.5707963267948966
+[mavros_node-1] [INFO] [1787072986.298900804] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072986.301590772] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072986.301641586] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072986.371569612] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072986.371610270] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072986.371697413] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072986.371797222] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072986.371816898] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072986.377347224] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072986.377654102] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072986.415163142] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072986.415695999] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072986.423679470] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072986.423741515] [mavros.mission]: WP: mission received
+[detection_node-9] [INFO] [1787072986.928919111] [detection_node]: virtual box: closest depth = 17.12 m (triggers below 40.5 m, plane-valid px = 32)
+[detection_node-9] [INFO] [1787072988.950300847] [detection_node]: virtual box: closest depth = 8.53 m (triggers below 40.5 m, plane-valid px = 64)
+[oda_maneuvers-7] [INFO] [1787072989.992779508] [oda_maneuvers]: Sweep complete – setpoints stopped, waiting for the next obstacle_detected trigger
+[detection_node-9] [INFO] [1787072991.045295267] [detection_node]: virtual box: closest depth = 8.53 m (triggers below 40.5 m, plane-valid px = 64)
+[mavros_node-1] [INFO] [1787072991.308215471] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072991.309348405] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072991.309453919] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072991.388512864] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072991.388571121] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072991.393451002] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072991.393611838] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072991.393655038] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072991.398476733] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072991.398625903] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072991.408652706] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072991.409582437] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072991.415097909] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072991.415284078] [mavros.mission]: WP: mission received
+[detection_node-9] [INFO] [1787072993.120263139] [detection_node]: virtual box: closest depth = 8.43 m (triggers below 1.3 m, plane-valid px = 0)
+[detection_node-9] [INFO] [1787072995.237937054] [detection_node]: virtual box: closest depth = 8.44 m (triggers below 1.3 m, plane-valid px = 0)
+[mavros_node-1] [INFO] [1787072996.374082020] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787072996.375097069] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072996.375126325] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072996.397830080] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072996.397879387] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072996.399758380] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787072996.401191291] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787072996.401225389] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787072996.405815737] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787072996.406665269] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787072996.416658092] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787072996.416817331] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787072996.420871159] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787072996.420926879] [mavros.mission]: WP: mission received
+[detection_node-9] [INFO] [1787072997.274984757] [detection_node]: virtual box: closest depth = 8.44 m (triggers below 1.3 m, plane-valid px = 0)
+[detection_node-9] [INFO] [1787072999.278270850] [detection_node]: virtual box: closest depth = 8.45 m (triggers below 1.3 m, plane-valid px = 0)
+[detection_node-9] [INFO] [1787073001.336811884] [detection_node]: virtual box: closest depth = 8.46 m (triggers below 1.3 m, plane-valid px = 0)
+[mavros_node-1] [INFO] [1787073001.383339043] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787073001.385754779] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787073001.385797430] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787073001.432930149] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787073001.432980213] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787073001.447975590] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787073001.448132458] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787073001.448158238] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787073001.448252163] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787073001.448327669] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787073001.458912849] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787073001.459179778] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787073001.465706145] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787073001.465769521] [mavros.mission]: WP: mission received
+[detection_node-9] [INFO] [1787073003.414946189] [detection_node]: virtual box: closest depth = 8.46 m (triggers below 1.3 m, plane-valid px = 0)
+[detection_node-9] [INFO] [1787073005.462659562] [detection_node]: virtual box: closest depth = 8.46 m (triggers below 1.3 m, plane-valid px = 0)
+[mavros_node-1] [INFO] [1787073006.399473358] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787073006.399733480] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787073006.399769077] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787073006.440180813] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787073006.440242991] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787073006.446158573] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787073006.446849505] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787073006.453786977] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787073006.455210706] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787073006.455344605] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787073006.455450981] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787073006.455469757] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787073006.460877040] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787073006.460942913] [mavros.mission]: WP: mission received
+[detection_node-9] [INFO] [1787073007.463057588] [detection_node]: virtual box: closest depth = 8.46 m (triggers below 1.3 m, plane-valid px = 0)
+[mavros_node-1] [ERROR] [1787073009.183545712] [mavros.time]: TM: Time jump detected. Resetting time synchroniser.
+[detection_node-9] [INFO] [1787073009.557625900] [detection_node]: virtual box: closest depth = 8.46 m (triggers below 1.3 m, plane-valid px = 0)
+[mavros_node-1] [INFO] [1787073011.419829752] [mavros.geofence]: GF: mission received
+[mavros_node-1] [INFO] [1787073011.420316116] [mavros.geofence]: GF: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787073011.420344298] [mavros.geofence]: GF: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787073011.448566912] [mavros.mission]: WP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787073011.448636552] [mavros.mission]: WP: scheduling pull after GCS is done
+[mavros_node-1] [INFO] [1787073011.451477429] [mavros.mission]: WP: item #0  F:0 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1652 z: 584.13
+[mavros_node-1] [WARN] [1787073011.451662671] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (0 != 1)
+[mavros_node-1] [INFO] [1787073011.456158883] [mavros.mission]: WP: item #1  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1653 z: 20
+[mavros_node-1] [WARN] [1787073011.456399870] [mavros.mission]: WP: Seq mismatch, dropping MISSION_ITEM_INT (1 != 2)
+[mavros_node-1] [INFO] [1787073011.464329935] [mavros.mission]: WP: item #2  F:3 C: 16 p: 0 0 0 0 x: -35.36326 y: 149.1713 z: 20
+[mavros_node-1] [INFO] [1787073011.464398316] [mavros.mission]: WP: mission received
+[mavros_node-1] [INFO] [1787073011.465327471] [mavros.rallypoint]: RP: mission received
+[mavros_node-1] [INFO] [1787073011.465501865] [mavros.rallypoint]: RP: seems GCS requesting mission
+[mavros_node-1] [INFO] [1787073011.465523946] [mavros.rallypoint]: RP: scheduling pull after GCS is done
+[detection_node-9] [INFO] [1787073011.636679627] [detection_node]: virtual box: closest depth = 8.47 m (triggers below 1.3 m, plane-valid px = 0)
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[mavros_node-1] [INFO] [1787073011.811500266] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[mavros_node-1] [WARN] [1787073011.818296824] [mavros.mavros]: UAS Executor terminated
+[start_trigger-5] Traceback (most recent call last):
+[start_trigger-5]   File "/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/sentinel_mission/start_trigger", line 33, in <module>
+[start_trigger-5]     sys.exit(load_entry_point('sentinel_mission==0.1.0', 'console_scripts', 'start_trigger')())
+[start_trigger-5]   File "/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/python3.10/site-packages/sentinel_mission/start_trigger.py", line 99, in main
+[start_trigger-5]     rclpy.shutdown()
+[start_trigger-5]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 130, in shutdown
+[start_trigger-5]     _shutdown(context=context)
+[start_trigger-5]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/utilities.py", line 58, in shutdown
+[start_trigger-5]     return context.shutdown()
+[start_trigger-5]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/context.py", line 102, in shutdown
+[start_trigger-5]     self.__context.shutdown()
+[start_trigger-5] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:241
+[mission_node-3] Traceback (most recent call last):
+[mission_node-3]   File "/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/sentinel_mission/mission_node", line 33, in <module>
+[mission_node-3]     sys.exit(load_entry_point('sentinel_mission==0.1.0', 'console_scripts', 'mission_node')())
+[mission_node-3]   File "/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/python3.10/site-packages/sentinel_mission/mission_node.py", line 166, in main
+[mission_node-3]     rclpy.shutdown()
+[mission_node-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 130, in shutdown
+[mission_node-3]     _shutdown(context=context)
+[mission_node-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/utilities.py", line 58, in shutdown
+[mission_node-3]     return context.shutdown()
+[mission_node-3]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/context.py", line 102, in shutdown
+[mission_node-3]     self.__context.shutdown()
+[mission_node-3] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:241
+[drone_node-6] Traceback (most recent call last):
+[drone_node-6]   File "/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/sentinel_mission/drone_node", line 33, in <module>
+[drone_node-6]     sys.exit(load_entry_point('sentinel_mission==0.1.0', 'console_scripts', 'drone_node')())
+[drone_node-6]   File "/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/python3.10/site-packages/sentinel_mission/drone_node.py", line 717, in main
+[drone_node-6]     rclpy.shutdown()
+[drone_node-6]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 130, in shutdown
+[drone_node-6]     _shutdown(context=context)
+[drone_node-6]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/utilities.py", line 58, in shutdown
+[drone_node-6]     return context.shutdown()
+[drone_node-6]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/context.py", line 102, in shutdown
+[drone_node-6]     self.__context.shutdown()
+[drone_node-6] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:241
+[emergency_node-4] Traceback (most recent call last):
+[emergency_node-4]   File "/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/sentinel_mission/emergency_node", line 33, in <module>
+[emergency_node-4]     sys.exit(load_entry_point('sentinel_mission==0.1.0', 'console_scripts', 'emergency_node')())
+[emergency_node-4]   File "/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/python3.10/site-packages/sentinel_mission/emergency_node.py", line 177, in main
+[emergency_node-4]     rclpy.shutdown()
+[emergency_node-4]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/__init__.py", line 130, in shutdown
+[emergency_node-4]     _shutdown(context=context)
+[emergency_node-4]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/utilities.py", line 58, in shutdown
+[emergency_node-4]     return context.shutdown()
+[emergency_node-4]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/context.py", line 102, in shutdown
+[emergency_node-4]     self.__context.shutdown()
+[emergency_node-4] rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:241
+[INFO] [mavros_node-1]: process has finished cleanly [pid 5248]
+[INFO] [oda_maneuvers-7]: process has finished cleanly [pid 5261]
+[ERROR] [start_trigger-5]: process has died [pid 5257, exit code 1, cmd '/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/sentinel_mission/start_trigger --ros-args -r __node:=start_trigger'].
+[ERROR] [mission_node-3]: process has died [pid 5252, exit code 1, cmd '/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/sentinel_mission/mission_node --ros-args -r __node:=mission_node --params-file /tmp/launch_params_z3aahgl1'].
+[INFO] [detection_node-9]: process has finished cleanly [pid 5265]
+[ERROR] [emergency_node-4]: process has died [pid 5254, exit code 1, cmd '/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/sentinel_mission/emergency_node --ros-args -r __node:=emergency_node'].
+[ERROR] [drone_node-6]: process has died [pid 5259, exit code 1, cmd '/home/ubuntu/Desktop/ROS2_sim/install/sentinel_mission/lib/sentinel_mission/drone_node --ros-args -r __node:=drone_node'].
+[INFO] [depth_node-8]: process has finished cleanly [pid 5263]

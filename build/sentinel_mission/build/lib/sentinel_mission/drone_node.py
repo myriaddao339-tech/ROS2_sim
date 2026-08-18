@@ -235,6 +235,11 @@ class DroneNode(Node):
         self._current_state = new_state
         self.get_logger().info(f"STATE → {new_state}")
 
+        # Publish immediately instead of waiting for the next 1 Hz tick:
+        # nodes like ODA Maneuvers gate on drone_state and must start the
+        # GUIDED brake the moment mission → oda happens.
+        self._publish_state()
+
     def _force_standby(self):
         """Force reset to standby (used for unexpected disarm)."""
         self._init_timer.cancel()

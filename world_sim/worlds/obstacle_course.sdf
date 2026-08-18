@@ -11,14 +11,12 @@
   along world +x to face the obstacles.
 
   Course layout (all distances along +x from spawn):
-    x = 10      gap-test walls: two 1 m wide walls with a 5 m gap
-                (tests the Detection node's block split)
-    x = 18      merge-test pair: two boxes 0.3 m apart (gap too narrow
-                to fly through -> must be ONE block)
-    x = 24-36   pylon slalom (r=0.15 m, 1.3 m tall)
-    x = 42      corridor markers
-    x = 44      long wall spanning y=-7..3 m, only passable on the right
-    x = 52-56   box cluster + tall box
+    x = 200     single giant "skyscraper" block: 30 m wide (y -15..15),
+                50 m tall, front face at x = 199.  The drone cannot fly
+                over, under or around it - it MUST detect it and stop.
+    WP1 x = 5   waypoint 1 (reached before the trigger range)
+    WP2 x = 550 waypoint 2, past the block (never reached once ODA takes
+                over)
 -->
 <sdf version="1.9">
   <world name="obstacle_course">
@@ -187,424 +185,128 @@
     </include>
 
     <!-- ============================================================ -->
-    <!-- x = 10: gap test – two walls, 5 m gap between inner faces    -->
+    <!-- x = 200: single giant block ("skyscraper") spanning the     -->
+    <!-- whole flight path: 30 m wide (y -15..15), 50 m tall, front   -->
+    <!-- face at x = 199.  The drone cannot fly over, under or around -->
+    <!-- it - it MUST detect it and stop.  Far enough from spawn that -->
+    <!-- the drone takes off and reaches WP1 (x = 5) long before the  -->
+    <!-- trigger range.                                               -->
     <!-- ============================================================ -->
-    <model name="wall_gap_left">
+    <model name="skyscraper">
       <static>1</static>
-      <pose>10 3 0.75 0 0 0</pose>
+      <pose>200 0 10 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
             <box>
-              <size>0.5 1 1.5</size>
+              <size>2 30 50</size>
             </box>
           </geometry>
         </collision>
         <visual name="visual">
           <geometry>
             <box>
-              <size>0.5 1 1.5</size>
+              <size>2 30 50</size>
             </box>
           </geometry>
           <material>
-            <ambient>0.55 0.55 0.6 1</ambient>
-            <diffuse>0.55 0.55 0.6 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
+            <ambient>0.55 0.58 0.62 1</ambient>
+            <diffuse>0.55 0.58 0.62 1</diffuse>
+            <specular>0.15 0.15 0.15 1</specular>
+          </material>
+        </visual>
+
+        <!-- floor stripes on the front face (visual only): give the
+             depth model some texture to latch onto.  The visible stripe
+             face sits slightly in front of the wall plane (x = -1). -->
+        <visual name="stripe_1">
+          <pose>-1.03 0 -9 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.06 29.96 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.27 0.3 1</ambient>
+            <diffuse>0.25 0.27 0.3 1</diffuse>
+          </material>
+        </visual>
+        <visual name="stripe_2">
+          <pose>-1.03 0 -6 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.06 29.96 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.27 0.3 1</ambient>
+            <diffuse>0.25 0.27 0.3 1</diffuse>
+          </material>
+        </visual>
+        <visual name="stripe_3">
+          <pose>-1.03 0 -3 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.06 29.96 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.27 0.3 1</ambient>
+            <diffuse>0.25 0.27 0.3 1</diffuse>
+          </material>
+        </visual>
+        <visual name="stripe_4">
+          <pose>-1.03 0 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.06 29.96 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.27 0.3 1</ambient>
+            <diffuse>0.25 0.27 0.3 1</diffuse>
+          </material>
+        </visual>
+        <visual name="stripe_5">
+          <pose>-1.03 0 3 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.06 29.96 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.27 0.3 1</ambient>
+            <diffuse>0.25 0.27 0.3 1</diffuse>
+          </material>
+        </visual>
+        <visual name="stripe_6">
+          <pose>-1.03 0 6 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.06 29.96 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.27 0.3 1</ambient>
+            <diffuse>0.25 0.27 0.3 1</diffuse>
+          </material>
+        </visual>
+        <visual name="stripe_7">
+          <pose>-1.03 0 9 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.06 29.96 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.27 0.3 1</ambient>
+            <diffuse>0.25 0.27 0.3 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
 
-    <model name="wall_gap_right">
-      <static>1</static>
-      <pose>10 -3 0.75 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>0.5 1 1.5</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>0.5 1 1.5</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0.55 0.55 0.6 1</ambient>
-            <diffuse>0.55 0.55 0.6 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
 
-    <!-- ============================================================ -->
-    <!-- x = 18: merge test – two boxes only 0.3 m apart (no flyable  -->
-    <!-- gap) – the detector must report ONE block, not two.          -->
-    <!-- ============================================================ -->
-    <model name="box_merge_left">
-      <static>1</static>
-      <pose>18 0.4 0.6 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>0.5 0.5 1.2</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>0.5 0.5 1.2</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0.55 0.38 0.2 1</ambient>
-            <diffuse>0.55 0.38 0.2 1</diffuse>
-            <specular>0.1 0.1 0.1 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <model name="box_merge_right">
-      <static>1</static>
-      <pose>18 -0.4 0.6 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>0.5 0.5 1.2</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>0.5 0.5 1.2</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0.55 0.38 0.2 1</ambient>
-            <diffuse>0.55 0.38 0.2 1</diffuse>
-            <specular>0.1 0.1 0.1 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <!-- ============================================================ -->
-    <!-- x = 24-36: pylon slalom                                      -->
-    <!-- ============================================================ -->
-    <model name="pylon_1">
-      <static>1</static>
-      <pose>24 2.5 0.65 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <cylinder>
-              <radius>0.15</radius>
-              <length>1.3</length>
-            </cylinder>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <cylinder>
-              <radius>0.15</radius>
-              <length>1.3</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <ambient>0.95 0.5 0.1 1</ambient>
-            <diffuse>0.95 0.5 0.1 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <model name="pylon_2">
-      <static>1</static>
-      <pose>28 -2.5 0.65 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <cylinder>
-              <radius>0.15</radius>
-              <length>1.3</length>
-            </cylinder>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <cylinder>
-              <radius>0.15</radius>
-              <length>1.3</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <ambient>0.95 0.5 0.1 1</ambient>
-            <diffuse>0.95 0.5 0.1 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <model name="pylon_3">
-      <static>1</static>
-      <pose>32 2.5 0.65 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <cylinder>
-              <radius>0.15</radius>
-              <length>1.3</length>
-            </cylinder>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <cylinder>
-              <radius>0.15</radius>
-              <length>1.3</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <ambient>0.95 0.5 0.1 1</ambient>
-            <diffuse>0.95 0.5 0.1 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <model name="pylon_4">
-      <static>1</static>
-      <pose>36 -2.5 0.65 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <cylinder>
-              <radius>0.15</radius>
-              <length>1.3</length>
-            </cylinder>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <cylinder>
-              <radius>0.15</radius>
-              <length>1.3</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <ambient>0.95 0.5 0.1 1</ambient>
-            <diffuse>0.95 0.5 0.1 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <!-- corridor markers -->
-    <model name="marker_left">
-      <static>1</static>
-      <pose>42 5 0.65 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <cylinder>
-              <radius>0.15</radius>
-              <length>1.3</length>
-            </cylinder>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <cylinder>
-              <radius>0.15</radius>
-              <length>1.3</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <ambient>0.9 0.9 0.2 1</ambient>
-            <diffuse>0.9 0.9 0.2 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <model name="marker_right">
-      <static>1</static>
-      <pose>42 -5 0.65 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <cylinder>
-              <radius>0.15</radius>
-              <length>1.3</length>
-            </cylinder>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <cylinder>
-              <radius>0.15</radius>
-              <length>1.3</length>
-            </cylinder>
-          </geometry>
-          <material>
-            <ambient>0.9 0.9 0.2 1</ambient>
-            <diffuse>0.9 0.9 0.2 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <!-- ============================================================ -->
-    <!-- x = 44: long wall spanning y=-7..3 – only the right side is  -->
-    <!-- open, forcing a detour                                       -->
-    <!-- ============================================================ -->
-    <model name="detour_wall">
-      <static>1</static>
-      <pose>44 -2 1 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>0.4 10 2</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>0.4 10 2</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0.5 0.5 0.55 1</ambient>
-            <diffuse>0.5 0.5 0.55 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <!-- ============================================================ -->
-    <!-- x = 52-56: box cluster + tall box                            -->
-    <!-- ============================================================ -->
-    <model name="box_cluster_1">
-      <static>1</static>
-      <pose>52 5 0.5 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>1 1 1</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>1 1 1</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0.55 0.38 0.2 1</ambient>
-            <diffuse>0.55 0.38 0.2 1</diffuse>
-            <specular>0.1 0.1 0.1 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <model name="box_cluster_2">
-      <static>1</static>
-      <pose>54 6.5 0.5 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>1 1 1</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>1 1 1</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0.55 0.38 0.2 1</ambient>
-            <diffuse>0.55 0.38 0.2 1</diffuse>
-            <specular>0.1 0.1 0.1 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <model name="box_cluster_3">
-      <static>1</static>
-      <pose>56 4 0.5 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>1 1 1</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>1 1 1</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0.55 0.38 0.2 1</ambient>
-            <diffuse>0.55 0.38 0.2 1</diffuse>
-            <specular>0.1 0.1 0.1 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <model name="tall_box">
-      <static>1</static>
-      <pose>52 -4 0.75 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>1 1 1.5</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>1 1 1.5</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0.5 0.5 0.55 1</ambient>
-            <diffuse>0.5 0.5 0.55 1</diffuse>
-            <specular>0.2 0.2 0.2 1</specular>
-          </material>
-        </visual>
-      </link>
-    </model>
 
   </world>
 </sdf>

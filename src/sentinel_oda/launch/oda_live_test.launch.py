@@ -8,7 +8,9 @@ Starts:
   - emergency_node         – battery + heartbeat watchdog
   - start_trigger          – auto-start signal for the drone node
   - drone_node             – mission state machine
-  - depth_node             – Depth Anything V2 on the UDP camera stream
+  - oda_maneuvers          – drone-side scout (GUIDED switch + yaw sweep)
+  - depth_node             – Depth Anything V2 on the UDP camera stream,
+                             or native Gazebo depth (depth_source:=gazebo_depth)
   - detection_node         – obstacle detection + block segmentation
 
 This file also enables the Gazebo camera stream: GstCameraPlugin only
@@ -54,6 +56,7 @@ def generate_launch_description():
     mission_file = LaunchConfiguration("mission_file")
     camera_stream_topic = LaunchConfiguration("camera_stream_topic")
     enable_camera_stream = LaunchConfiguration("enable_camera_stream")
+    depth_source = LaunchConfiguration("depth_source")
 
     args = [
         DeclareLaunchArgument(
@@ -84,6 +87,15 @@ def generate_launch_description():
             default_value="true",
             description="Send the enable_streaming message to the Gazebo camera (false for real-drone runs)",
         ),
+        DeclareLaunchArgument(
+            "depth_source",
+            default_value="udp",
+            description=(
+                "Depth input for depth_node: 'udp' (ML pipeline on the camera "
+                "stream), 'webcam' (PC camera), or 'gazebo_depth' (native gz "
+                "depth camera – exact metric depth, no ML model)"
+            ),
+        ),
     ]
 
     # ---- MAVROS (APM pluginlist/config, but launched directly so it can
@@ -96,7 +108,7 @@ def generate_launch_description():
         package="mavros",
         executable="mavros_node",
         namespace="mavros",
-        output="screen",
+        #output="screen",
         respawn=True,
         respawn_delay=3.0,
         parameters=[
@@ -136,6 +148,10 @@ def generate_launch_description():
                 ],
             },
         ],
+        # ArduPilot streams unsolicited param values that mavros.param logs
+        # as INFO on every change ("PR: got an unsolicited param value ..."),
+        # drowning the terminal.  Raise only that logger to WARN.
+        arguments=["--ros-args", "--log-level", "mavros.param:=warn"],
     )
 
     # ---- mission package nodes (same set as mission_package.launch.py) ----
@@ -165,6 +181,14 @@ def generate_launch_description():
         output="screen",
     )
 
+    # ---- ODA Maneuvers node (drone-side scout: GUIDED switch + yaw sweep) ----
+    oda_maneuvers_node = Node(
+        package="sentinel_oda",
+        executable="oda_maneuvers",
+        name="oda_maneuvers",
+        output="screen",
+    )
+
     # ---- depth node: reads the drone/Gazebo camera stream (MPEG-TS UDP) ----
     depth_node = Node(
         package="sentinel_oda",
@@ -173,12 +197,12 @@ def generate_launch_description():
         output="screen",
         parameters=[
             {
-                "video_source": "udp",      # Gazebo GstCameraPlugin / drone relay
+                "video_source": depth_source,   # udp (ML) | webcam | gazebo_depth (native)
                 "udp_port": 5600,           # camera streams here (see world_sim model)
-                "inference_rate": 20.0,     # timer cap; CPU tops out ~5-8 fps @ 308px
+                "inference_rate": 40.0,     # 30-40 fps target on GPU (camera renders at 40 Hz)
                 "model_input_size": 308,    # window size kept per user request
-                "device": "cpu",            # switch to "cuda" once the GPU is safe
-                "show_preview": True,       # pop-up depth map window (TURBO colormap)
+                "device": "cuda",           # GPU inference (CUDA works again)
+                "show_preview": False,      # HUD window is owned by detection_node (show_hud)
             }
         ],
     )
@@ -196,9 +220,25 @@ def generate_launch_description():
                 "drone_height": 0.363,
                 "box_margin": 0.2,
                 "confirm_frames": 10,       # one-way validation, no clearing
-                "mission_obstacle_threshold": 10.0,
+                # With the native Gazebo depth camera the depth is exact
+                # metric, so 10 m means 10 m.  With the ML pipeline the
+                # numbers are model-reported metres (tune against the
+                # preview + "closest depth" logs if the model is off).
+                "mission_obstacle_threshold": 40.0,
                 "oda_obstacle_threshold": 0.8,
                 "depth_margin": 0.5,
+                # Altitude-plane filter: only obstacles near the drone's
+                # altitude can validate the trigger, so the ground cannot
+                # trip ODA during takeoff.
+                "plane_filter": True,
+                "plane_band_below_m": 2.0,
+                "plane_band_above_m": 5.0,
+                # Takeoff protection: validation is suppressed for this
+                # long after leaving standby (timer, not altitude gate).
+                "standby_suppress_sec": 10.0,
+                # HUD: preview + trigger box + altitude-plane grid.
+                "show_hud": True,
+                "hud_rate": 15.0,
             }
         ],
     )
@@ -235,6 +275,7 @@ def generate_launch_description():
             emergency_node,
             start_trigger,
             drone_node,
+            oda_maneuvers_node,
             depth_node,
             detection_node,
         ]

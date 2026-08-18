@@ -1,5 +1,16 @@
 # Sentinel V1 — ODA Package Development Log
 
+## Session — 2026-08-17
+
+### Situation
+- User launched with `video_source:=gazebo_depth` and depth_node still ran the UDP ML pipeline.
+
+### What I did
+- Checked `oda_live_test.launch.py`: the declared launch argument is `depth_source` (default "udp"), passed to depth_node param `video_source`. No `video_source` launch arg exists.
+
+### What I answered
+- `video_source:=...` was ignored by launch; correct command is `depth_source:=gazebo_depth`.
+
 ## Session 1 — 2026-08-11
 
 ### Context
@@ -880,3 +891,444 @@ Finally, one more warning of a bug that you also created last time, because I'm 
   future_error; mavros stays up; takeoff climbs to 15 m once.
 - Optional tuning: -p cpu_threads:=N (0 = auto), -p inference_rate:=N.
   mavros respawn safety net remains in place.
+
+
+## Session 22 — 2026-08-15
+
+### Situation
+- Depth preview works; no obstacle is ever detected yet (probably the
+  10-frame hysteresis + low frame count at ~5-8 fps CPU) — not to dwell.
+- Task: implement the ODA Maneuvers node (node 3 of the ODA package).
+- Open questions asked: first-sweep trigger + detection threshold scheme.
+  User answered: first sweep starts on the mission→ODA switch; 10 m
+  threshold during sweeps (first AND re-sweeps — user corrected
+  themselves), 0.8 m between sweeps in ODA.
+
+### What I did
+- Created src/sentinel_oda/sentinel_oda/oda_maneuvers.py:
+  - gates on /drone_node/drone_state; on ODA entry switches the FCU to
+    GUIDED (async SetMode, retries with backoff, never overrides RTL/LAND).
+  - sweep: ψ0+90/+45/0/-45/-90 each held heading_hold_duration=3.0 s,
+    final return to ψ0; yaw-only PositionTarget on
+    /mavros/setpoint_raw/local (coordinate_frame=1, type_mask 2559),
+    5 deg tolerance, 10 s per-step timeout, 1 s keepalive resends; stops
+    setpoints at sweep end.
+  - re-sweeps on fresh obstacle_detected rising edges (ignored during a
+    sweep); publishes ~/sweeping (Bool) for Detection.
+  - yaw bookkeeping in the ENU domain (0=East, CCW+, so +90 = left, as the
+    user specified); converted to NED (pi/2 - yaw) at publish time.
+  - timer-driven state machine — no spin_until_future_complete anywhere.
+- Updated detection_node.py:
+  - subscribes /oda_maneuvers/sweeping; in ODA uses 10 m during sweeps,
+    0.8 m between them; obstacle_info always registers at the 10 m
+    threshold and publishes whenever blocks exist (independent of the
+    latch); latch resets on drone_state change and at sweep end so fresh
+    edges can fire.
+- setup.py: added oda_maneuvers entry point.
+- oda_live_test.launch.py: now starts oda_maneuvers (drone-side block).
+- context.md: appended implementation notes (sweep triggering, yaw
+  conventions, detection threshold scheme).
+- Built sentinel_oda (clean). Verified: py_compile, launch --show-args,
+  yaw-conversion math, type_mask=2559, headless smoke test of the phase
+  machine (enter→GUIDED→sweep→rotate/hold→RTL guard→exit reset) — pass.
+
+### What I answered
+- ODA Maneuvers implemented and tested headlessly. Live test: run the
+  normal stack; when the drone enters ODA it should switch to GUIDED, hold
+  position, sweep ±90° in 45° steps (3 s each, ~18-20 s total), then go
+  quiet until the next 0.8 m trigger.
+- Next up: Inner Map node (the planner feeding GUIDED).
+
+## Session 23 — 2026-08-15
+
+### Situation
+- User asked to fix the drone not detecting obstacles (and make it stop
+  before crashing), raise fps to 30-40 (new charger, CUDA works again),
+  and lower the waypoint altitudes so obstacles are a real crash risk.
+- Mid-experiment the user interrupted: machine was running hot, asked to
+  kill everything I started and report whether we should switch the depth
+  model back to Depth Pro.
+
+### What I did
+- Experiment (headless, all cleaned up afterwards):
+  - Ran `gz sim -r -s` obstacle_course world + enabled the camera stream +
+    ran depth_node with device=cuda, 30 Hz, 308 px + captured depth maps.
+  - Measured against known geometry: wall really at 10 m reported ~15 m;
+    ground really at 1.0 m / 0.28 m reported ~9 m / ~6.9 m. The metric
+    scale is badly wrong on Gazebo's synthetic images → fixed thresholds
+    never fire → root cause of "no obstacle detected".
+  - GPU inference itself: 0.03 s/frame → 30-40 fps target achievable.
+  - Also observed: headless render ~0.2 fps throttles the test, and the
+    UDP drain loop's drain_budget can cap throughput on fast streams
+    (worth revisiting for 30-40 fps on the GUI run).
+- Cleanup: killed gz sim + depth node + capture processes (verified by
+  pgrep), closed both terminals, GPU back to 0% / 6 MiB / 82 C falling.
+
+### What I answered
+- Recommended NOT switching to Depth Pro: same real→sim domain-scale
+  problem, far too slow for 30-40 fps, previously caused overload.
+- Proposed fix: self-calibrate the depth scale in detection_node using the
+  drone altitude (from /mavros/local_position/pose) + ground-plane
+  geometry; rescale map each frame so thresholds work in sim and real.
+- Pending user confirmation: implement calibration + 30-40 fps +
+  lower waypoints + faster stop on ODA entry. No code changes made yet.
+
+## Session 24 — 2026-08-15
+
+### Situation
+- User decided the depth-scale calibration is too complicated for now —
+  defer it (remembered in context.md). Goal: bare bones only — mission
+  starts, obstacle detected, ODA maneuvers run (stop + sweep). Inner Map /
+  GUIDED later.
+- User asked to simplify the obstacle course to ONE giant block ("skyscraper")
+  in front of the drone at 30 m, so the drone can't miss it, and far enough
+  to take off and reach WP1 before the trigger.
+
+### What I did
+- world_sim/worlds/obstacle_course.sdf: removed ALL old obstacles (walls,
+  boxes, pylons, markers, detour wall, cluster). Single "skyscraper" model
+  at x=30: 2x30x20 m (front face x=29, spans y -15..15, 20 m tall) with
+  7 dark floor stripes on the face for texture. Header comment + README
+  course table updated.
+- src/sentinel_mission/missions/obstacle_course.plan: WP altitudes 2.0 → 1.2 m.
+- drone_node.py: _set_state() now publishes drone_state IMMEDIATELY (was
+  only the 1 Hz timer) so ODA Maneuvers starts the GUIDED brake the moment
+  mission→oda happens (~1 s saved on the stop chain).
+- depth_node.py: UDP drain loop rewritten — drains buffered frames and
+  breaks as soon as a grab() waits for a new frame, so a 40 Hz stream is no
+  longer throttled to ~8 fps by the old 0.1 s drain_budget. Docstring updated.
+- sentinel_f450 model.sdf: camera update_rate 30 → 40.
+- oda_live_test.launch.py: inference_rate 20 → 40 (GPU target 30-40 fps);
+  mission_obstacle_threshold 10 → 15 with a comment (metric model
+  overestimates on synthetic scenes — single tuning knob).
+- detection_node.py: throttled (2 s) diagnostic log "virtual box: closest
+  depth = X m (triggers below Y m)" for easy threshold tuning.
+- context.md: recorded the deferred self-calibration idea (altitude +
+  ground-plane rescale, EMA, clamp) under "Deferred idea".
+- Rebuilt sentinel_mission + sentinel_oda (clean). gz sdf -p validates the
+  world; plan parses with alts [1.2, 1.2]. Verified all edits with greps.
+
+### What I answered
+- Bare-bones sequence: takeoff → AUTO → WP1 (x=5) → approach skyscraper →
+  detection latches (10 consecutive frames @ ~30-40 fps) → drone_state
+  published instantly → ODA Maneuvers switches AUTO→GUIDED (brake/hold) →
+  ±90° yaw sweep → waits (no re-sweeps in sim since 0.8 m threshold is
+  below the model's compressed floor).
+- Tuning: if ODA fires too early (before WP1), raise
+  mission_obstacle_threshold; if the drone gets too close, lower it. Watch
+  the depth preview + "closest depth" logs.
+
+## Session 25 — 2026-08-15
+
+### Situation
+- User pushed back on the threshold tuning advice and asked for the
+  obstacle + WP2 to be moved to at least 500 m.
+- Note: the user had already edited oda_live_test.launch.py themselves:
+  mission_obstacle_threshold 15.0 -> 5.0.
+
+### What I did
+- Acknowledged the user was right: trigger is `reported_depth < threshold`,
+  so LOWER = detect later (obstacle closer), HIGHER = detect earlier.
+  My earlier launch comment had it backwards - fixed the comment (kept the
+  user's 5.0 value).
+- obstacle_course.sdf: skyscraper pose 30 -> 500 (front face 499), header
+  + section comments updated.
+- obstacle_course.plan: WP2 lon recomputed for 550 m east of home
+  (149.1712955, ~111320*cos(lat) m per deg lon), alt stays 1.2.
+- README course table updated (500 / 550).
+- context.md tuning note: direction clarified (LOWER = later, HIGHER =
+  earlier) and current value 5.0.
+- Rebuilt sentinel_mission + sentinel_oda; world SDF validates; installed
+  plan verified at 550 m.
+
+### What I answered
+- Threshold knob: lower -> later detection, higher -> earlier detection,
+  all in model-reported metres (sim scale is inflated, so tune against the
+  preview + "closest depth" logs).
+- New layout: WP1 x=5, skyscraper x=500, WP2 x=550; ~495 m approach leg
+  (~100 s at 5 m/s).
+
+## Session 26 — 2026-08-15 (live test log analysis)
+
+### Situation
+- User ran `oda_live_test` (23:15 local, log timestamps 1786828545+) and
+  reported: "distance estimation is way out of whack, behaviour not too
+  unexpected". Also edited waypoints + obstacle world after the run.
+
+### What I did
+- Re-read oda_maneuvers.py (tick, sweep, setpoint, shutdown), detection_node.py,
+  depth_node.py; re-verified plan files (src alt 1.2 vs install alt 20, the run
+  used 20), obstacle_course.sdf (block pose x=200 vs stale comment x=499,
+  collision 20 m vs visual 50 m), camera model.sdf, mav.parm, log.md history.
+- Diagnosis: (1) yaw sweep never rotates — ArduPilot ignores the yaw field of
+  SET_POSITION_TARGET_LOCAL_NED when position/velocity are masked out; (2)
+  depth ~4.3 m constant = metric model saturating on the synthetic scene
+  (8.21 m on ground, 36→28 m climb, pinned 4.06-4.33 m in cruise); (3)
+  infinite sweep loop = two edge-handling bugs in oda_maneuvers (stale edge
+  after _tick_switching sweep start + rising edges latched mid-sweep);
+  (4) noted noise: double rclpy.shutdown tracebacks, mavros param spam,
+  h264 PPS at startup, inference latency drift 0.04→0.95 s.
+
+### What I answered
+- Fix yaw via AttitudeTarget (setpoint_raw/attitude, type_mask ignoring rates
+  + thrust, quaternion from yaw) or yaw_rate in PositionTarget; verify with a
+  throwaway +45 deg test.
+- For SITL, replace ML depth with Gazebo native depth camera (exact metric
+  depth); keep depth_node for real hardware.
+- Fix both sweep-edge bugs; with accurate depth the sweep loop then stops and
+  Inner Map/GUIDED (not launched yet) take over.
+- Flagged: rebuild sentinel_mission before 1.2 m alts take effect; 1.2 m
+  altitude is risky (ground floods FOV, wall not clearable); block now at
+  x≈200 → approach leg only ~195 m; stale header comment in SDF; raise
+  mission_obstacle_threshold once depth is real (5.5 m too late at cruise).
+- Offered to implement yaw + sweep-edge fixes next.
+
+## Session 27 — 2026-08-16 (yaw-rate sweep + native Gazebo depth)
+
+### Situation
+- User picked the yaw-rate sweep approach; wants it slow (~1 min per 180 deg)
+  and accurate. Accepted the Gazebo native depth camera as an extra option
+  (threshold back to 10 m). Approved the sweep-restart bug fixes. Clarified:
+  the ~4.3 m readings were the skyscraper (drone stared at it, no rotation),
+  not the ground; the 20 m waypoint altitude was deliberate; asked to make
+  the collision match the 50 m visual and fix the world comments.
+
+### What I did
+- oda_maneuvers.py: sweep redesigned from 45-deg hold steps to a CONTINUOUS
+  yaw-rate fan. New params: sweep_rate_deg_s=3.0 (180 deg in ~60 s),
+  sweep_span_deg=180, return_to_heading=true, sweep_rate_kp=1.0,
+  leg_timeout_scale=2.5. PositionTarget now commands yaw_rate only
+  (type_mask 1535, IGNORE_YAW set; ENU->NED sign flip), republished every
+  tick, proportional slowdown near the target, per-leg timeout safety net.
+  Fixed both sweep-loop bugs: stale obstacle edge cleared when the first
+  sweep starts; rising edges DURING a sweep are ignored.
+- depth_node.py: new video_source "gazebo_depth" – subscribes the gz
+  depth_camera depth_image topic directly via gz.transport13 + gz.msgs10
+  (no ML model, no video capture), republishes at gz_depth_rate=15 Hz as
+  the normal /depth_node/depth_map + viz + heartbeat. Shared _publish_depth
+  helper. Fixed gz-transport subscribe() signature (msg_type, topic, cb)
+  and msgs10 enum names (module-level R_FLOAT32) found via headless test.
+- sentinel_f450 model.sdf: added depth_camera sensor on camera_link
+  (640x480, 53.5 deg HFOV, clip 0.1-60 m, 15 Hz).
+- oda_live_test.launch.py: new depth_source arg (udp|webcam|gazebo_depth,
+  default udp); mission_obstacle_threshold 5.0 -> 10.0.
+- obstacle_course.sdf: skyscraper collision 20 -> 50 m tall (matches the
+  visual); header + section comments fixed (front face x = 199).
+- obstacle_course.plan (src): WP altitudes 1.2 -> 20 (matches the installed
+  plan the user intentionally flew at 20 m; src and install now agree).
+- world_sim/README.md: course table 500 -> 200; block description fixed.
+- Rebuilt sentinel_oda + sentinel_mission. SDF validates. HEADLESS TEST
+  PASSED: gz depth camera streams at 15 Hz; depth_node republished
+  /depth_node/depth_map at 5 Hz; values are true metric (ground under the
+  drone 0.10 m, horizon ~48 m, far clip 60 m).
+
+### What I answered
+- Yaw-rate sweep = one continuous 180 deg pass at 3 deg/s then return to
+  heading; publish every tick, proportional ramp-down for accuracy.
+  CAVEAT: verify in SITL that the FCU honors yaw_rate; the per-leg timeout
+  makes failures loud. Fallback = AttitudeTarget if ignored.
+- New run command: ros2 launch sentinel_oda oda_live_test.launch.py
+  depth_source:=gazebo_depth  (default stays the ML pipeline).
+- Next live test expected: pause -> 180 deg sweep (~60 s) -> return to
+  heading -> wait for the next 0.8 m trigger (no more infinite re-sweeps).
+
+## Session 28 — 2026-08-16 (empty world bug AGAIN — fixed for real)
+
+### Situation
+- User: "the empty gazebo world bug is back...". Recurring symptom from
+  Sessions 18/19: world opens with 0 entities.
+
+### What I did
+- Diagnosed: found ONE orphaned `gz sim server` process (PID 30398, ruby,
+  cwd = world_sim/worlds) holding SITL plugin port 9002. Its argv is
+  literally `gz sim server` — NO world name — so the script's old
+  pkill -f "gz sim .*obstacle_course" could NEVER match it. That is why
+  the bug kept coming back despite the Session 19 fix.
+- Killed the orphan; verified no gz processes left, ports 9002/9003 free.
+- Confirmed the world file is fine (self-contained, absolute-path
+  sentinel_f450 include, no model://).
+- start_gazebo.sh hardened (both pre-start and cleanup trap):
+  + pkill -f "gz sim server" (catches the bare-argv server orphan)
+  + fuser -k 9002/udp 9003/udp (force-frees the SITL ports, whatever
+    holds them)
+  Kept the old obstacle_course pattern too (catches headless -s runs).
+- Verified: bash -n OK; headless `gz sim -s -r obstacle_course.sdf` loads
+  ALL entities (axes, ground, runway_strip, sentinel_f450, skyscraper),
+  binds 9002; test server killed afterwards, ports free, zero leftovers.
+
+### What I answered
+- Root cause: orphaned gz sim server whose argv omits the world name;
+  script now kills it by name + frees ports via fuser, pre-start and on
+  exit. If an empty world ever appears again, check
+  `pgrep -af 'gz sim'` first — anything running means a stale server is
+  stealing the ports before launching.
+
+## Session 29 — 2026-08-16 (altitude-plane trigger filter + HUD)
+
+### Situation
+- User: drone won't take off — suspicion: detection node sees the ground
+  and immediately switches mission→oda. Proposed fix: project a plane
+  level with the drone's altitude (not pitch/yaw) into the camera feed;
+  only obstacles a bit below/above that plane AND inside the detection box
+  can validate the trigger. Also asked to draw the detection box + the
+  plane (fine grid) onto the preview as a HUD.
+
+### What I did
+- Verified the camera geometry empirically (headless gz sim, gz.math7
+  pose composition, depth-image sampling): the sentinel_f450 depth camera
+  is forward-horizontal when the drone is level (horizon at image centre).
+  So camera = drone attitude, no static tilt. Confirmed gz SDF link+sensor
+  poses compose to identity.
+- detection_node.py:
+  - New altitude-plane filter (default ON). Every pixel's unit ray (built
+    once per image size, cached) is rotated by the MAVROS ENU quaternion;
+    a box pixel only counts if its 3D point is within
+    plane_band_below_m (2.0) .. plane_band_above_m (5.0) of the drone's
+    altitude. Ground = always ~altitude below the plane → never validates.
+  - min_trigger_altitude (3.0 m) gate: below it the ground IS the plane
+    (drone on/near the ground), so validation is fully suppressed during
+    takeoff. This is the piece the user's idea alone was missing.
+  - New params: plane_filter, plane_band_below_m, plane_band_above_m,
+    min_trigger_altitude, camera_pitch_offset_deg / camera_roll_offset_deg
+    (HUD calibration), show_hud, hud_rate.
+  - _pose_cb now stores full quaternion + ENU altitude; builds camera→ENU
+    rotation each pose update.
+  - HUD: subscribes /depth_node/depth_map_viz, publishes ~/hud_viz with:
+    green active trigger box, dashed-cyan mission registration band,
+    yellow altitude-plane perspective grid (lateral + depth lines, 1 px),
+    dashed-white band-edge lines, status text (state/threshold/alt/band/
+    closest depth/obstacle/consecutive/blocks). Optional pop-up window
+    (show_hud). Diagnostics now include plane-valid pixel count.
+- oda_live_test.launch.py: depth_node show_preview True→False (preview
+  moved to the detection HUD), detection_node got show_hud=True and the
+  plane-filter params.
+- Sign conventions: MAVROS pose quaternion is ENU (body = fwd/LEFT/up), so
+  pixel rays are (fwd, left, up) = (1, -u, -v)/norm; grid project() converts
+  ENU→body→camera (cam=(right,down,fwd)=(-by,-bz,bx)). Validated with
+  standalone numpy checks (level/pitch/roll/grid-line positions all exact).
+- Smoke-tested the node headlessly with a fake feeder: takeoff suppressed
+  (alt 0.5 → 0 consecutive), wall at 8 m at 20 m alt validated after 10
+  frames and latched through clear frames, sky never triggers, ~/hud_viz
+  published, HUD image visually verified (grid tilts with attitude).
+- Rebuilt sentinel_oda (colcon OK).
+
+### What I answered
+- The plane idea is right and will work, with one addition: while the
+  drone is standing on/very near the ground the ground is AT the plane
+  (only ~0.1-1 m below), so a pure band filter would still let the ground
+  trip the trigger during the first metres of climb → added the
+  min_trigger_altitude gate (no validation below 3 m).
+- The plane is world-level, but projecting it into the image still needs
+  the camera attitude (the horizon moves when the drone pitches) — taken
+  from /mavros/local_position/pose quaternion; no ML/tuned constants.
+- obstacle_info registration intentionally left unfiltered (Inner Map may
+  want full obstacle columns) — can filter later if wanted.
+- Next live test: run oda_live_test as usual; watch "Detection HUD" window
+  and the "plane filter: trigger suppressed (...)" + "plane-valid px" logs.
+  If the HUD grid does not sit on the real horizon, tune
+  camera_pitch_offset_deg / camera_roll_offset_deg.
+
+## Session 30 — 2026-08-16 (follow-up: is the plane filter the real thing?)
+
+### Situation
+- User questioned whether the implementation really does "project the
+  horizontal altitude plane into the camera and compare points against it".
+
+### What I did
+- Re-confirmed the equivalence: per-pixel h = d * r_z (ray up-component
+  rotated by the drone attitude) IS the check against the projected
+  altitude plane; pixels with r_z ~ 0 are the plane's image projection.
+  The HUD grid draws that same plane in perspective.
+- Noted the takeoff gate is min_trigger_altitude (3 m) instead of the
+  user's planned standby-delay.
+
+### What I answered
+- Yes, it's the same geometry per-pixel; the HUD grid is the visual
+  projection and can be checked against the horizon. Offered to add a
+  standby delay too if wanted (no code change made).
+
+## Session 31 — 2026-08-16 (4 follow-up items, minimal implementation)
+
+### Situation
+- User asked for 4 things: (1) the standby-timer idea instead of the
+  altitude gate so the drone can fly low, (2) obstacle_info only when the
+  obstacle is confirmed, (3) detection box vertically aligned with the
+  altitude plane (between the two HUD plane lines), (4) drone speed on the
+  HUD.  First attempt overengineered everything; user asked to delete all
+  changes from that session and redo it minimally.
+
+### What I did
+- Reverted this session's edits in detection_node.py, launch file,
+  context.md (kept all prior sessions' work: plane filter, HUD, sweep).
+- Minimal re-implementation in detection_node.py:
+  1. `standby_suppress_sec` (default 10 s) replaces the removed
+     `min_trigger_altitude` gate. `_state_cb` stores `_standby_since`
+     when leaving standby; the plane-filter block suppresses validation
+     while `now - _standby_since < standby_suppress_sec`. Timer, not
+     altitude → low-altitude flight allowed after expiry.
+  2. obstacle_info now published only when the obstacle is confirmed:
+     `if not blocks or not self._obstacle: return` (blocks extraction
+     unchanged, no plane-band filtering of blocks).
+  3. Box vertical centre shifted to the projected altitude plane row:
+     `cy = cy + focal_px * R_eff[2,0]/R_eff[2,2]` (clamped), so the box
+     sits between the two HUD plane band lines; horizontal centre
+     unchanged.
+  4. Subscribes /mavros/local_position/velocity_local (TwistStamped),
+     stores speed magnitude, new HUD line "speed X.X m/s".
+- oda_live_test.launch.py: added standby_suppress_sec=10.0 (removed
+  min_trigger_altitude); kept mavros_node --log-level mavros.param:=warn
+  (silences the "PR: got an unsolicited param value" INFO spam, item 5 of
+  the original request).
+- Rebuilt sentinel_oda. Headless smoke test passed (single node, wall at
+  8 m, 2 s grace, confirm_frames=3): obstacle stays False during grace,
+  obstacle_detected=True at T+2.21, first obstacle_info at T+2.27 (only
+  after confirmation), then info every frame. Launch file parses.
+- Note: earlier smoke tests were cross-contaminated because `kill $PID`
+  on `ros2 run` orphans the child node — always pkill -f the executable.
+
+### What I answered
+- All 4 items done with minimal diffs; mavros.param log spam silenced via
+  per-logger log level. Low-altitude flight is now possible after the
+  grace timer expires (tune standby_suppress_sec if the ground still trips
+  during takeoff).
+
+## Session — 2026-08-17 (sweep still not rotating — root cause found & fixed)
+
+### Situation
+- Live test (test_logs.txt): drone entered ODA, oda_maneuvers switched to
+  GUIDED and started the sweep, but legs 1/3 (+90°) and 2/3 (-90°) both
+  timed out at 75 s; leg 3 (+0.0°) "reached" instantly because the heading
+  never moved off ψ0 = 0.0. Drone hovered staring at the building.
+- The yaw-rate-only SET_POSITION_TARGET_LOCAL_NED command was being
+  ignored by the FCU (ArduCopter 4.8.0-dev, SITL).
+
+### What I did
+- Verified against ArduPilot master source (GCS_MAVLink_Copter.cpp):
+  handle_message_set_position_target_local_ned dispatches on the
+  pos/vel/acc ignore bits; when ALL THREE are masked it falls into the
+  final else -> copter.mode_guided.hold_position() and NEVER reads yaw or
+  yaw_rate. That is exactly why neither the old yaw-only nor the
+  yaw-rate-only command ever rotated the drone.
+- The working branch: position present + vel/acc masked + yaw present ->
+  set_pos_NED_m(..., use_yaw=true, ...) -> auto_yaw
+  set_yaw_angle_and_rate_rad -> ANGLE_RATE mode (0=North, CW+). Position
+  hold is kept by guided.
+- Verified mavros /mavros/local_position/pose is ENU (ned_enu transform in
+  local_position.cpp) -> converted to NED target pos (x=N=y_enu,
+  y=E=x_enu, z=D=-z_enu). Kept yaw_ned = pi/2 - yaw_enu.
+- Edited oda_maneuvers.py: _pose_cb now stores NED position;
+  _send_yaw_rate_setpoint replaced by _send_yaw_setpoint which publishes a
+  PositionTarget with type_mask = IGNORE_VX|VY|VZ|AFX|AFY|AFZ|YAW_RATE,
+  position = current NED position, yaw = commanded angle; the commanded
+  angle (_cmd_yaw_enu) is integrated each tick at
+  clamp(kp*err, ±sweep_rate_deg_s). Docstrings updated.
+- Rebuilt sentinel_oda (colcon build --packages-select sentinel_oda).
+
+### What I answered
+- The sweep never moved because ArduPilot drops pos/vel/acc-fully-masked
+  position targets outright — not a mavros or topic issue. Fix: always
+  send current position + yaw angle.
+- Next test: rerun oda_live_test; expect "Sweep leg 1/3: rotating to
+  +90.0 deg" then "Heading +90.0 deg reached" in ~30 s, leg 2 to -90° in
+  ~60 s, leg 3 return in ~30 s, and detection's "virtual box" depths to
+  change as the camera pans.

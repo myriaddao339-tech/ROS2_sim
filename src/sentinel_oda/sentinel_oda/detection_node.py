@@ -101,7 +101,7 @@ class DetectionNode(Node):
         self.declare_parameter("drone_height", 0.363)   # metres
         self.declare_parameter("box_margin", 0.2)       # metres, safety pad around the drone
         self.declare_parameter("camera_hfov_deg", 53.5) # horizontal FOV of the drone camera
-        self.declare_parameter("confirm_frames", 10)    # consecutive hits to validate a danger tile
+        self.declare_parameter("confirm_frames", 5)    # consecutive hits to validate a danger tile
         self.declare_parameter("min_block_px", 3)       # ignore near-pixel components smaller than this
         self.declare_parameter("median_window", 5)      # frames for closest_distance median
         self.declare_parameter("plane_filter", True)       # only obstacles near the drone's altitude plane count
@@ -135,6 +135,7 @@ class DetectionNode(Node):
         self._pitch_off = float(self.get_parameter("camera_pitch_offset_deg").value)
         self._roll_off = float(self.get_parameter("camera_roll_offset_deg").value)
         self._show_hud = bool(self.get_parameter("show_hud").value)
+        self._hud_seen = False  # window actually shown at least once (X-close detection)
         hud_rate = float(self.get_parameter("hud_rate").value)
 
         # ---- state ----
@@ -555,7 +556,21 @@ class DetectionNode(Node):
         self._hud_pub.publish(hud_msg)
         if self._show_hud:
             cv2.imshow("Detection HUD", img)
-            cv2.waitKey(1)
+            key = cv2.waitKey(1) & 0xFF
+            # The X button destroys the window and the next imshow would
+            # re-create it – detect that.  A freshly created window can
+            # report "not visible" for a few frames while the window
+            # manager maps it, so only honour the visibility check once
+            # the window has been seen visible at least once (q/ESC always).
+            visible = cv2.getWindowProperty("Detection HUD", cv2.WND_PROP_VISIBLE)
+            if visible >= 1.0:
+                self._hud_seen = True
+            if key in (ord("q"), 27) or (self._hud_seen and visible < 1.0):
+                cv2.destroyWindow("Detection HUD")
+                self._show_hud = False
+                self.get_logger().info(
+                    "HUD window closed – show_hud set to false"
+                )
 
     def _draw_hud(self, img):
         hud = self._hud

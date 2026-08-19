@@ -5,51 +5,55 @@ oda_maneuvers.py – the "scout": yaw-sweep probing in GUIDED mode.
 Runs on the drone.  Only operates while drone_state == "oda".
 
 Flow:
-  1. ODA entered -> this node switches the FCU to GUIDED mode (it owns that
-     switch) and the drone brakes to a position hold.
-  2. Once GUIDED is confirmed -> the scouting sweep starts.  The current
-     yaw (ψ0) is recorded and the drone rotates at `sweep_rate_deg_s`
-     (default 3 deg/s, so a 180 deg fan takes ~60 s) from ψ0+span/2 to
-     ψ0-span/2, then (by default) returns to ψ0.  The rotation is
-     commanded through the yaw field of SET_POSITION_TARGET_LOCAL_NED,
-     with the drone's CURRENT NED position carried in the same message
-     (position hold).  ArduPilot Copter drops commands whose position,
-     velocity AND acceleration bits are all masked (it calls
-     hold_position() without ever reading yaw or yaw_rate – verified in
-     4.8-dev GCS_MAVLink_Copter.cpp), so the position must be present.
-     The commanded yaw is ramped at the sweep rate; the rate is
-     proportional to the remaining error near the target, so the stop is
-     smooth and accurate, not a snap.
-  3. Sweep done -> the rate command stops and the node waits.  A fresh
-     rising edge on obstacle_detected (in ODA that is the 0.8 m threshold)
-     starts a new sweep.  Obstacles seen DURING a sweep never restart it.
-  4. Leaving ODA (mission resumed, emergency -> landing) -> all setpoints
-     stop immediately and the node resets.
+  1. ODA entered -> this node switches the FCU to GUIDED (it owns that
+     switch) and commands a zero-velocity body offset so the drone
+     brakes to a position hold for 10 s.
+  2. GUIDED confirmed + brake done -> the sweep runs as a sequence of
+     discrete yaw legs, one commanded every 5 s (`self.yaws`, popped
+     LIFO: +90 deg, four -45 deg steps across the 180 deg fan, then
+     +90 deg back to the start heading).  Each leg is a single
+     SET_POSITION_TARGET_LOCAL_NED command in FRAME_BODY_OFFSET_NED:
+     position (0, 0, 0) = hold the current spot, and the yaw field
+     carries a heading offset RELATIVE to the current heading (ArduPilot
+     sets yaw_relative = true for body frames – verified in
+     GCS_MAVLink_Copter.cpp).  The FCU holds the last commanded heading
+     between legs.
+  3. Sweep done -> ~/sweeping drops to False and the node waits for a
+     rising edge on obstacle_detected (0.8 m threshold between sweeps)
+     to command the next sweep leg.  Obstacles seen DURING a sweep are
+     discarded (no mid-sweep restarts).
+  4. Leaving ODA (mission resumed, emergency -> landing) -> the setpoint
+     stream stops immediately and the node resets; the FCU keeps holding
+     its last target until the other nodes take over.
 
-While sweeping, ~/sweeping = True is published; the Detection node uses it
-to run with the 10 m threshold during sweeps and the 0.8 m threshold
-between them.
+While sweeping, ~/sweeping = True is published; the Detection node uses
+it to run with the mission threshold (10 m, registration) during sweeps
+and the 0.8 m re-sweep threshold between them.
 
 Yaw bookkeeping:
-  - Heading is read from /mavros/local_position/pose with the standard
-    ENU-quaternion yaw formula (0 = East, CCW positive) – the same
-    convention detection_node uses for current_heading.
-  - Sweep offsets are applied in that ENU domain, so +90 deg = turn left.
-  - The yaw sent to the FCU is converted to the NED convention expected by
-    SET_POSITION_TARGET_LOCAL_NED:  yaw_ned = pi/2 - yaw_enu.
+  - The heading is read from /mavros/local_position/pose with the
+    standard ENU-quaternion formula (0 = East, CCW positive) and stored
+    in _yaw_enu, but the leg commands themselves use no absolute
+    headings – the FCU applies the relative offset itself.
+  - For the relative offset, positive = clockwise (turn right) in the
+    FCU's NED yaw convention.  The values in self.yaws are sent raw.
+  - _send_yaw_setpoint (deprecated, not called anymore) still documents
+    the older absolute-yaw recipe: current NED position + yaw_ned =
+    pi/2 - yaw_enu.
 
 Subscribes (absolute paths – these topics belong to other nodes):
   /drone_node/drone_state           – std_msgs/String (oda gate)
   /detection_node/obstacle_detected – std_msgs/Bool (re-sweep trigger)
-  /mavros/local_position/pose       – geometry_msgs/PoseStamped (yaw)
+  /mavros/local_position/pose       – geometry_msgs/PoseStamped (heading)
   /mavros/state                     – mavros_msgs/State (mode confirmation)
 
 Publishes:
-  /mavros/setpoint_raw/local – mavros_msgs/PositionTarget, current NED
-                               position + ramped yaw angle
-                               (coordinate_frame=1, velocity/accel/yaw_rate
-                               ignored, yaw used)
-  ~/sweeping                 – std_msgs/Bool, threshold selector for Detection
+  /mavros/setpoint_raw/local – mavros_msgs/PositionTarget: brake
+                               command (zero velocity) and leg commands
+                               (FRAME_BODY_OFFSET_NED, zero position
+                               offset + relative yaw offset)
+  ~/sweeping                 – std_msgs/Bool, threshold selector for
+                               Detection
 
 Service client:
   /mavros/set_mode           – mavros_msgs/SetMode -> custom_mode "GUIDED"
@@ -89,37 +93,28 @@ class OdaManeuvers(Node):
 
         # ---- parameters ----
         self.declare_parameter("tick_rate", 10.0)                 # Hz, state-machine tick
-        self.declare_parameter("sweep_rate_deg_s", 3.0)           # deg/s, sweep yaw rate (180 deg in 60 s)
-        self.declare_parameter("sweep_span_deg", 180.0)           # deg, total fan width of the sweep
-        self.declare_parameter("return_to_heading", True)         # rotate back to ψ0 after the fan
-        self.declare_parameter("sweep_rate_kp", 1.0)              # 1/s, proportional rate near the target
-        self.declare_parameter("yaw_tolerance_deg", 5.0)          # deg, "heading reached"
-        self.declare_parameter("leg_timeout_scale", 2.5)          # reach timeout = expected leg time × scale
         self.declare_parameter("mode_switch_retry_interval", 2.0) # s, SetMode backoff
 
         tick_rate = max(1.0, float(self.get_parameter("tick_rate").value))
         self._tick_period = 1.0 / tick_rate
-        self._rate_max = math.radians(max(0.1, float(self.get_parameter("sweep_rate_deg_s").value)))
-        self._span = math.radians(max(0.0, float(self.get_parameter("sweep_span_deg").value)))
-        self._return_to_psi0 = bool(self.get_parameter("return_to_heading").value)
-        self._rate_kp = max(0.05, float(self.get_parameter("sweep_rate_kp").value))
-        self._yaw_tol = math.radians(float(self.get_parameter("yaw_tolerance_deg").value))
-        self._timeout_scale = max(1.1, float(self.get_parameter("leg_timeout_scale").value))
         self._mode_retry_interval = float(self.get_parameter("mode_switch_retry_interval").value)
 
         # ---- state ----
         self._drone_state = "standby"
         self._yaw_enu = None           # None until the first pose message arrives
         self._fcu_mode = ""            # latest /mavros/state mode string
-        self._phase = "idle"           # idle | switching | sweeping | waiting
+        self._phase = "idle"           # idle | switching | breaking | sweeping | waiting
         self._mode_future = None       # pending SetMode(GUIDED) future
         self._mode_req_sent_at = None
         self._mode_retry_after = None
         self._break_sent = False       # breaking command sent
-        self._psi0 = 0.0               # yaw at sweep start (ENU domain)
+        self._psi0 = 0.0               # legacy – unused in the current leg-list sweep
         self.pi = math.pi              # pi constant for convenience
-        self._cmd_yaw_enu = 0.0        # commanded yaw (ENU), ramped at sweep rate
+        self._cmd_yaw_enu = 0.0        # next leg's yaw command (set in _do_sweep)
         self._pos_ned = None           # latest NED position (x=N, y=E, z=D)
+        # Sweep fan: relative heading offsets, one command per leg, popped
+        # LIFO – the sequence runs +90 deg, four -45 deg steps across the
+        # 180 deg fan, then +90 deg back to the start heading.
         self.yaws = [self.pi/2.0, -self.pi/4.0, 
                     -self.pi/4.0, -self.pi/4.0, 
                     -self.pi/4.0, self.pi/2.0] 
@@ -151,11 +146,7 @@ class OdaManeuvers(Node):
         self.create_timer(1.0 / tick_rate, self._tick)
 
         self.get_logger().info(
-            "ODA Maneuvers ready – position-hold yaw sweep: "
-            f"{math.degrees(self._span):.0f} deg fan at "
-            f"{math.degrees(self._rate_max):.1f} deg/s, "
-            f"tolerance {math.degrees(self._yaw_tol):.1f} deg, "
-            f"{'returning to ψ0' if self._return_to_psi0 else 'no return leg'}"
+            "ODA maneuvers node initialized - waiting for drone state 'oda' to start the yaw sweep"
         )
 
     # ==================================================================
@@ -204,6 +195,7 @@ class OdaManeuvers(Node):
 
     def _on_oda_enter(self):
         self._phase = "switching"
+        self._break_sent = False
         self._mode_future = None
         self._mode_req_sent_at = None
         self._mode_retry_after = None
@@ -237,12 +229,11 @@ class OdaManeuvers(Node):
         elif self._phase == "sweeping":
             self._do_sweep()
         elif self._phase == "waiting" and self._obstacle_edge:
-            if self._do_sweep():
-                self._obstacle_edge = False
-            else:
-                self.get_logger().warn(
-                    "No pose yet – cannot start sweep, will retry"
-                )
+            self._obstacle_edge = False
+            self._break_sent = False
+            self._phase = "breaking"
+            self._break_start_time = self.get_clock().now()
+            
 
     def _tick_switching(self):
         if self._fcu_mode == "GUIDED":
@@ -306,7 +297,7 @@ class OdaManeuvers(Node):
     # ==================================================================
 
     def _break_drone(self):
-        """Breaking sequence before starting the sweep"""
+        """Brake: one zero-velocity body command, then a 10 s hold."""
 
         if not self._break_sent:
             self._break_start_time = self.get_clock().now()
@@ -319,26 +310,33 @@ class OdaManeuvers(Node):
                 | PositionTarget.IGNORE_YAW_RATE
             )
             
+            # Zero velocity offset -> guided holds the current position.
+            # yaw is a relative offset for body frames, so 0.0 keeps the
+            # current heading.
             msg.velocity.x, msg.velocity.y, msg.velocity.z = 0.0, 0.0, 0.0
             msg.yaw = 0.0
             self._setpoint_pub.publish(msg)
-            self.get_logger().info(f"#####################################Breaking command sent !#####################################")
+            self.get_logger().info("Brake command sent – position hold for 10 s")
 
             self._break_sent = True
 
         if self.get_clock().now() - self._break_start_time < Duration(seconds=10.0):
-            return  # wait for the pose to finish
+            return  # wait out the 10 s brake hold
         
         self._phase = "sweeping"
         self._do_sweep()
         return True
 
     def _do_sweep(self) -> bool:
-        """Begin a sweep relative to the current yaw."""
+        """Command the next leg of the yaw fan, one leg per 5 s window.
+
+        Returns True after commanding a leg, falsy while waiting out the
+        5 s hold between legs (or once the fan is finished).
+        """
         self._publish_sweeping(True)
 
         if self.get_clock().now() - self._sweep_start_time < Duration(seconds=5.0):
-            return  # wait for the pose to finish
+            return  # wait out the 5 s leg hold
 
         if len(self.yaws) == 0:
             self._finish_sweep()
@@ -355,13 +353,15 @@ class OdaManeuvers(Node):
             | PositionTarget.IGNORE_YAW_RATE
         )
         
+        # BODY_OFFSET_NED: (0, 0, 0) position = hold the current spot.
+        # The yaw field is a heading offset relative to the current
+        # heading (ArduPilot sets yaw_relative for body frames);
+        # positive = clockwise (turn right).
         msg.position.x, msg.position.y, msg.position.z = 0.0, 0.0, 0.0
         msg.yaw = self._cmd_yaw_enu
         self._setpoint_pub.publish(msg)
-        self.get_logger().info(f"#####################################Published yaw setpoint !#####################################")
-
         self.get_logger().info(
-            f"Scouting ongoing, current leg: {self._cmd_yaw_enu}"
+            f"Sweep leg: commanded yaw offset {math.degrees(self._cmd_yaw_enu):+.0f} deg"
         )
         return True
 
@@ -372,45 +372,13 @@ class OdaManeuvers(Node):
                     -self.pi/4.0, self.pi/2.0]
         self._publish_sweeping(False)
         self.get_logger().info(
-            "Sweep complete – setpoints stopped, waiting for the next "
+            "Sweep complete – holding last heading, waiting for the next "
             "obstacle_detected trigger"
         )
 
     # ==================================================================
-    # Setpoint / helper publishers
+    # Helper publishers
     # ==================================================================
-
-    def _send_yaw_setpoint(self):
-        """
-        Publish a PositionTarget that holds the current position and asks
-        for a yaw angle.
-
-        ArduPilot Copter's handle_message_set_position_target_local_ned
-        treats a command whose position, velocity AND acceleration bits are
-        ALL masked as unsupported and calls hold_position() WITHOUT reading
-        yaw or yaw_rate (verified in 4.8-dev GCS_MAVLink_Copter.cpp) –
-        that is why the previous yaw-only and yaw-rate-only commands never
-        rotated the drone.  With the position bits present the FCU takes
-        the branch set_pos_NED_m(..., use_yaw=true, ...), which feeds the
-        yaw field into auto_yaw ANGLE_RATE mode (0 = North, positive = CW
-        in NED) while keeping the position hold active.
-        """
-        if self._pos_ned is None:
-            return
-        msg = PositionTarget()
-        msg.header.stamp = self.get_clock().now().to_msg()
-        msg.coordinate_frame = PositionTarget.FRAME_BODY_NED
-        msg.type_mask = (
-            PositionTarget.IGNORE_VX | PositionTarget.IGNORE_VY | PositionTarget.IGNORE_VZ
-            | PositionTarget.IGNORE_AFX | PositionTarget.IGNORE_AFY | PositionTarget.IGNORE_AFZ
-            | PositionTarget.IGNORE_YAW_RATE
-        )
-        
-        msg.position.x, msg.position.y, msg.position.z = self._pos_ned
-        # ENU yaw (0=East, CCW +) -> NED yaw (0=North, CW +): pi/2 - yaw.
-        msg.yaw = math.pi / 2.0 - self._cmd_yaw_enu
-        self._setpoint_pub.publish(msg)
-        self.get_logger().info(f"#####################################Published yaw setpoint !###################################")
 
     def _publish_sweeping(self, value: bool):
         self._sweeping_pub.publish(Bool(data=value))

@@ -25,8 +25,9 @@ pub struct ObstacleInfo {
     /// Horizontal width of the closest block (metres, margin-inflated).
     pub obstacle_width: f32,
 
-    /// Drone's current yaw heading (radians, 0 = North, positive = East) at the
-    /// moment the frame was captured.  Sourced from /mavros/local_position/pose.
+    /// Drone's current yaw heading (radians, ENU convention: 0 = East,
+    /// positive = counterclockwise toward North) at the moment the frame was
+    /// captured.  Sourced from /mavros/local_position/pose.
     pub current_heading: f32,
 
     /// Horizontal offset of the left edge of the closest block from the drone's

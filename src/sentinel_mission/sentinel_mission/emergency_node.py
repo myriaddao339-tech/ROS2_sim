@@ -50,6 +50,7 @@ class EmergencyNode(Node):
         self.create_subscription(String, "/drone_node/drone_state", self._drone_state_cb, 10)
         self.create_subscription(Header, "/depth_node/heartbeat", self._make_pc_hb_cb("depth"), 10)
         self.create_subscription(Header, "/detection_node/heartbeat", self._make_pc_hb_cb("detection"), 10)
+        self.create_subscription(Bool, "/inner_map/dead_end_detected", self._dead_end_cb, 10)
 
         # --- Publisher ---
         self._emergency_pub = self.create_publisher(Bool, "~/emergency", 10)
@@ -72,6 +73,8 @@ class EmergencyNode(Node):
         self.get_logger().info(
             f"Emergency node ready – battery < {self.battery_threshold*100:.0f}%, "
             f"heartbeat timeout {self.heartbeat_timeout}s"
+            f"PC nodes heartbeat timeout"
+            f"Inner map dead end triggered"
         )
 
     # ---- Callbacks ----
@@ -98,6 +101,7 @@ class EmergencyNode(Node):
             self.get_logger().error(
                 f"Heartbeat lost for {elapsed:.1f}s (timeout={self.heartbeat_timeout}s)"
             )
+            self.get_logger().info(f"It was the heartbeat from the fcu")
             self._activate_emergency()
             return
 
@@ -114,6 +118,7 @@ class EmergencyNode(Node):
                     self.get_logger().error(
                         f"PC node '{label}' heartbeat lost for {silent:.1f}s"
                     )
+                    self.get_logger().info(f"It was the heartbeat from the fcu")
                     self._activate_emergency()
                     return
 
@@ -130,6 +135,15 @@ class EmergencyNode(Node):
             msg_out.data = False
             self._emergency_pub.publish(msg_out)
 
+    def _dead_end_cb(self, msg: Bool):
+        """Inner Map cannot chart a safe path – emergency, like any other."""
+        if msg.data and not self.emergency_active:
+            self.get_logger().error(
+                "Dead end reported by Inner Map – activating emergency"
+            )
+            self.get_logger().info(f"It was the dead end")
+            self._activate_emergency()
+
     # ---- PC-node heartbeat tracking ----
     def _make_pc_hb_cb(self, name):
         """Return a callback that stamps the last heartbeat of a PC node."""
@@ -143,6 +157,7 @@ class EmergencyNode(Node):
     # ---- Emergency activation ----
     def _activate_emergency(self):
         """Start publishing emergency continuously."""
+        self.get_logger().info(f"####It has passed through _activate_emergency####")
         self.emergency_active = True
         self._publish_timer.reset()
         self.get_logger().error("EMERGENCY ACTIVATED")
@@ -155,6 +170,7 @@ class EmergencyNode(Node):
 
         msg = Bool()
         msg.data = True
+        self.get_logger().info(f"If it publishes without having passed through _activate_emergency, the issue is in the declaration of the timer !")
         self._emergency_pub.publish(msg)
 
         # Stop when drone enters landing state (emergency landing in progress)

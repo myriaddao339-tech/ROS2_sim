@@ -245,7 +245,10 @@ CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_introspection_c__pyext.dir/rosi
   rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.h \
   rosidl_generator_c/sentinel_oda_msgs/msg/rosidl_generator_c__visibility_control.h \
   rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__struct.h \
-  rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.h
+  rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__struct.h \
+  rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.h \
+  rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.h \
+  rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.h
 
 
 rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.h:
@@ -273,6 +276,8 @@ rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.h:
 /usr/include/python3.10/compile.h:
 
 /usr/include/python3.10/context.h:
+
+rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
 
@@ -305,6 +310,8 @@ rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.h:
 /usr/include/python3.10/cpython/initconfig.h:
 
 /usr/include/python3.10/traceback.h:
+
+rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.h:
 
 /usr/include/python3.10/cpython/picklebufobject.h:
 
@@ -437,6 +444,8 @@ rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.h:
 /usr/include/linux/errno.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
+
+rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__struct.h:
 
 /usr/include/python3.10/cpython/pytime.h:
 

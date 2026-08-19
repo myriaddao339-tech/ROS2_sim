@@ -243,6 +243,19 @@ def generate_launch_description():
         ],
     )
 
+    # ---- Inner Map node (drone-side planner: tile grid + A* path) ----
+    inner_map_node = Node(
+        package="sentinel_oda",
+        executable="inner_map",
+        name="inner_map",
+        output="screen",
+        parameters=[
+            {
+                "show_map": True,   # pop-up tile-map window (X/q/ESC to close)
+            }
+        ],
+    )
+
     # ---- enable the Gazebo camera stream ----------------
     # GstCameraPlugin only starts pushing MPEG-TS to udp://127.0.0.1:5600
     # after it receives enable_streaming=true (ardupilot_gazebo behaviour).
@@ -278,5 +291,6 @@ def generate_launch_description():
             oda_maneuvers_node,
             depth_node,
             detection_node,
+            inner_map_node,
         ]
     )

@@ -20,3 +20,10 @@ sentinel_mission/mission_loader.py
 sentinel_mission/mission_node.py
 sentinel_mission/proposal.py
 sentinel_mission/start_trigger.py
+sentinel_mission.egg-info/PKG-INFO
+sentinel_mission.egg-info/SOURCES.txt
+sentinel_mission.egg-info/dependency_links.txt
+sentinel_mission.egg-info/entry_points.txt
+sentinel_mission.egg-info/requires.txt
+sentinel_mission.egg-info/top_level.txt
+sentinel_mission.egg-info/zip-safe

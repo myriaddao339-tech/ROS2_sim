@@ -50,6 +50,7 @@ class EmergencyNode(Node):
         self.create_subscription(String, "/drone_node/drone_state", self._drone_state_cb, 10)
         self.create_subscription(Header, "/depth_node/heartbeat", self._make_pc_hb_cb("depth"), 10)
         self.create_subscription(Header, "/detection_node/heartbeat", self._make_pc_hb_cb("detection"), 10)
+        self.create_subscription(Bool, "/inner_map/dead_end_detected", self._dead_end_cb, 10)
 
         # --- Publisher ---
         self._emergency_pub = self.create_publisher(Bool, "~/emergency", 10)
@@ -129,6 +130,14 @@ class EmergencyNode(Node):
             msg_out = Bool()
             msg_out.data = False
             self._emergency_pub.publish(msg_out)
+
+    def _dead_end_cb(self, msg: Bool):
+        """Inner Map cannot chart a safe path – emergency, like any other."""
+        if msg.data and not self.emergency_active:
+            self.get_logger().error(
+                "Dead end reported by Inner Map – activating emergency"
+            )
+            self._activate_emergency()
 
     # ---- PC-node heartbeat tracking ----
     def _make_pc_hb_cb(self, name):

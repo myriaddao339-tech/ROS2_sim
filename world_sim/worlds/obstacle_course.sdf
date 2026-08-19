@@ -11,12 +11,15 @@
   along world +x to face the obstacles.
 
   Course layout (all distances along +x from spawn):
-    x = 200     single giant "skyscraper" block: 30 m wide (y -15..15),
-                50 m tall, front face at x = 199.  The drone cannot fly
-                over, under or around it - it MUST detect it and stop.
     WP1 x = 5   waypoint 1 (reached before the trigger range)
-    WP2 x = 550 waypoint 2, past the block (never reached once ODA takes
-                over)
+    x = 150     three-block wall spanning the WHOLE map width: original
+                30 m block (y -15..15) plus two long slabs (y 16.2..200
+                and -200..-16.2) with 1.2 m gaps (< 1.7 m, so the gap
+                tiles become danger tiles).  A* cannot get past it -
+                DEAD END scenario for the Inner Map.
+    WP2 x = 180 waypoint 2, just past the wall and INSIDE the +/-200 m
+                tile grid (the grid ends at x = 200, which is why the
+                wall and WP2 were moved west from the old x = 200/550)
 -->
 <sdf version="1.9">
   <world name="obstacle_course">
@@ -185,16 +188,14 @@
     </include>
 
     <!-- ============================================================ -->
-    <!-- x = 200: single giant block ("skyscraper") spanning the     -->
-    <!-- whole flight path: 30 m wide (y -15..15), 50 m tall, front   -->
-    <!-- face at x = 199.  The drone cannot fly over, under or around -->
-    <!-- it - it MUST detect it and stop.  Far enough from spawn that -->
-    <!-- the drone takes off and reaches WP1 (x = 5) long before the  -->
-    <!-- trigger range.                                               -->
+    <!-- x = 150: three-block wall spanning the full map width.       -->
+    <!-- Original 30 m block (y -15..15) + two long slabs with 1.2 m  -->
+    <!-- gaps (< 1.7 m -> danger tiles) covering y 16.2..200 and      -->
+    <!-- -200..-16.2.  No A* path can cross it: DEAD END scenario.    -->
     <!-- ============================================================ -->
     <model name="skyscraper">
       <static>1</static>
-      <pose>200 0 10 0 0 0</pose>
+      <pose>150 0 10 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
@@ -296,6 +297,132 @@
           <geometry>
             <box>
               <size>0.06 29.96 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.27 0.3 1</ambient>
+            <diffuse>0.25 0.27 0.3 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- north slab: y 16.2..200, 1.2 m gap to the original block -->
+    <model name="skyscraper_north">
+      <static>1</static>
+      <pose>150 108.1 10 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>2 183.8 50</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>2 183.8 50</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.55 0.58 0.62 1</ambient>
+            <diffuse>0.55 0.58 0.62 1</diffuse>
+            <specular>0.15 0.15 0.15 1</specular>
+          </material>
+        </visual>
+        <visual name="stripe_1">
+          <pose>-1.03 0 -6 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.06 183.76 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.27 0.3 1</ambient>
+            <diffuse>0.25 0.27 0.3 1</diffuse>
+          </material>
+        </visual>
+        <visual name="stripe_2">
+          <pose>-1.03 0 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.06 183.76 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.27 0.3 1</ambient>
+            <diffuse>0.25 0.27 0.3 1</diffuse>
+          </material>
+        </visual>
+        <visual name="stripe_3">
+          <pose>-1.03 0 6 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.06 183.76 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.27 0.3 1</ambient>
+            <diffuse>0.25 0.27 0.3 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- south slab: y -200..-16.2, 1.2 m gap to the original block -->
+    <model name="skyscraper_south">
+      <static>1</static>
+      <pose>150 -108.1 10 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>2 183.8 50</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>2 183.8 50</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.55 0.58 0.62 1</ambient>
+            <diffuse>0.55 0.58 0.62 1</diffuse>
+            <specular>0.15 0.15 0.15 1</specular>
+          </material>
+        </visual>
+        <visual name="stripe_1">
+          <pose>-1.03 0 -6 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.06 183.76 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.27 0.3 1</ambient>
+            <diffuse>0.25 0.27 0.3 1</diffuse>
+          </material>
+        </visual>
+        <visual name="stripe_2">
+          <pose>-1.03 0 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.06 183.76 0.8</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.25 0.27 0.3 1</ambient>
+            <diffuse>0.25 0.27 0.3 1</diffuse>
+          </material>
+        </visual>
+        <visual name="stripe_3">
+          <pose>-1.03 0 6 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>0.06 183.76 0.8</size>
             </box>
           </geometry>
           <material>

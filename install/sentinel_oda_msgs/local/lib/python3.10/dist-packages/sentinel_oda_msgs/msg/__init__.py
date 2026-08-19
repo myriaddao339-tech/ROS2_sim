@@ -1,2 +1,1 @@
-from sentinel_oda_msgs.msg._obstacle_block import ObstacleBlock  # noqa: F401
-from sentinel_oda_msgs.msg._obstacle_info import ObstacleInfo  # noqa: F401
+/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_py/sentinel_oda_msgs/msg/__init__.py

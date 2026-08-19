@@ -13,4 +13,12 @@ resource/sentinel_oda
 sentinel_oda/__init__.py
 sentinel_oda/depth_node.py
 sentinel_oda/detection_node.py
+sentinel_oda/inner_map.py
 sentinel_oda/oda_maneuvers.py
+sentinel_oda.egg-info/PKG-INFO
+sentinel_oda.egg-info/SOURCES.txt
+sentinel_oda.egg-info/dependency_links.txt
+sentinel_oda.egg-info/entry_points.txt
+sentinel_oda.egg-info/requires.txt
+sentinel_oda.egg-info/top_level.txt
+sentinel_oda.egg-info/zip-safe

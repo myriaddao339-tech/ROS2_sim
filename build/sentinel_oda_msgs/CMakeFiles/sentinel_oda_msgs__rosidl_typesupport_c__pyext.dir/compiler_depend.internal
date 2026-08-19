@@ -246,5 +246,8 @@ CMakeFiles/sentinel_oda_msgs__rosidl_typesupport_c__pyext.dir/rosidl_generator_p
  /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__type_support.h
  /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/rosidl_generator_c__visibility_control.h
  /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__struct.h
+ /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__struct.h
  /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_info__functions.h
+ /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__type_support.h
+ /home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_generator_c/sentinel_oda_msgs/msg/detail/obstacle_block__functions.h
 

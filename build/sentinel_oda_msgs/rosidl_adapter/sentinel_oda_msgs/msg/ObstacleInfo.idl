@@ -29,8 +29,9 @@ module sentinel_oda_msgs {
       float obstacle_width;
 
       @verbatim (language="comment", text=
-        "Drone's current yaw heading (radians, 0 = North, positive = East) at the" "\n"
-        "moment the frame was captured.  Sourced from /mavros/local_position/pose.")
+        "Drone's current yaw heading (radians, ENU convention: 0 = East," "\n"
+        "positive = counterclockwise toward North) at the moment the frame was" "\n"
+        "captured.  Sourced from /mavros/local_position/pose.")
       float current_heading;
 
       @verbatim (language="comment", text=

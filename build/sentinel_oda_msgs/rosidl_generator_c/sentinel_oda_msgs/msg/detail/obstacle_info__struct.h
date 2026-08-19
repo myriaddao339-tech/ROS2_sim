@@ -41,8 +41,9 @@ typedef struct sentinel_oda_msgs__msg__ObstacleInfo
   float closest_distance;
   /// Horizontal width of the closest block (metres, margin-inflated).
   float obstacle_width;
-  /// Drone's current yaw heading (radians, 0 = North, positive = East) at the
-  /// moment the frame was captured.  Sourced from /mavros/local_position/pose.
+  /// Drone's current yaw heading (radians, ENU convention: 0 = East,
+  /// positive = counterclockwise toward North) at the moment the frame was
+  /// captured.  Sourced from /mavros/local_position/pose.
   float current_heading;
   /// Horizontal offset of the left edge of the closest block from the drone's
   /// forward axis (metres, negative = left, margin-inflated).

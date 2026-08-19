@@ -24,6 +24,7 @@ setup(
             "depth_node = sentinel_oda.depth_node:main",
             "detection_node = sentinel_oda.detection_node:main",
             "oda_maneuvers = sentinel_oda.oda_maneuvers:main",
+            "inner_map = sentinel_oda.inner_map:main",
         ],
     },
 )

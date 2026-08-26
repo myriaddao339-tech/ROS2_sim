@@ -1,5 +1,50 @@
 # Sentinel V1 — ODA Package Development Log
 
+## Session — 2026-08-26 (greeting / image capability check)
+
+### Situation
+- User opened the session with a capability question: whether I can read images. No code involved.
+
+### What I did
+- Checked log.md per session rules; no edits to any source files.
+
+### What I answered
+- Yes — I can view image files (png/jpg/jpeg/gif/webp) attached to the workspace or passed in chat, useful for inspecting simulation screenshots, plots, or captured frames.
+
+## Session — 2026-08-24 (detection_node R_eff indexing)
+
+### Situation
+- User asked to confirm two claims about `_update_camera_rotation` / `_R_eff` in detection_node.py: (1) R is the rotation of the camera frame (ENU body axes) into world ENU; (2) `_R_eff[2,0]` is the "east" component of the camera's up axis. Explanation only; no code changed.
+
+### What I did
+- Re-read `_update_camera_rotation` (quat→DCM, R_pitch/R_roll mounts, `R_eff = R @ R_pitch @ R_roll`) plus `_body_dirs` / `_up_map` / `_draw_plane_grid` for the axis conventions.
+
+### What I answered
+- (1) Mostly yes: R is the standard ENU quaternion→DCM, body→world (columns = body fwd/left/up expressed in world E/N/U). But the camera optical frame is not the body frame — `_body_dirs` re-labels camera right/down/fwd to body −y/−z/+x — and camera→world is `R_eff` (includes mount offsets), not R. Also a proper rotation, not a projection.
+- (2) No. Row 2 = world UP (row 0 is East); column 0 = camera forward axis. So `_R_eff[2,0]` = Up component of the camera's FORWARD axis (nose-down → negative), which is exactly why it feeds the cy shift. "East component of camera up axis" = `_R_eff[0,2]`.
+
+## Session — 2026-08-20 (detection_node pinhole explanation)
+
+### Situation
+- Follow-up question on `detection_node.py` about two lines in `_depth_cb`: `focal_px = (w/2.0) / tan(hfov/2)` and the cy shift `cy += focal_px * R_eff[2,0]/R_eff[2,2]`. Explanation only; no code changed.
+
+### What I did
+- Explained both lines as pinhole geometry: fx computed from the horizontal FOV (edge pixel ↔ HFOV/2, assuming square pixels), and the cy shift as the row where the world-horizontal altitude plane crosses the image centre column (ray with zero ENU-up component, solving R20 − R22·v = 0).
+
+### What I answered
+- No edits. Verified the cy formula against the sign conventions: level flight → centre row; nose down (R20<0) → plane row above centre, matching expectations.
+
+## Session — 2026-08-20 (detection_node rotation question)
+
+### Situation
+- User asked about `_update_camera_rotation` in `src/sentinel_oda/sentinel_oda/detection_node.py`: given the standard x=pitch / y=roll convention for ENU, shouldn't the `R_pitch` (about y) and `R_roll` (about x) offset matrices be reversed? No code changed.
+
+### What I did
+- Reviewed the rotation code (lines ~255–265) and its sign conventions against the body-frame definitions and the comments. Answered with an explanation only; no edits.
+
+### What I answered
+- Not reversed. The x=pitch / y=roll mapping holds for WORLD ENU axes (east/north); the offset matrices rotate about the ENU BODY axes defined as x=forward, y=left, z=up, where pitch is rotation about the lateral (y) axis and roll about the longitudinal (x) axis. Verified signs: +po tips forward toward −z (down, camera tilted down) and +ro leans up toward −y (right side down), both matching the docstrings. Offsets are right-multiplied (body-frame mount corrections before the attitude quaternion), which is correct.
+
 ## Session — 2026-08-17
 
 ### Situation
@@ -1631,3 +1676,25 @@ Finally, one more warning of a bug that you also created last time, because I'm 
 - State machine was correct; the trigger came from the orphaned
   start_trigger.  Two fixes: clean stale stacks before launching, and the
   armed_once guard.  Awaiting go-ahead for the patch.
+
+## Session — 2026-08-19
+
+### Situation
+- User reviewing detection_node._pose_cb(); asked whether pose callbacks can receive None, comparing with old oda_maneuvers `_pose_ned is not None` checks.
+
+### What I did
+- Read detection_node _pose_cb and None-guard call sites (lines 309, 337–341, 415); confirmed fields init to None at lines 145–155.
+
+### What I answered
+- rclpy callbacks always get a valid msg (never None). Old oda_maneuvers checks guarded startup ("no pose yet"), not None messages. detection_node is equivalent: fields start None and consumers check before use.
+
+## Session — 2026-08-19 (Q: @ operator)
+
+### Situation
+- User asked what the `@` operator does in detection_node._update_camera_rotation().
+
+### What I did
+- Confirmed `R @ R_pitch @ R_roll` is NumPy matmul.
+
+### What I answered
+- `@` = matrix multiplication (np.matmul), composing attitude × pitch offset × roll offset into the camera→ENU rotation.

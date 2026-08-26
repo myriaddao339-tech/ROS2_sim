@@ -628,7 +628,7 @@ class DroneNode(Node):
     def _on_enter_oda(self, event):
         self._set_state("oda")
         self.get_logger().info("=== ODA: obstacle avoidance active ===")
-        self.get_logger().info("ODA package handles navigation; waiting for waypoint_reached...")
+        self.get_logger().info("ODA package handles obstacle detection and avoidance; handing over navigation; waiting for waypoint_reached...")
 
     # ==================================================================
     # STATE: landing

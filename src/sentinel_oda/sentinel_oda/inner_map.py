@@ -193,8 +193,7 @@ class InnerMap(Node):
             return
         if self._pose_ned is None:
             self.get_logger().warn(
-                "No pose yet – dropping obstacle_info",
-                throttle_duration_sec=5.0,
+                "No pose yet – dropping obstacle_info"
             )
             return
 
@@ -311,8 +310,7 @@ class InnerMap(Node):
             return
         if self._pose_ned is None or self._target_wp is None:
             self.get_logger().warn(
-                "Cannot plan yet – waiting for pose and target waypoint",
-                throttle_duration_sec=5.0,
+                "Cannot plan yet – waiting for pose and target waypoint"
             )
             return
 
@@ -489,7 +487,7 @@ class InnerMap(Node):
 
     def _request_waypoint_skip(self, reason: str):
         self.get_logger().warn(
-            f"Skipping waypoint – {reason}", throttle_duration_sec=5.0
+            f"Skipping waypoint – {reason}"
         )
         self._skip_pub.publish(Bool(data=True))
 

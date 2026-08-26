@@ -274,7 +274,7 @@ class DetectionNode(Node):
         try:
             depth = self._bridge.imgmsg_to_cv2(msg, desired_encoding="32FC1")
         except Exception as e:
-            self.get_logger().error(f"Bad depth map: {e}", throttle_duration_sec=5.0)
+            self.get_logger().error(f"Bad depth map: {e}")
             return
 
         h, w = depth.shape[:2]
@@ -287,10 +287,10 @@ class DetectionNode(Node):
             threshold = self._mission_thr if self._sweeping else self._oda_thr
         else:
             threshold = self._mission_thr
-        trigger_dist = threshold + self._depth_margin
+        trigger_dist = threshold - self._depth_margin
 
         # ---- obstacle_info registration: ALWAYS the mission threshold --
-        reg_dist = self._mission_thr + self._depth_margin
+        reg_dist = self._mission_thr - self._depth_margin
 
         # Pinhole model: each box is the drone silhouette (+ margin) as it
         # would appear at that box's threshold distance.
@@ -352,8 +352,7 @@ class DetectionNode(Node):
         if suppress_reason is not None:
             near = np.zeros_like(near)
             self.get_logger().info(
-                f"plane filter: trigger suppressed ({suppress_reason})",
-                throttle_duration_sec=2.0,
+                f"plane filter: trigger suppressed ({suppress_reason})"
             )
 
         found = bool(np.any(near))
@@ -367,8 +366,7 @@ class DetectionNode(Node):
             self.get_logger().info(
                 f"virtual box: closest depth = {closest_box:.2f} m "
                 f"(triggers below {trigger_dist:.1f} m, "
-                f"plane-valid px = {int(np.count_nonzero(near))})",
-                throttle_duration_sec=2.0,
+                f"plane-valid px = {int(np.count_nonzero(near))})"
             )
 
         # HUD snapshot for the overlay timer.
@@ -493,7 +491,7 @@ class DetectionNode(Node):
 
             block = ObstacleBlock()
             block.distance = dist
-            block.width = raw_width + 2.0 * self._box_margin
+            block.width = raw_width 
             block.left = left_m - self._box_margin
             blocks.append(block)
 

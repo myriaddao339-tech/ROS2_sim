@@ -24,13 +24,16 @@ from sentinel_mission.drone_node import DroneNode
 
 
 class Harness(Node):
-    def __init__(self):
+    def __init__(self, serve_param=True):
         super().__init__("drone_rtl_harness")
         self._state_pub = self.create_publisher(State, "/mavros/state", 10)
         # Ordered record of every MAVROS service call:
-        # ("param", param_id, integer_value) / ("mode", custom_mode)
+        # ("param", param_id, double_value) / ("mode", custom_mode)
         self.calls = []
-        self._param_srv = self.create_service(ParamSetV2, "/mavros/param/set", self._param_cb)
+        if serve_param:
+            self._param_srv = self.create_service(
+                ParamSetV2, "/mavros/param/set", self._param_cb
+            )
         self._mode_srv = self.create_service(SetMode, "/mavros/set_mode", self._mode_cb)
 
     def _param_cb(self, req, res):
@@ -106,11 +109,41 @@ def main():
     pump(ex, 1.0)
     ok &= expect(node._current_state == "landing",
                  f"still in landing after RTL confirmation (got {node._current_state})")
+    node.destroy_node()
+    h.destroy_node()
+
+    # ---- Scenario 2: param plugin denylisted (no /mavros/param/set).
+    # The RTL_ALT_M raise must be SKIPPED with a warning and the RTL
+    # switch must still happen (mav.parm preconfigures RTL_ALT_M = 100).
+    node2 = DroneNode()
+    node2._init_timer.cancel()
+    h2 = Harness(serve_param=False)
+    ex.add_node(node2)
+    ex.add_node(h2)
+    pump(ex, 0.5)
+
+    h2.set_fcu("GUIDED", armed=True)
+    pump(ex, 0.3)
+    node2._sm.set_state("mission")
+    node2.do_emergency()
+    # wait_for_service blocks ~2 s per attempt, so the step-0 skip (at
+    # elapsed > 3 s) and the step-1 RTL request need a few seconds.
+    pump(ex, 7.5)
+
+    ok &= expect(not any(c[0] == "param" for c in h2.calls),
+                 f"no ParamSetV2 call when the service is absent (calls: {h2.calls})")
+    ok &= expect(any(c[0] == "mode" and c[1] == "RTL" for c in h2.calls),
+                 f"RTL switch still requested (calls: {h2.calls})")
+
+    h2.set_fcu("RTL", armed=True)
+    pump(ex, 1.0)
+    ok &= expect(node2._current_state == "landing",
+                 f"landing completes without the param raise (got {node2._current_state})")
+    node2.destroy_node()
+    h2.destroy_node()
 
     print("RESULT:", "ALL PASS" if ok else "FAILURES")
     ex.shutdown()
-    node.destroy_node()
-    h.destroy_node()
     rclpy.shutdown()
     return 0 if ok else 1
 

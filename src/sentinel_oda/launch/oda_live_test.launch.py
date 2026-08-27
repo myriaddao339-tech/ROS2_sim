@@ -147,6 +147,14 @@ def generate_launch_description():
                     # project: unused, and its 10 s GET_HOME_POSITION poll
                     # triggers the mavros duplicate-ACK crash
                     "home_position",
+                    # mavros 2.14.0 param plugin crashes on ArduPilot's
+                    # double param-ACK (std::future_error: Promise already
+                    # satisfied, issue #2159; fixed only in 2.15.x, which
+                    # has no jammy binaries).  RTL_ALT_M is preconfigured
+                    # in mav.parm / mav_0_1.parm instead of being raised
+                    # at runtime; drone_node skips the raise when this
+                    # service is absent.
+                    "param",
                 ],
             },
         ],

@@ -278,6 +278,7 @@ rosidl_generator_c/sentinel_mission_msgs/srv/get_mission.h: /opt/ros/humble/shar
 rosidl_generator_c/sentinel_mission_msgs/srv/get_mission.h: /opt/ros/humble/share/geometry_msgs/msg/Vector3.idl
 rosidl_generator_c/sentinel_mission_msgs/srv/get_mission.h: /opt/ros/humble/share/geometry_msgs/msg/Vector3Stamped.idl
 rosidl_generator_c/sentinel_mission_msgs/srv/get_mission.h: /opt/ros/humble/share/geometry_msgs/msg/VelocityStamped.idl
+rosidl_generator_c/sentinel_mission_msgs/srv/get_mission.h: /opt/ros/humble/share/geometry_msgs/msg/VelocityWithCovarianceStamped.idl
 rosidl_generator_c/sentinel_mission_msgs/srv/get_mission.h: /opt/ros/humble/share/geometry_msgs/msg/Wrench.idl
 rosidl_generator_c/sentinel_mission_msgs/srv/get_mission.h: /opt/ros/humble/share/geometry_msgs/msg/WrenchStamped.idl
 rosidl_generator_c/sentinel_mission_msgs/srv/get_mission.h: /opt/ros/humble/share/sensor_msgs/msg/BatteryState.idl

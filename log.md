@@ -1913,3 +1913,54 @@ Finally, one more warning of a bug that you also created last time, because I'm 
 
 ### What I answered
 - The "hovering" was the landing step-0 failure (service API mismatch), not the waypoint logic — the oda -> landing switch itself was proven working in the log. Next live run should land: RTL_ALT_M raised to 100 m via ParamSetV2, then RTL switch.
+
+## Session — 2026-08-27 (mavros param plugin crashes on ParamSetV2 – denylisted)
+
+### Situation
+- New run: the whole ODA flight worked and oda -> landing fired, but the moment drone_node sent ParamSetV2(RTL_ALT_M) mavros aborted: "terminate called after throwing an instance of 'std::future_error' / Promise already satisfied" (SIGABRT, exit -6), mavros respawned, drone disarmed -> standby. User: "still not working", pointed at the future_error lines and asked to take inspiration from the takeoff crash (which we fixed by denylisting home_position).
+
+### What I did
+- Root cause: same duplicate-ACK mavros bug class as the takeoff home_position crash. ArduPilot ACKs a param set twice (targeted ack + param-change broadcast) and mavros' param plugin fulfills its std::promise twice -> std::future_error -> terminate. Not fixable from our side; the plugin must not be called.
+- oda_live_test.launch.py: added "param" to plugin_denylist (with comment) – same treatment as home_position.
+- mav.parm + mav_0_1.parm: RTL_ALT_M 15 -> 100 (SITL preconfiguration replaces the runtime raise).
+- drone_node.py _step_set_rtl_alt: when the ParamSetV2 service is absent (denylisted), skip the raise with a warning after 3 s and proceed to the RTL switch (step 1) instead of force_standby. The service-present path (and its 20 s failure window) is unchanged.
+- test_drone_rtl_alt.py: Harness gets serve_param flag; new scenario 2 asserts: no ParamSetV2 call when the service is absent, RTL switch still requested, landing completes. ALL PASS. test_oda_wp_completion.py still ALL PASS. colcon build sentinel_mission + sentinel_oda clean.
+
+### What I answered
+- Explained the mavros-side promise race (double ACK) and the denylist fix mirroring the takeoff home_position solution. Landing now: skip the raise (param preconfigured to 100 m in the parm files) -> RTL switch -> land. Caveat: if the SITL is started without the repo parm files, set RTL_ALT_M once in MAVProxy (param set RTL_ALT_M 100) so the RTL return path stays above the wall.
+
+## Session — 2026-08-27 (post-crash integrity check + mavros 2.15.1 research; NO implementation)
+
+### Situation
+- User's PC crashed while a mavros source build was running (the previous session had found an online solution to the "impossible to change a param mid-flight" claim and started building). User asked to (1) check nothing is broken and (2) redo the online research WITHOUT implementing, just report.
+
+### What I did (integrity check)
+- Main ROS2_sim workspace: colcon build clean (6 packages, 7.6 s). ALL 8 test scripts pass (drone_rtl_alt, oda_wp_completion, guided_node, detection_cooldown, smoke_inner_map, tile_decay, yaw_sync, extract_blocks, wall_smear).
+- Uncommitted working-tree changes from the crashed session, all consistent + tested: drone_node.py (ParamSetV2 absent -> warn after 3 s -> proceed to RTL switch; docstring notes "mavros >= 2.15.1 guards the duplicate-ACK double-set") and test_drone_rtl_alt.py (scenario 2, serve_param=False). CAUTION FOUND: oda_live_test.launch.py is back at HEAD state — "param" is NOT in plugin_denylist anymore (log.md's earlier denylist edit is gone; apparently reverted by the crashed session to prepare for the 2.15.1 upgrade). With system mavros 2.14.0 still installed, running landing NOW would call ParamSetV2 and crash mavros again — the workspace is mid-migration, treat as not-flight-ready until a decision is made.
+- ~/mavros_ws: src = clean checkout at tag 2.15.1. Build interrupted at ~65% of mavros_plugins (geofence.cpp); libmavconn (rc 0) and mavros_msgs (rc 0) finished. install/ has libmavconn + mavros_msgs but NOT mavros. No stale colcon locks (uv.lock is a repo file). NOT sourced in .bashrc -> inert, cannot affect runtime. Resumable with a plain colcon build.
+- System apt mavros 2.14.0: dpkg -V clean, untouched, still the one used at runtime.
+- setuptools = 79.0.1 -> the user's rollback was applied; the build alias (colcon --symlink-install) should work again.
+
+### What I found online (researched, NOT implemented)
+- The crash = mavros issue #2159 "Promise already satisfied" (param plugin), fixed by PR #2093 "Fix: Race condition in param plugin" (alexbennett, merged Feb 5, milestone 2.15): atomic completed flag guarding both promise.set_value() sites in param.cpp. Verified the guard is present in the local 2.15.1 checkout. Mid-flight param changes ARE possible — 2.14.0's plugin was simply buggy.
+- Bonus: PR #2160 (also in 2.15.0) fixes the SAME std::future_error double-promise crash in command.cpp (try/catch promise_already_satisfied) — the bug class behind our home_position denylist too.
+- No prebuilt 2.15.x for jammy yet (apt candidate = 2.14.0) -> source build is the only upgrade path.
+- Alternatives checked: (a) don't change params mid-flight at all — RTL_ALT_M=100 already preconfigured in mav.parm/mav_0_1.parm, MAVProxy one-shot; (b) pymavlink script over UDP sending PARAM_SET directly to the FCU, bypassing mavros; (c) keep "param" denylisted + drone_node skip fallback; (d) MAV_CMD_DO_SET_PARAMETER via mavros command plugin — verified NOT supported by ArduPilot (no handler anywhere in the tree) -> dead end; (e) backport PR #2093's 3-line guard into a 2.14.0 source build (same effort, old API).
+- PR author caveat: with the fix, on timeout the service can report failure although the param actually got set (benign race, no crash).
+
+### What I answered
+- Nothing broken in the main workspace (build + tests green); the only real hazard is the missing "param" denylist while mavros 2.14.0 is still installed -> don't fly until one option is chosen. Options presented: resume the 2.15.1 build (a few minutes, then use it at runtime), or re-add "param" to the denylist and rely on the preconfigured RTL_ALT_M. Awaiting the user's choice before touching anything.
+
+## Session — 2026-08-27 (Option B implemented: param denylisted again, stay on 2.14.0)
+
+### Situation
+- User chose Option B: stay on the apt mavros 2.14.0, re-denylist the param plugin, rely on preconfigured RTL_ALT_M. No 2.15.1 source build for now (~/mavros_ws left untouched, inert).
+
+### What I did
+- oda_live_test.launch.py: re-added "param" to plugin_denylist (with a comment: 2.14.0 crashes on ArduPilot's double param-ACK, issue #2159; fixed only in 2.15.x which has no jammy binaries; RTL_ALT_M preconfigured in the parm files; drone_node skips the raise when the service is absent). Verified in install/ after rebuild.
+- drone_node.py: docstring of _step_set_rtl_alt updated to match Option B (plugin denylisted BY DESIGN; service-present path kept for a future >= 2.15.1 upgrade). No logic changes.
+- CAUGHT: mav.parm + mav_0_1.parm still had RTL_ALT_M = 15.000000 — the earlier "15 -> 100" edit was ALSO lost in the crash. Restored both to 100.000000 (15 m barely clears the 8 m wall on the RTL return path).
+- colcon build sentinel_oda + sentinel_mission clean; test_drone_rtl_alt ALL PASS (both scenarios), test_oda_wp_completion ALL PASS.
+
+### What I answered
+- Option B is now complete and flight-ready for the landing path: launch denylists "param" -> /mavros/param/set never appears -> drone_node warns after 3 s and proceeds to the RTL switch -> FCU uses RTL_ALT_M=100 from the parm files. Reminder for live runs: the SITL must be started with the repo parm files, otherwise set RTL_ALT_M once in MAVProxy.

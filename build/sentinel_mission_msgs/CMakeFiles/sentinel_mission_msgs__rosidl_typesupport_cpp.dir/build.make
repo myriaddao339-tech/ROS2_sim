@@ -271,6 +271,7 @@ rosidl_typesupport_cpp/sentinel_mission_msgs/srv/get_mission__type_support.cpp: 
 rosidl_typesupport_cpp/sentinel_mission_msgs/srv/get_mission__type_support.cpp: /opt/ros/humble/share/geometry_msgs/msg/Vector3.idl
 rosidl_typesupport_cpp/sentinel_mission_msgs/srv/get_mission__type_support.cpp: /opt/ros/humble/share/geometry_msgs/msg/Vector3Stamped.idl
 rosidl_typesupport_cpp/sentinel_mission_msgs/srv/get_mission__type_support.cpp: /opt/ros/humble/share/geometry_msgs/msg/VelocityStamped.idl
+rosidl_typesupport_cpp/sentinel_mission_msgs/srv/get_mission__type_support.cpp: /opt/ros/humble/share/geometry_msgs/msg/VelocityWithCovarianceStamped.idl
 rosidl_typesupport_cpp/sentinel_mission_msgs/srv/get_mission__type_support.cpp: /opt/ros/humble/share/geometry_msgs/msg/Wrench.idl
 rosidl_typesupport_cpp/sentinel_mission_msgs/srv/get_mission__type_support.cpp: /opt/ros/humble/share/geometry_msgs/msg/WrenchStamped.idl
 rosidl_typesupport_cpp/sentinel_mission_msgs/srv/get_mission__type_support.cpp: /opt/ros/humble/share/sensor_msgs/msg/BatteryState.idl

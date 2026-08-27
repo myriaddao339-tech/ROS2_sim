@@ -669,15 +669,24 @@ class DroneNode(Node):
             self._step_switch_rtl(elapsed)
 
     def _step_set_rtl_alt(self, elapsed):
-        """Step 0: set RTL_ALT_M to rtl_altitude_m before the RTL switch."""
+        """Step 0: raise RTL_ALT_M to rtl_altitude_m before the RTL switch.
+
+        The param plugin is DENYLISTED at launch (mavros 2.14.0 crashes on
+        ArduPilot's double param-ACK, issue #2159), so the service is absent
+        by design and RTL_ALT_M is preconfigured in the parm files.  Skip
+        with a warning and carry on with the FCU's current RTL_ALT_M instead
+        of stranding the drone in a hover.  The service-present path is kept
+        for a future mavros upgrade (>= 2.15.1 guards the double-ACK)."""
         if not self._param_ok:
             if self._param_future is None:
                 if not self._param_cli.wait_for_service(timeout_sec=2.0):
-                    if elapsed > 20.0:
-                        self.get_logger().error(
-                            "ParamSet service unavailable – cannot raise RTL altitude"
+                    if elapsed > 3.0:
+                        self.get_logger().warn(
+                            "ParamSetV2 service unavailable – skipping the "
+                            "RTL_ALT_M raise, carrying on with the FCU's "
+                            "current RTL_ALT_M"
                         )
-                        self._force_standby()
+                        self._landing_step = 1
                     return
 
                 req = ParamSetV2.Request()

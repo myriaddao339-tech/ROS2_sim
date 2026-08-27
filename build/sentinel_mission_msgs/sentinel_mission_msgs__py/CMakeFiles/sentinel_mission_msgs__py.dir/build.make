@@ -282,6 +282,7 @@ rosidl_generator_py/sentinel_mission_msgs/_sentinel_mission_msgs_s.ep.rosidl_typ
 rosidl_generator_py/sentinel_mission_msgs/_sentinel_mission_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/geometry_msgs/msg/Vector3.idl
 rosidl_generator_py/sentinel_mission_msgs/_sentinel_mission_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/geometry_msgs/msg/Vector3Stamped.idl
 rosidl_generator_py/sentinel_mission_msgs/_sentinel_mission_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/geometry_msgs/msg/VelocityStamped.idl
+rosidl_generator_py/sentinel_mission_msgs/_sentinel_mission_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/geometry_msgs/msg/VelocityWithCovarianceStamped.idl
 rosidl_generator_py/sentinel_mission_msgs/_sentinel_mission_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/geometry_msgs/msg/Wrench.idl
 rosidl_generator_py/sentinel_mission_msgs/_sentinel_mission_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/geometry_msgs/msg/WrenchStamped.idl
 rosidl_generator_py/sentinel_mission_msgs/_sentinel_mission_msgs_s.ep.rosidl_typesupport_fastrtps_c.c: /opt/ros/humble/share/sensor_msgs/msg/BatteryState.idl

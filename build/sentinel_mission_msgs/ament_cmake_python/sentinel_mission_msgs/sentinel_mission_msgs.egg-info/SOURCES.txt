@@ -4,3 +4,5 @@ sentinel_mission_msgs.egg-info/PKG-INFO
 sentinel_mission_msgs.egg-info/SOURCES.txt
 sentinel_mission_msgs.egg-info/dependency_links.txt
 sentinel_mission_msgs.egg-info/top_level.txt
+sentinel_mission_msgs/srv/__init__.py
+sentinel_mission_msgs/srv/_get_mission.py

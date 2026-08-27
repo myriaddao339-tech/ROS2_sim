@@ -8,13 +8,18 @@ Responsibilities:
   3. Subscribe to /mavros/mission/reached and publish waypoint_reached
      (once per waypoint) or mission_finished (continuous at 2 Hz until
      drone_state becomes "landing").
-  4. Subscribe to drone_state to know when to stop publishing triggers.
+  4. During ODA the FCU is in GUIDED mode and never reports "reached",
+     so waypoint completion is detected by drone position: within
+     oda_wp_reach_radius of the current target waypoint (last waypoint
+     -> mission_finished, intermediate -> waypoint_reached).
+  5. Subscribe to drone_state to know when to stop publishing triggers.
 """
 
 import math
 import os
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 from std_msgs.msg import Bool, Int32, String
 from geometry_msgs.msg import PoseStamped
 from mavros_msgs.msg import WaypointReached
@@ -32,6 +37,7 @@ class MissionNode(Node):
         self.declare_parameter("ekf_origin_lat", 0.0)   # deg, defaults to the plan home
         self.declare_parameter("ekf_origin_lon", 0.0)   # deg, defaults to the plan home
         self.declare_parameter("ekf_origin_alt", 0.0)   # m AMSL, defaults to the plan home
+        self.declare_parameter("oda_wp_reach_radius", 10.0)  # m, horizontal – waypoint "reached" while in ODA
         mission_file = self.get_parameter("mission_file_path").get_parameter_value().string_value
 
         # --- Parse the mission file ---
@@ -56,6 +62,14 @@ class MissionNode(Node):
         self.drone_state = "standby"
         self.create_subscription(String, "/drone_node/drone_state", self._drone_state_cb, 10)
 
+        # --- Drone position for ODA waypoint arrival (during ODA the FCU
+        #     is in GUIDED mode, so /mavros/mission/reached never fires) ---
+        self._oda_reach_r = max(0.5, float(self.get_parameter("oda_wp_reach_radius").value))
+        self._pose_ned = None        # (x=N, y=E, z=D) from /mavros/local_position/pose
+        self.create_subscription(
+            PoseStamped, "/mavros/local_position/pose", self._pose_cb, qos_profile_sensor_data
+        )
+
         # --- Subscribe to waypoint_skip from Inner Map ---
         self._skip_prev = False
         self.create_subscription(Bool, "/inner_map/waypoint_skip", self._waypoint_skip_cb, 10)
@@ -73,6 +87,10 @@ class MissionNode(Node):
         # Timer to republish mission_finished at 2 Hz while active
         self._mission_finished_timer = self.create_timer(0.5, self._republish_mission_finished)
         self._mission_finished_timer.cancel()  # start disabled
+
+        # Republish target_waypoint at 1 Hz while flying so late-joining
+        # subscribers (Inner Map) never miss the current target.
+        self._target_timer = self.create_timer(1.0, self._republish_target)
 
         self.get_logger().info(
             f"Mission node ready – {self.total_waypoints} waypoints loaded"
@@ -117,7 +135,7 @@ class MissionNode(Node):
             z = -alt                   # relative-altitude frames (AGL)
         return d_north, d_east, z
 
-    def _publish_target_waypoint(self):
+    def _publish_target_waypoint(self, log=True):
         """Publish the current target waypoint to Inner Map (local NED)."""
         if not self.mission_waypoints or self.target_index >= self.total_waypoints:
             return
@@ -130,10 +148,70 @@ class MissionNode(Node):
         msg.pose.position.y = y
         msg.pose.position.z = z
         self._target_wp_pub.publish(msg)
-        self.get_logger().info(
-            f"Published target_waypoint {self.target_index}: "
-            f"NED ({x:.1f}, {y:.1f}, {z:.1f})"
-        )
+        if log:
+            self.get_logger().info(
+                f"Published target_waypoint {self.target_index}: "
+                f"NED ({x:.1f}, {y:.1f}, {z:.1f})"
+            )
+
+    def _republish_target(self):
+        """Timer callback: keep target_waypoint alive while flying, and in
+        ODA also detect waypoint arrival by position (the FCU is in GUIDED
+        mode there, so its own "reached" reports never come)."""
+        if self.drone_state in ("mission", "oda"):
+            self._publish_target_waypoint(log=False)
+        if self.drone_state == "oda":
+            self._check_oda_waypoint_reached()
+
+    def _check_oda_waypoint_reached(self):
+        """Position-based waypoint completion during ODA.
+
+        The ODA package flies the drone itself in GUIDED mode, so the FCU
+        mission never reports the waypoint as reached.  When the drone
+        comes within oda_wp_reach_radius of the current target waypoint,
+        declare it reached: intermediate -> publish waypoint_reached once
+        (drone_node resumes the mission); last -> publish mission_finished
+        (drone_node switches to landing).
+        """
+        if self._publishing_mission_finished:
+            return
+        if self._pose_ned is None or not self.mission_waypoints:
+            return
+        if self.target_index >= self.total_waypoints:
+            return
+        wx, wy, _ = self._wp_to_local_ned(self.mission_waypoints[self.target_index])
+        nx, ny, _ = self._pose_ned
+        if math.hypot(wx - nx, wy - ny) > self._oda_reach_r:
+            return
+        seq = self.target_index
+        if seq >= self.total_waypoints - 1:
+            # Last waypoint reached during ODA -> mission finished.  The
+            # 2 Hz timer keeps it alive until drone_state == "landing".
+            self.get_logger().info(
+                f"Last waypoint {seq} reached during ODA (position check) – "
+                "publishing mission_finished"
+            )
+            self._publishing_mission_finished = True
+            self._mission_finished_timer.reset()
+        else:
+            # Intermediate waypoint -> one-shot waypoint_reached, exactly
+            # like the FCU path.  Record the seq so the FCU's later
+            # duplicate report (after AUTO resumes) is dropped.
+            self.get_logger().info(
+                f"Waypoint {seq} reached during ODA (position check)"
+            )
+            self.last_reached_index = seq
+            msg_out = Int32()
+            msg_out.data = seq
+            self._wp_reached_pub.publish(msg_out)
+            self.target_index = seq + 1
+            self._publish_target_waypoint()
+
+    def _pose_cb(self, msg: PoseStamped):
+        """MAVROS local pose (ENU) -> NED (x=N, y=E, z=D) for the ODA
+        waypoint-arrival check."""
+        p = msg.pose.position
+        self._pose_ned = (float(p.y), float(p.x), float(-p.z))
 
     def _waypoint_skip_cb(self, msg: Bool):
         """Inner Map asks to skip the current target (one skip per edge)."""

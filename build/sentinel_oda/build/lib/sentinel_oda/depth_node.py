@@ -230,6 +230,7 @@ class DepthNode(Node):
         # device path / video file.
         self._is_gz_depth = video_source == "gazebo_depth"
         self._gz_depth = None      # newest native depth frame (H×W float32)
+        self._gz_arrival_t = None  # wall-clock time the frame arrived (≈ capture)
         if self._is_gz_depth:
             self._cap = None
             self._model = None
@@ -348,8 +349,7 @@ class DepthNode(Node):
             dtype = np.float32
         else:
             self.get_logger().warn(
-                f"Unexpected gz depth pixel format {fmt} – expecting R_FLOAT32",
-                throttle_duration_sec=10.0,
+                f"Unexpected gz depth pixel format {fmt} – expecting R_FLOAT32"
             )
             return
         try:
@@ -358,20 +358,28 @@ class DepthNode(Node):
             )
         except ValueError as e:
             self.get_logger().error(
-                f"Depth frame size mismatch: {e}", throttle_duration_sec=5.0
+                f"Depth frame size mismatch: {e}"
             )
             return
         self._gz_depth = arr.astype(np.float32, copy=False)
+        self._gz_arrival_t = time.time()  # ≈ frame capture time (wall clock)
 
     def _gz_depth_timer_cb(self):
         """Republish the newest native depth frame (no ML inference)."""
         if self._gz_depth is None:
             self.get_logger().warn(
-                "No depth frame from Gazebo yet – is the depth camera rendering?",
-                throttle_duration_sec=5.0,
+                "No depth frame from Gazebo yet – is the depth camera rendering?"
             )
             return
-        self._publish_depth(self._gz_depth, self.get_clock().now().to_msg())
+        # Stamp with the frame's ARRIVAL time, not "now": Detection looks
+        # up the drone's yaw at this time, so blocks are painted at the
+        # heading the camera actually had when the frame was captured.
+        stamp = self.get_clock().now().to_msg()
+        if self._gz_arrival_t is not None:
+            t = self._gz_arrival_t
+            stamp.sec = int(t)
+            stamp.nanosec = int((t - int(t)) * 1e9)
+        self._publish_depth(self._gz_depth, stamp)
 
     # ==================================================================
     # Callbacks
@@ -418,14 +426,13 @@ class DepthNode(Node):
 
         if not ret or frame is None:
             self._infer_busy = False
-            self.get_logger().warn("Failed to retrieve frame from video stream", throttle_duration_sec=5.0)
+            self.get_logger().warn("Failed to retrieve frame from video stream")
             return
 
         # frame is BGR (OpenCV default) – convert to RGB for the model
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         self.get_logger().info(
-            f"Running inference on {rgb.shape[1]}x{rgb.shape[0]} frame…",
-            throttle_duration_sec=5.0,
+            f"Running inference on {rgb.shape[1]}x{rgb.shape[0]} frame…"
         )
 
         # ---- run inference ----
@@ -434,10 +441,10 @@ class DepthNode(Node):
             depth = self._model.infer(rgb)
         except Exception as e:
             self._infer_busy = False
-            self.get_logger().error(f"Inference failed: {e}", throttle_duration_sec=5.0)
+            self.get_logger().error(f"Inference failed: {e}")
             return
         dt = (self.get_clock().now() - t0).nanoseconds / 1e9
-        self.get_logger().info(f"Inference done in {dt:.2f}s", throttle_duration_sec=5.0)
+        self.get_logger().info(f"Inference done in {dt:.2f}s")
 
         # ---- publish raw depth map + viz + preview ----
         self._publish_depth(depth, self.get_clock().now().to_msg())

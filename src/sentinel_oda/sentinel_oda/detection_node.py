@@ -30,7 +30,11 @@ optional live window (show_hud) turns it into a cockpit-style HUD.
 
 Once an obstacle is validated (confirm_frames consecutive hits) it is
 NEVER cleared while the drone stays in mission/oda state – validation is
-one-way.  On every frame the node also segments the near-threshold pixels
+one-way.  After a scout sweep ends the trigger is additionally kept
+silent for post_sweep_cooldown_sec: the drone is normally still close
+to the obstacle it just swept, and without the cooldown the fresh
+re-sweep threshold would immediately re-arm the sweep instead of
+letting GUIDED fly the path away.  On every frame the node also segments the near-threshold pixels
 into obstacle "blocks" (see ObstacleBlock.msg): clusters separated by a
 gap the drone could fly through become separate blocks, so two obstacles
 side by side are reported individually with their own width and left edge
@@ -69,10 +73,21 @@ IMPORTANT: the depth map must be METRIC (Depth Anything V2 Metric-Outdoor).
 A relative depth map cannot be compared against metre thresholds.
 """
 
+# possible culprits for why there are too many danger tiles:
+
+# The unvalidation should not be through: danger_decay_timeout as it cancels the whole point of the memorized inner map that is supposed to remember where obstacles are. Forget the unvalidation for now.
+
+
+# Turns out the biggest contributing factor to the smear is tile_safe_radius, reduce it and the smear is less exagerated.
+
+# If all else fails, let's apply proven real world SLAM techniques
+
 import math
 from collections import deque
+import time
 
 import rclpy
+from rclpy.duration import Duration
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 
@@ -95,7 +110,7 @@ class DetectionNode(Node):
 
         # ---- parameters ----
         self.declare_parameter("mission_obstacle_threshold", 10.0)  # metres, mission state
-        self.declare_parameter("oda_obstacle_threshold", 0.80)      # metres, oda state
+        self.declare_parameter("oda_obstacle_threshold", 4.5)      # metres, oda state
         self.declare_parameter("depth_margin", 0.5)     # metres added to the threshold (model error)
         self.declare_parameter("drone_width", 0.363)    # metres
         self.declare_parameter("drone_height", 0.363)   # metres
@@ -108,11 +123,14 @@ class DetectionNode(Node):
         self.declare_parameter("plane_band_below_m", 2.0)  # m below the plane still accepted
         self.declare_parameter("plane_band_above_m", 5.0)  # m above the plane still accepted
         self.declare_parameter("standby_suppress_sec", 10.0)  # seconds of suppressed validation after leaving standby (takeoff grace)
+        self.declare_parameter("post_sweep_cooldown_sec", 10.0)  # seconds the trigger stays silent after a sweep ends (lets GUIDED fly away)
         self.declare_parameter("camera_pitch_offset_deg", 0.0)  # + = camera tilted down (HUD calibration)
         self.declare_parameter("camera_roll_offset_deg", 0.0)   # + = right side down (HUD calibration)
         self.declare_parameter("show_hud", False)      # pop-up HUD window (box + plane grid)
         self.declare_parameter("hud_rate", 15.0)       # Hz, HUD redraw / publish rate
         self.declare_parameter("heartbeat_rate", 1.0)   # Hz
+        self.declare_parameter("pose_history_sec", 2.0)     # s of yaw history kept for depth-frame sync
+        self.declare_parameter("depth_frame_lag_sec", 0.15) # s, frame content age vs its arrival stamp
 
         self._mission_thr = float(self.get_parameter("mission_obstacle_threshold").value)
         self._oda_thr = float(self.get_parameter("oda_obstacle_threshold").value)
@@ -132,6 +150,7 @@ class DetectionNode(Node):
         self._band_below = float(self.get_parameter("plane_band_below_m").value)
         self._band_above = float(self.get_parameter("plane_band_above_m").value)
         self._standby_suppress_sec = float(self.get_parameter("standby_suppress_sec").value)
+        self._post_sweep_cooldown = max(0.0, float(self.get_parameter("post_sweep_cooldown_sec").value))
         self._pitch_off = float(self.get_parameter("camera_pitch_offset_deg").value)
         self._roll_off = float(self.get_parameter("camera_roll_offset_deg").value)
         self._show_hud = bool(self.get_parameter("show_hud").value)
@@ -143,7 +162,11 @@ class DetectionNode(Node):
         self._drone_state = "standby"
         self._sweeping = False        # True while ODA Maneuvers runs a scout sweep
         self._yaw = None              # None until the first pose message arrives
+        self._pose_hist = deque()     # (wall-clock seconds, yaw) – capture-time yaw lookup
+        self._pose_hist_sec = float(self.get_parameter("pose_history_sec").value)
+        self._depth_lag = float(self.get_parameter("depth_frame_lag_sec").value)
         self._standby_since = None      # time we left standby (post-standby grace timer)
+        self._post_sweep_until = None   # trigger silenced until this time (ROS clock) after a sweep ends
         self._vel = None                # current speed (m/s) for the HUD
         self._obstacle = False        # validated trigger state (reset on state change)
         self._consecutive = 0         # consecutive hits (reset on a miss)
@@ -186,7 +209,8 @@ class DetectionNode(Node):
         self.get_logger().info(
             f"Detection node ready – mission threshold {self._mission_thr:.2f} m, "
             f"oda threshold {self._oda_thr:.2f} m (margin +{self._depth_margin:.2f} m), "
-            f"validate after {self._confirm_n} consecutive frames, obstacles never cleared"
+            f"validate after {self._confirm_n} consecutive frames, obstacles never cleared, "
+            f"post-sweep cooldown {self._post_sweep_cooldown:.1f} s"
         )
         if self._plane_filter:
             self.get_logger().info(
@@ -213,17 +237,31 @@ class DetectionNode(Node):
         # trigger could never produce a new rising edge. Drone Node
         # edge-detects on this topic, so a False here is harmless.
         self._reset_detection()
+        self._post_sweep_until = None   # any state change cancels the post-sweep cooldown
         self._obstacle_pub.publish(Bool(data=False))
 
     def _sweeping_cb(self, msg: Bool):
         """ODA Maneuvers publishes True while a scout sweep is running."""
+        prev = self._sweeping
         self._sweeping = msg.data
-        if not self._sweeping and self._drone_state == "oda":
-            # Sweep finished: the 0.8 m re-sweep trigger takes over with a
+        if prev and not self._sweeping and self._drone_state == "oda":
+            # Sweep finished: the 4.5 m re-sweep trigger takes over with a
             # clean slate, so a near obstacle yields a fresh rising edge.
             if self._obstacle:
                 self._reset_detection()
                 self._obstacle_pub.publish(Bool(data=False))
+            # Post-sweep cooldown: the drone is usually still close to the
+            # obstacle it just swept, so a fresh trigger would immediately
+            # re-arm the sweep instead of letting GUIDED fly the path away.
+            # Keep the trigger silent for post_sweep_cooldown_sec.
+            if self._post_sweep_cooldown > 0.0:
+                self._post_sweep_until = self.get_clock().now() + Duration(
+                    seconds=self._post_sweep_cooldown
+                )
+                self.get_logger().info(
+                    f"Sweep finished – trigger cooldown "
+                    f"{self._post_sweep_cooldown:.1f} s"
+                )
 
     def _pose_cb(self, msg: PoseStamped):
         q = msg.pose.orientation
@@ -233,6 +271,34 @@ class DetectionNode(Node):
         self._qw, self._qx, self._qy, self._qz = q.w, q.x, q.y, q.z
         self._alt = float(msg.pose.position.z)
         self._update_camera_rotation()
+        # Wall-clock arrival time of this pose – key for the capture-time
+        # yaw lookup (same clock domain as the depth-frame stamps).
+        now = time.time()
+        self._pose_hist.append((now, self._yaw))
+        while self._pose_hist and self._pose_hist[0][0] < now - self._pose_hist_sec:
+            self._pose_hist.popleft()
+
+    def _yaw_at(self, t: float):
+        """Heading (ENU rad) at wall-clock time t, linearly interpolated
+        from the pose history (wrap-aware).  None when the history is too
+        thin – the caller then falls back to the live yaw."""
+        hist = self._pose_hist
+        if len(hist) < 2:
+            return None
+        if t <= hist[0][0]:
+            return hist[0][1]
+        if t >= hist[-1][0]:
+            return hist[-1][1]
+        for i in range(len(hist) - 1, 0, -1):
+            t0, y0 = hist[i - 1]
+            t1, y1 = hist[i]
+            if t0 <= t <= t1:
+                dt = t1 - t0
+                if dt <= 0.0:
+                    return y1
+                dy = (y1 - y0 + math.pi) % (2.0 * math.pi) - math.pi
+                return y0 + dy * (t - t0) / dt
+        return hist[-1][1]
 
     def _vel_cb(self, msg: TwistStamped):
         t = msg.twist.linear
@@ -357,6 +423,16 @@ class DetectionNode(Node):
 
         found = bool(np.any(near))
 
+        # Post-sweep cooldown: right after a scout sweep the drone is
+        # still close to the obstacle it just swept – keep the trigger
+        # silent for post_sweep_cooldown_sec so GUIDED gets to fly the
+        # path away instead of ODA Maneuvers re-arming the sweep.
+        if self._post_sweep_until is not None:
+            if self.get_clock().now() < self._post_sweep_until:
+                found = False
+            else:
+                self._post_sweep_until = None
+
         # Diagnostic for threshold tuning: closest valid depth inside the
         # virtual box vs the current trigger distance, plus how many box
         # pixels pass the altitude-plane filter.
@@ -410,7 +486,19 @@ class DetectionNode(Node):
             return
         info = ObstacleInfo()
         info.closest_distance = blocks[0].distance  # blocks sorted by distance
-        info.current_heading = self._yaw if self._yaw is not None else 0.0
+        # Heading at DEPTH-FRAME CAPTURE time, not the live yaw: the frame
+        # is 0.1-0.4 s old, and during the ODA yaw sweep a stale heading
+        # paints the blocks at wrong bearings (the danger-tile smear).
+        cap_t = (
+            float(msg.header.stamp.sec)
+            + float(msg.header.stamp.nanosec) * 1e-9
+            - self._depth_lag
+        )
+        yaw_sync = self._yaw_at(cap_t)
+        info.current_heading = (
+            yaw_sync if yaw_sync is not None
+            else (self._yaw if self._yaw is not None else 0.0)
+        )
         # Legacy single-obstacle fields mirror the closest block.
         info.obstacle_width = blocks[0].width
         info.obstacle_left = blocks[0].left

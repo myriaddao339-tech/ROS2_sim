@@ -1,61 +1,5 @@
 # Sentinel V1 — ODA Package Development Log
 
-## Session — 2026-08-26 (greeting / image capability check)
-
-### Situation
-- User opened the session with a capability question: whether I can read images. No code involved.
-
-### What I did
-- Checked log.md per session rules; no edits to any source files.
-
-### What I answered
-- Yes — I can view image files (png/jpg/jpeg/gif/webp) attached to the workspace or passed in chat, useful for inspecting simulation screenshots, plots, or captured frames.
-
-## Session — 2026-08-24 (detection_node R_eff indexing)
-
-### Situation
-- User asked to confirm two claims about `_update_camera_rotation` / `_R_eff` in detection_node.py: (1) R is the rotation of the camera frame (ENU body axes) into world ENU; (2) `_R_eff[2,0]` is the "east" component of the camera's up axis. Explanation only; no code changed.
-
-### What I did
-- Re-read `_update_camera_rotation` (quat→DCM, R_pitch/R_roll mounts, `R_eff = R @ R_pitch @ R_roll`) plus `_body_dirs` / `_up_map` / `_draw_plane_grid` for the axis conventions.
-
-### What I answered
-- (1) Mostly yes: R is the standard ENU quaternion→DCM, body→world (columns = body fwd/left/up expressed in world E/N/U). But the camera optical frame is not the body frame — `_body_dirs` re-labels camera right/down/fwd to body −y/−z/+x — and camera→world is `R_eff` (includes mount offsets), not R. Also a proper rotation, not a projection.
-- (2) No. Row 2 = world UP (row 0 is East); column 0 = camera forward axis. So `_R_eff[2,0]` = Up component of the camera's FORWARD axis (nose-down → negative), which is exactly why it feeds the cy shift. "East component of camera up axis" = `_R_eff[0,2]`.
-
-## Session — 2026-08-20 (detection_node pinhole explanation)
-
-### Situation
-- Follow-up question on `detection_node.py` about two lines in `_depth_cb`: `focal_px = (w/2.0) / tan(hfov/2)` and the cy shift `cy += focal_px * R_eff[2,0]/R_eff[2,2]`. Explanation only; no code changed.
-
-### What I did
-- Explained both lines as pinhole geometry: fx computed from the horizontal FOV (edge pixel ↔ HFOV/2, assuming square pixels), and the cy shift as the row where the world-horizontal altitude plane crosses the image centre column (ray with zero ENU-up component, solving R20 − R22·v = 0).
-
-### What I answered
-- No edits. Verified the cy formula against the sign conventions: level flight → centre row; nose down (R20<0) → plane row above centre, matching expectations.
-
-## Session — 2026-08-20 (detection_node rotation question)
-
-### Situation
-- User asked about `_update_camera_rotation` in `src/sentinel_oda/sentinel_oda/detection_node.py`: given the standard x=pitch / y=roll convention for ENU, shouldn't the `R_pitch` (about y) and `R_roll` (about x) offset matrices be reversed? No code changed.
-
-### What I did
-- Reviewed the rotation code (lines ~255–265) and its sign conventions against the body-frame definitions and the comments. Answered with an explanation only; no edits.
-
-### What I answered
-- Not reversed. The x=pitch / y=roll mapping holds for WORLD ENU axes (east/north); the offset matrices rotate about the ENU BODY axes defined as x=forward, y=left, z=up, where pitch is rotation about the lateral (y) axis and roll about the longitudinal (x) axis. Verified signs: +po tips forward toward −z (down, camera tilted down) and +ro leans up toward −y (right side down), both matching the docstrings. Offsets are right-multiplied (body-frame mount corrections before the attitude quaternion), which is correct.
-
-## Session — 2026-08-17
-
-### Situation
-- User launched with `video_source:=gazebo_depth` and depth_node still ran the UDP ML pipeline.
-
-### What I did
-- Checked `oda_live_test.launch.py`: the declared launch argument is `depth_source` (default "udp"), passed to depth_node param `video_source`. No `video_source` launch arg exists.
-
-### What I answered
-- `video_source:=...` was ignored by launch; correct command is `depth_source:=gazebo_depth`.
-
 ## Session 1 — 2026-08-11
 
 ### Context
@@ -1337,6 +1281,17 @@ Finally, one more warning of a bug that you also created last time, because I'm 
   grace timer expires (tune standby_suppress_sec if the ground still trips
   during takeoff).
 
+## Session — 2026-08-17
+
+### Situation
+- User launched with `video_source:=gazebo_depth` and depth_node still ran the UDP ML pipeline.
+
+### What I did
+- Checked `oda_live_test.launch.py`: the declared launch argument is `depth_source` (default "udp"), passed to depth_node param `video_source`. No `video_source` launch arg exists.
+
+### What I answered
+- `video_source:=...` was ignored by launch; correct command is `depth_source:=gazebo_depth`.
+
 ## Session — 2026-08-17 (sweep still not rotating — root cause found & fixed)
 
 ### Situation
@@ -1698,3 +1653,263 @@ Finally, one more warning of a bug that you also created last time, because I'm 
 
 ### What I answered
 - `@` = matrix multiplication (np.matmul), composing attitude × pitch offset × roll offset into the camera→ENU rotation.
+
+## Session — 2026-08-20 (detection_node pinhole explanation)
+
+### Situation
+- Follow-up question on `detection_node.py` about two lines in `_depth_cb`: `focal_px = (w/2.0) / tan(hfov/2)` and the cy shift `cy += focal_px * R_eff[2,0]/R_eff[2,2]`. Explanation only; no code changed.
+
+### What I did
+- Explained both lines as pinhole geometry: fx computed from the horizontal FOV (edge pixel ↔ HFOV/2, assuming square pixels), and the cy shift as the row where the world-horizontal altitude plane crosses the image centre column (ray with zero ENU-up component, solving R20 − R22·v = 0).
+
+### What I answered
+- No edits. Verified the cy formula against the sign conventions: level flight → centre row; nose down (R20<0) → plane row above centre, matching expectations.
+
+## Session — 2026-08-20 (detection_node rotation question)
+
+### Situation
+- User asked about `_update_camera_rotation` in `src/sentinel_oda/sentinel_oda/detection_node.py`: given the standard x=pitch / y=roll convention for ENU, shouldn't the `R_pitch` (about y) and `R_roll` (about x) offset matrices be reversed? No code changed.
+
+### What I did
+- Reviewed the rotation code (lines ~255–265) and its sign conventions against the body-frame definitions and the comments. Answered with an explanation only; no edits.
+
+### What I answered
+- Not reversed. The x=pitch / y=roll mapping holds for WORLD ENU axes (east/north); the offset matrices rotate about the ENU BODY axes defined as x=forward, y=left, z=up, where pitch is rotation about the lateral (y) axis and roll about the longitudinal (x) axis. Verified signs: +po tips forward toward −z (down, camera tilted down) and +ro leans up toward −y (right side down), both matching the docstrings. Offsets are right-multiplied (body-frame mount corrections before the attitude quaternion), which is correct.
+
+## Session — 2026-08-24 (detection_node R_eff indexing)
+
+### Situation
+- User asked to confirm two claims about `_update_camera_rotation` / `_R_eff` in detection_node.py: (1) R is the rotation of the camera frame (ENU body axes) into world ENU; (2) `_R_eff[2,0]` is the "east" component of the camera's up axis. Explanation only; no code changed.
+
+### What I did
+- Re-read `_update_camera_rotation` (quat→DCM, R_pitch/R_roll mounts, `R_eff = R @ R_pitch @ R_roll`) plus `_body_dirs` / `_up_map` / `_draw_plane_grid` for the axis conventions.
+
+### What I answered
+- (1) Mostly yes: R is the standard ENU quaternion→DCM, body→world (columns = body fwd/left/up expressed in world E/N/U). But the camera optical frame is not the body frame — `_body_dirs` re-labels camera right/down/fwd to body −y/−z/+x — and camera→world is `R_eff` (includes mount offsets), not R. Also a proper rotation, not a projection.
+- (2) No. Row 2 = world UP (row 0 is East); column 0 = camera forward axis. So `_R_eff[2,0]` = Up component of the camera's FORWARD axis (nose-down → negative), which is exactly why it feeds the cy shift. "East component of camera up axis" = `_R_eff[0,2]`.
+
+## Session — 2026-08-26 (landing: raise RTL_ALT before the RTL switch)
+
+### Situation
+- User pointed out the return leg after WP2 ends in RTL at an altitude lower than the obstacle walls -> collision risk. Asked to raise RTL altitude to 100 m when entering the landing state, BEFORE switching to RTL mode.
+
+### What I did
+- src/sentinel_mission/sentinel_mission/drone_node.py:
+  - New ParamSet client on /mavros/param/set; new parameter rtl_altitude_m (default 100.0).
+  - Landing sequence split into steps: step 0 = _step_set_rtl_alt (PARAM_SET RTL_ALT = 10000 cm, async with the usual 10 s timeout -> force_standby on failure), step 1 = _step_switch_rtl (the previous rtl_landing logic, unchanged).
+  - _on_enter_landing resets _param_future/_param_ok/_rtl_mode_future and starts at step 0, so RTL is only requested after RTL_ALT is confirmed.
+  - Added a guard in rtl_landing: if the state left landing (e.g. force_standby on timeout), the landing timer cancels itself (the old code kept ticking).
+- Test: test_scripts/test_drone_rtl_alt.py (headless): fake /mavros/state + real ParamSet/SetMode service servers recording call order; enters landing via mission -> do_emergency; asserts ParamSet(RTL_ALT, 10000) strictly before SetMode(RTL), then RTL confirmation keeps the state in landing. ALL PASS. Rebuilt sentinel_mission.
+- Note: mavros param plugin is NOT denylisted in oda_live_test.launch.py, so /mavros/param/set is live.
+
+### What I answered
+- RTL_ALT raise implemented as landing step 0 (100 m, tunable via rtl_altitude_m). The value persists in the FCU afterwards, which is fine (it stays at the safe height for future landings too).
+
+## Session — 2026-08-26 (GUIDED node built)
+
+### Situation
+- User satisfied with the inner-map results and moved on to the last ODA node: GUIDED (drone-side pilot). Design fully settled in context.md.
+
+### What I did
+- Created src/sentinel_oda/sentinel_oda/guided_node.py per the settled spec:
+  - subs /inner_map/safe_path (nav_msgs/Path), /drone_node/drone_state, /mavros/local_position/pose (ENU -> NED (y, x, -z)).
+  - Gate: acts only while drone_state == "oda"; leaving oda clears the path and stops setpoints. No emergency subscription (user scrapped it).
+  - Every new Path REPLACES the stored path wholesale (even mid-traversal), restarting the walk.
+  - Sequential walk: publishes PositionTarget on /mavros/setpoint_raw/local, coordinate_frame = FRAME_LOCAL_NED (1), type_mask = 3576 (position-only: vel/accel/yaw/yaw-rate ignored), position = path point directly (path is already NED, z positive-down – no negation).
+  - Advances when within reach_tolerance_m (0.5, horizontal) per /mavros/local_position/pose; keepalive resend of the current target after resend_timeout (1.0 s); 10 Hz tick.
+  - GUIDED-mode switch is owned by oda_maneuvers (already switched on ODA entry), so this node never calls /mavros/set_mode.
+- Registered entry point "guided" in setup.py; added guided node (+params reach_tolerance_m 0.5, resend_timeout 1.0) to oda_live_test.launch.py and its docstring.
+- New test_scripts/test_guided_node.py (headless): A) new path -> first point sent with frame 1 / mask 3576; B) 0.5 m reach advances; C) mid-traversal overwrite; D) no setpoints outside oda; E) keepalive resend. Poll-based wait_until for determinism (fixed pumps flaked under executor jitter). ALL PASS twice.
+
+### What I answered
+- GUIDED node complete and tested; the ODA pipeline Depth -> Detection -> ODA Maneuvers -> Inner Map -> GUIDED now exists end-to-end. Next live test: relaunch with the rebuilt package (guided is now started by oda_live_test.launch.py) and verify the drone flies the green path after the sweep.
+
+## Session — 2026-08-26 (knob sweep: decay, radius, confirm, legs, depth lag)
+
+### Situation
+- Smear persisted after the capture-time yaw sync. User asked to try the remaining knobs: depth frame lag, tile invalidation (unvalidate), faster tile validation, longer ODA sweep legs, and tile_safe_radius 0.5.
+
+### What I did
+- inner_map.py:
+  - tile_safe_radius default 1.7 -> 0.5 (user request; noted blind-band caveat: obstacles on even coordinates can fall between tile centres and mark nothing; the current course walls sit on odd coords so lines stay visible).
+  - confirm_count default 5 -> 3.
+  - NEW danger-tile invalidation: `danger_decay_timeout` (default 30.0, 0 = off). Dangerous tiles are re-validated by fresh hits (_hit_point now refreshes _last_hit for dangerous tiles); tiles with no re-observation for the timeout decay back to safe and trigger a replan. Found+fixed a bug while testing: the counter-expiry pass was resetting _last_hit to NaN for dangerous tiles (making decay unreachable) - expiry now excludes dangerous tiles.
+- detection_node.py: depth_frame_lag_sec 0.03 -> 0.15.
+- oda_maneuvers.py: leg hold is now the `leg_duration_sec` parameter, default 10.0 (was hardcoded 5.0) - user-approved change; brake hold untouched (10 s). Docstring updated.
+- Tests: new test_tile_decay.py (decay mechanics: re-observation keeps, stale decays, 0 disables) -> ALL PASS; smoke_inner_map and test_wall_smear pin inner._safe_r=1.7 so their geometry stays valid under the new 0.5 default. Full suite green: smoke 8/8, tile_decay 4/4, yaw_sync 5/5, extract_blocks 5/5, wall_smear 4/4.
+
+### What I answered
+- All five knobs implemented and verified. Caveats for the live run: (a) decay only runs when obstacle_info arrives (checked on the next report); (b) radius 0.5 leaves 1 m blind bands between tile centres for obstacles that do not align with tile centres - raise back to ~1.4 if the wall ever disappears from the map; (c) decay can clear REAL wall tiles once the drone stops observing them - disable with danger_decay_timeout=0 if that bites.
+
+## Session — 2026-08-26 (detection smear root cause + capture-time yaw sync)
+
+### Situation
+- User reported the path fix worked but the detection issue remained: wall flagged well at first, then during the ODA sweep every tile in the FOV (except the first column) became dangerous; also ~4 tile columns behind the wall face. Asked to try the test_logs.txt hypotheses and to write tests BEFORE changing code.
+
+### What I did
+- Tests first (all against the real production code):
+  - test_extract_blocks.py: hypotheses H2 (no-depth gap -> d_gap=min) and H3 (cur/nxt mutation) -> ALL PASS; the merge logic behaves exactly as designed (H2 conservative merge intended, H3 chain correct + idempotent). NOT the cause.
+  - test_wall_smear.py: full production chain (synthetic depth band -> _extract_blocks -> _mark_block) over a +/-90 deg sweep. STALE heading (live yaw, +13..31 deg lag) paints off-wall danger tiles; SYNC heading paints a clean wall line. Proved heading staleness is the smearing mechanism.
+- Root cause: detection stamped `obstacle_info.current_heading` with the LIVE yaw at processing time while the Gazebo depth frame is 0.1-0.4 s old (render + 15 Hz republish). During the sweep the heading advances past the capture heading, so blocks get painted at wrong bearings (my earlier rate gate can't catch slow slews or variable lag).
+- Fix implemented:
+  - depth_node.py: the gazebo_depth frame is now stamped with its gz-callback ARRIVAL wall time (≈ capture time) instead of now().
+  - detection_node.py: new pose history (deque of (wall_t, yaw), 2 s window, param pose_history_sec) filled in _pose_cb; new `_yaw_at(t)` wrap-aware interpolation; obstacle_info heading = yaw at capture time (cap_t = frame stamp - depth_frame_lag_sec, default 0.03) with fallback to live yaw.
+- test_yaw_sync.py added (interpolation unit tests) -> ALL PASS. Rebuilt sentinel_oda; full suite green: smoke 8/8, extract_blocks 5/5, yaw_sync 5/5, wall_smear 4/4.
+- World box repositioning (east/north/south, east at the back, open west) NOT done this round - user said "forget it" until the dead-end test.
+
+### What I answered
+- Merge hypotheses H2/H3 disproven by tests; unvalidate (H1) still not implemented (sync fix removes the smear at the source; decay can be opt-in later if wanted).
+- Residual multi-column wall line = marks accumulated at different standoff distances (brake drift) + tile_safe_radius inflation; sync turns the blob into a ~2-column line.
+- For the live test: restart depth/detection nodes with the rebuilt package; watch the map for a thin wall line during the sweep.
+
+## Session — 2026-08-26 (inner map: path not drawn + false danger tiles + new box course)
+
+### Situation
+- Two issues: (1) Inner Map log said an A* path was published but no green itinerary ever appeared on the map window; (2) during ODA maneuvers, danger tiles appeared around the drone on previously safe tiles. User also asked to replace the full-width wall with a "box with one side open" and supplied 3 hypotheses in test_logs.txt.
+
+### What I did
+- Root cause (1): `inner_map.py::_publish_path` never updated `self._path_xy`, so the map's green polyline stayed empty forever. Fixed: `_path_xy` is now rebuilt from the published poses (also clears on ODA exit).
+- Root cause (2): Gazebo depth frames lag the heading by up to ~0.5 s (gz render + 15 Hz republish), while MAVROS yaw is current. During the fast ODA sweep yaw slews, blocks were painted at stale bearings → wall tiles smeared in an arc around the drone (matches the screenshot cluster). Fix: yaw-rate gate in `inner_map.py` — `_pose_cb` estimates deg/s over a 0.35 s window; `_obstacle_info_cb` drops reports while |rate| > `max_yaw_rate_deg` (25) and for `yaw_gate_holdoff_sec` (0.5) after it settles. All params, gate is a new opt-out guard, no existing logic touched.
+- World: replaced skyscraper/skyscraper_north/skyscraper_south with box_west (140,0, size 2x8x50), box_east (160,0, 2x8x50), box_south (150,-4, 20x2x50) — a U open to the NORTH. 8 m wall width chosen so the wall ends (+/-22.8 deg) fit inside the 53.5 deg camera FOV at the 10 m detection range → the whole west wall gets charted and A* routes around it through the north opening. Updated header comments.
+- Rebuilt `sentinel_oda`; smoke test 8/8 PASS; offline box-course check: path published, no dead end, detour span 6 m around the wall end.
+
+### What I answered
+- Hypotheses: (3) cur/nxt mutation is safe (intended, no aliasing) — left unchanged; (2) `d_gap = min(...)` fallback stays (conservative merge); (1) unvalidate/decay NOT implemented — proposed as opt-in follow-up (risk: unobserved ≠ free).
+- Suggested long-term fix: thread the gz capture timestamp through depth_node and interpolate the yaw in detection (proper sync) — the rate gate is the pragmatic fix for now.
+
+## Session — 2026-08-26 (greeting / image capability check)
+
+### Situation
+- User opened the session with a capability question: whether I can read images. No code involved.
+
+### What I did
+- Checked log.md per session rules; no edits to any source files.
+
+### What I answered
+- Yes — I can view image files (png/jpg/jpeg/gif/webp) attached to the workspace or passed in chat, useful for inspecting simulation screenshots, plots, or captured frames.
+
+## Session — 2026-08-27 (three ODA live-test logs: sweep stomped by guided, dive crash)
+
+### Situation
+- User shared 3 concatenated sim logs (test_logs.txt, runs 01:48/01:52/01:54) and asked: did we use SET_POSITION_TARGET local or global, and could the entered positions be incompatible with the drone frame ("that would explain why it went down")? Two symptoms: drone skips ODA maneuvers and immediately follows the itinerary; later veers left and crashes.
+
+### What I did
+- Analysis only, no code changed (per user rule on oda_maneuvers).
+- Frames: guided_node = FRAME_LOCAL_NED (1), positions straight from A* path; oda_maneuvers = FRAME_BODY_OFFSET_NED (8) pos(0,0,0)+relative yaw. No global frames.
+- Frame compatibility VERIFIED good: mission WP1 reached, flight along N≈0; first painted danger tiles land exactly on box_west (NED (3,141)/(-3,141)… = world y 139-141); every guided setpoint z=-20 (never a descent command).
+- Root cause 1 (sweep skipped): guided and oda_maneuvers BOTH write /mavros/setpoint_raw/local; inner_map re-publishes a Path every 1 s, guided streams at 10 Hz → each brake/leg message is overwritten within ~100 ms. Run 1: STATE→oda 183.196, first guided setpoint 183.309 (before GUIDED confirmed 183.378 and brake 183.480). Sweep effectively never runs.
+- Root cause 2 (crash): all 3 runs end with camera 0.27-0.40 m from a surface in open space; run 3 path first-pose (=actual drone position) = NED (42.4,91.1)=ENU(91,42) at the moment depth collapsed 58→24→22→0.3 m = progressive pitch-over dive into the ground. No FCU crash/disarm message, no z change. Conclusion: control conflict symptom, NOT a coordinate bug.
+
+### What I answered
+- Answered local-vs-global (local) and frame-compat (yes, compatible; hypothesis rejected with evidence).
+- Proposed fix (awaiting user approval): gate guided_node on /oda_maneuvers/sweeping — hold current position (yaw ignored) while sweeping, fly the path only after the first sweep completes; oda_maneuvers logic untouched. Optional: inner_map skip replan while sweeping; add altitude logging in guided for next live test.
+- No code modified this session.
+
+## Session — 2026-08-27 (guided/oda_maneuvers arbitration implemented + tested)
+
+### Situation
+- User approved the proposed fix from the previous session: gate guided_node so it stops stomping oda_maneuvers' brake/sweep on the shared /mavros/setpoint_raw/local topic (root cause of the skipped sweep and the dive crash in the three 01:48-01:54 live runs).
+
+### What I did
+- src/sentinel_oda/sentinel_oda/guided_node.py (oda_maneuvers logic NOT touched):
+  - New subs /oda_maneuvers/sweeping (Bool) and /detection_node/obstacle_detected (Bool).
+  - Arbitration: guided holds position (FRAME_LOCAL_NED, mask 3576, yaw ignored so sweep legs keep steering) while sweeping OR before the first sweep ever completes OR while an obstacle is reported. First sweep = rising True->False edge of /sweeping -> sweep_ever_done. Fresh ODA entry resets sweep_ever_done/sweeping/obstacle.
+  - Hold published at the drone's CURRENT NED pose (current altitude), throttled to resend_timeout; _sent reset on every hold tick so flying resumes immediately on release.
+  - New param status_rate (1.0 Hz): logs NED position + altitude + gate flags while in oda, so a future descent can be seen in the logs.
+  - Docstring updated (arbitration bullet + new subscribes).
+- test_scripts/test_guided_node.py updated: harness now publishes /oda_maneuvers/sweeping + /detection_node/obstacle_detected; new checks G1-G10 (pre-sweep hold, hold during sweep, unlock after first sweep, obstacle hold/resume, re-entry re-arms gate) + existing A-E kept (E now unlocked via a new sweep edge). 18 checks.
+- Built sentinel_oda; full suite green: test_guided_node ALL PASS x3 (stability), smoke_inner_map ALL PASS (8/8), test_tile_decay, test_yaw_sync, test_extract_blocks, test_wall_smear ALL PASS. No other tests reference guided.
+
+### What I answered
+- Done and tested. Handshake now: ODA entry -> guided holds (obstacle latched True + no sweep yet) -> first sweep runs un-stomped (holds ignore yaw, legs work) -> sweep end resets detection obstacle -> guided flies the path -> near a new obstacle detection fires -> guided holds -> oda_maneuvers re-breaks/re-sweeps -> repeat. Next step: live run with the rebuilt package (relaunch oda_live_test) and watch the new guided "Hold – ..." and "status: ... alt ..." logs if anything still goes down.
+
+## Session — 2026-08-27 (real root cause found: mavros ENU->NED conversion; guided fixed)
+
+### Situation
+- User ran the arbitration build (02:43/02:44 runs): guided now holds correctly, but the drone STILL never stopped — it kept flying ~5 m/s east, then turned LEFT (north) at the first sweep leg and descended steadily ~0.6 m/s into the ground in open space (status log: alt 20.1 -> 0.2 m). Same trajectory as the old runs, with or without guided streaming.
+
+### What I did
+- Parsed the SITL tlog (ardupilot/Tools/autotest/mav.tlog) with pymavlink: HEARTBEATs confirm FCU really is GUIDED after ODA entry; wire SET_POSITION_TARGET_LOCAL_NED shows guided's NED hold (0.0, 110.4, -20.1) arrives at the FCU as x=110.4 y=0.0 z=+20.1 (x/y swapped, z negated), and the +90 deg leg arrives as yaw=-1.57 (negated). Verified against mavros 2.14 source (setpoint_raw.cpp::local_cb): mavros treats PositionTarget fields as ENU and converts ENU->NED on the wire (position/velocity/af via transform_frame_enu_ned, yaw via orientation transforms).
+- ROOT CAUSE: our nodes published NED values into the message; mavros double-converted them -> FCU got x/y swapped and z=+20 (underground) -> the drone flew NNW and dived; yaw mirrored -> right legs became left turns ("veers to the left"). This also retro-explains all three 01:48-01:54 runs.
+- Fix (guided only): _send_target and _send_hold now publish ENU fields (x=E=ned_y, y=N=ned_x, z=U=-ned_z); coordinate_frame stays FRAME_LOCAL_NED (1). Docstring documents the mavros conversion with the wire evidence.
+- test_guided_node.py: all setpoint expectations updated to ENU; C1 now checks all three axes (path NED (3,8,-12) -> msg (8,3,12)); docstring updated. 18/18 PASS x3; full ODA suite green (smoke, tile_decay, yaw_sync, extract_blocks, wall_smear).
+
+### What I answered
+- Explained the wire evidence and the mavros source. guided is now correct; oda_maneuvers was NOT touched (its position/velocity fields are all-zero so they survive the conversion; its yaw legs are MIRRORED (right leg -> left turn) but the +-90 deg fan is symmetric, so coverage is unchanged). Asked the user whether to flip the leg yaw signs in oda_maneuvers (one-line msg.yaw = -self._cmd_yaw_enu) so turns match the docstring.
+- Next live run should now: brake actually stops the drone (hold z = +20 ENU -> wire -20 NED), sweep yaws in place, then guided flies the path with correct targets.
+
+## Session — 2026-08-27 (03:27 log analysis: wall crashes; guided silent-while-sweeping)
+
+### Situation
+- User reported: "the sweep never completes", asked whether I changed the sweeping, and asked to make guided publish new setpoints ONLY when not sweeping. Attached the 03:27 live logs (test_logs.txt): drone detects the wall, does a "weird" sweep, follows the path around the wall, then collides with the wall homing to the waypoint even though the map showed it past the wall.
+
+### What I did
+- Log forensics (3 flights in test_logs.txt, all post-ENU-fix):
+  - The sweep itself COMPLETES every time: 6 legs (+90, -45 x4, +90) every 5 s -> "Sweep complete" in all runs. What never completes is the ODA mission.
+  - ODA entry at ~32 m from the wall (mission threshold 40 m + ~9 m latency). The brake only decelerates ~0.5 m/s^2, so the drone drifts ~27 m and sweeps at ~3.4 m standoff (status y: 108 -> 135.6, wall face at y=139).
+  - The map under-charts the wall: only 4 danger tiles at crash 1 (wall spans ~10 tiles), 12 at crash 2. A* then threads the REAL wall end: guided flies (5,139) -> (3,139) -> (3,141), and (3,141) is INSIDE the wall footprint -> the drone presses against the face at (3.3, 139.0) for minutes (Setpoint 2/23 repeats, status frozen), then "Drone disarmed unexpectedly" (crash) at 5122.5 and again at 5635.3 (run 3), also 1165.6 (run 1) and 4602.9 (run 2).
+  - No last-second rescue: detection's ODA trigger fires only below 0.30 m (0.8 thr - 0.5 margin) and at 0.34 m "plane-valid px = 0" - the altitude-plane filter rejected the wall pixels at point-blank range.
+  - start_trigger auto-restarts the mission after each disarm -> the drone re-flies the leg and repeats the same crash (looks like "sweep never completes").
+- guided_node.py (user-approved request): gate now means SILENCE. Removed _send_hold/_last_hold/_held; _tick publishes NOTHING while _gated() (sweeping OR first sweep not done OR obstacle) - the FCU keeps ODA Maneuvers' last command. Previously guided re-published a position hold every 1 s during the sweep/brake, stomping oda_maneuvers' brake and yaw legs on the shared /mavros/setpoint_raw/local. _hold_now renamed _gated; docstring + ready/status logs updated.
+- test_guided_node.py G-section rewritten to assert silence (G1 before first sweep, G5 while sweeping, G7 obstacle keeps last path target, G9 re-entry silent) - ALL PASS. colcon build sentinel_oda clean. oda_maneuvers NOT touched.
+
+### What I answered
+- No change was made to the sweeping logic this session (last change: leg_duration param). The sweep finishes; the ODA flight loops on the wall crash instead.
+- Root-cause chain: slow brake -> 3.4 m sweep standoff -> wall only partially charted (unobserved = free) -> A* threads the wall end -> guided target inside the real wall -> collision -> disarm -> auto-restart loop. Secondary: effective ODA trigger = 0.30 m and plane filter rejects wall pixels at close range, so nothing re-triggers before impact.
+- Proposals (awaiting approval): (1) brake phase -> position hold (body pos=(0,0,0), yaw ignored) instead of zero-velocity, or back up ~6 m before sweeping, so the sweep runs from 10+ m standoff and charts the whole wall; (2) restore tile_safe_radius ~1.7 (currently 1.5 default, was 0.5) or inflate danger around charted wall ends; (3) detection: separate close-range panic threshold (e.g. 1.5 m) independent of the plane filter for the last-resort re-break.
+
+## Session — 2026-08-27 (post-sweep detection cooldown + log.md reordered)
+
+### Situation
+- User: logs must stay organized (a previous session had PREPENDED a block of entries at the top of log.md, before the original first log – do not repeat). Also reported a live bug: when the ODA threshold arms a sweep at close range, the sweep finishes, and as soon as GUIDED starts flying to the waypoint, ODA Maneuvers is re-triggered because the drone is still next to the obstacle – sweep/fly loop. Asked for a 10 s detection cooldown after a sweep.
+
+### What I did
+- log.md: reordered the 59 "## Session" blocks chronologically by date (stable sort on the header date, one-off script); line count preserved (1859). All new entries are appended at the END from now on.
+- detection_node.py (user-approved request):
+  - New param post_sweep_cooldown_sec (default 10.0, 0 = off). _sweeping_cb now edge-detects True->False: sweep end -> existing latch reset + fresh trigger silence until get_clock().now() + cooldown.
+  - _depth_cb: when the cooldown is active, found is forced False (no validation, obstacle_detected stays False); expired cooldown self-clears. obstacle_info/map registration unaffected by the cooldown (it only follows the latch anyway).
+  - _state_cb cancels the cooldown on any state change (fresh phase = fresh rules). Docstring + ready log updated.
+- oda_live_test.launch.py: detection gets "post_sweep_cooldown_sec": 10.0 with a comment.
+- New test_scripts/test_detection_cooldown.py (headless): synthetic 32FC1 depth with a 2 m obstacle; plane_filter off, confirm 2, cooldown 0.5 s set directly on the node. A) validates during sweep; B) sweep end clears latch + arms cooldown; C) no re-trigger during cooldown (topic stays False); D) re-triggers after expiry; E) state change cancels. ALL PASS. colcon build sentinel_oda clean.
+
+### What I answered
+- Cooldown implemented as requested: 10 s of trigger silence after each sweep end, so GUIDED gets a clean window to fly the path away before detection can re-arm the sweep. If the obstacle is still within threshold after the window, detection re-triggers normally (safety preserved).
+- Log bookkeeping: file is now chronological; future reports are appended at the end.
+
+## Session — 2026-08-27 (ODA waypoint completion: mission/landing never triggered)
+
+### Situation
+- The ODA flight itself now works (new 01:31 run: guided flew the path around the wall and finished), but after "Safe path complete" the drone just hovered at the last path point: no waypoint_reached, no STATE → mission. User: "the switch to mission state does not seem to take place after we reach the waypoint... or maybe the edge case of the waypoint reached during oda being the last one is causing issues... either way could you fix that please?"
+
+### What I did
+- Root cause: during ODA the FCU is in GUIDED mode (oda_maneuvers owns it), so /mavros/mission/reached never fires -> mission_node never publishes waypoint_reached -> drone_node waits forever. AND obstacle_course.plan has only 2 real waypoints, so the wall waypoint is the LAST one: even if it fired, mission_node publishes mission_finished for it, which drone_node ignored in oda (transition was mission-only). Both fixed:
+  - mission_node.py: subscribes /mavros/local_position/pose (ENU->NED (y,x,-z)). _republish_target (1 Hz) now also runs _check_oda_waypoint_reached while drone_state == oda: within oda_wp_reach_radius (default 3.0 m, horizontal) of the current target waypoint -> intermediate: publish waypoint_reached once + last_reached_index dedup (the FCU's later duplicate after AUTO resume is dropped) + advance target; last: publish mission_finished (continuous 2 Hz until landing). _publishing_mission_finished guard; docstring updated.
+  - drone_node.py: do_mission_finished transition source mission -> ["mission", "oda"]; _handle_trigger accepts mission_finished in mission/oda. So a last waypoint reached during ODA goes oda -> landing (RTL at 100 m), not a stuck hover.
+- New test_scripts/test_oda_wp_completion.py (headless): MissionNode A) near WP1 -> waypoint_reached 1 + target advance, C) far -> silent, B) near last WP2 -> mission_finished; DroneNode D) waypoint_reached in oda -> mission, E) mission_finished in oda -> landing. ALL PASS. test_drone_rtl_alt.py regression still ALL PASS. colcon build sentinel_mission clean.
+
+### What I answered
+- Explained the deadlock (GUIDED mode => no FCU reached reports) and the last-waypoint routing through mission_finished. Live flow now: guided completes the path at the waypoint -> mission_node position check (within 3 m) -> waypoint_reached/mission_finished -> drone_node resumes AUTO (intermediate) or goes landing (last).
+
+## Session — 2026-08-27 (simplified course: single wall)
+
+### Situation
+- User asked to simplify the obstacle course to a single wall in front of the drone ("do it quickly").
+
+### What I did
+- world_sim/worlds/obstacle_course.sdf: removed the box_east and box_south models and their stripe visuals; kept box_west (140, 0, 2x8x50) as the only obstacle. Updated the comment block above the wall. XML re-validated (models now: axes, ground, runway_strip, box_west).
+
+### What I answered
+- Course is now one wall directly in the drone's path; A* just routes around either end of it.
+
+## Session — 2026-08-27 (landing: ParamSet API changed in new mavros; fixed)
+
+### Situation
+- New live run: ODA waypoint completion WORKED (position check fired, oda -> landing), but the drone then failed the landing step 0 with "ParamSet service unavailable – cannot raise RTL altitude" and dropped to standby after 10 s. User reported the drone still hovering / not switching.
+
+### What I did
+- Log forensics: mavros "Plugin param created/initialized" at startup, yet /mavros/param/set never became available to the client. Checked the installed mavros (2.14.0, the 2026 router/UAS rewrite): the param plugin now serves `~/set` with type mavros_msgs/srv/ParamSetV2 (request: force_set, param_id, rcl_interfaces/ParameterValue value) and no longer advertises the DEPRECATED ParamSet service — our old-type client could never match it. Also the old request used legacy param id "RTL_ALT" (cm); mav.parm shows the ArduPilot 4.x name is RTL_ALT_M (float, metres).
+- drone_node.py: _param_cli -> ParamSetV2 on /mavros/param/set; request: force_set=True (param cache sync can be incomplete), param_id "RTL_ALT_M", value.type=3 (double), double_value=rtl_altitude_m. RTL_ALT_M step-0 timeout window 10 -> 20 s (param plugin can be busy with the FCU param list sync). Comments updated.
+- test_drone_rtl_alt.py: harness serves ParamSetV2, records double_value; asserts RTL_ALT_M = 100.0 before SetMode(RTL). ALL PASS; test_oda_wp_completion.py still ALL PASS. colcon build sentinel_mission clean.
+
+### What I answered
+- The "hovering" was the landing step-0 failure (service API mismatch), not the waypoint logic — the oda -> landing switch itself was proven working in the log. Next live run should land: RTL_ALT_M raised to 100 m via ParamSetV2, then RTL switch.

@@ -25,6 +25,7 @@ setup(
             "detection_node = sentinel_oda.detection_node:main",
             "oda_maneuvers = sentinel_oda.oda_maneuvers:main",
             "inner_map = sentinel_oda.inner_map:main",
+            "guided = sentinel_oda.guided_node:main",
         ],
     },
 )

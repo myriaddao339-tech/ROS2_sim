@@ -230,6 +230,7 @@ class DepthNode(Node):
         # device path / video file.
         self._is_gz_depth = video_source == "gazebo_depth"
         self._gz_depth = None      # newest native depth frame (H×W float32)
+        self._gz_arrival_t = None  # wall-clock time the frame arrived (≈ capture)
         if self._is_gz_depth:
             self._cap = None
             self._model = None
@@ -361,6 +362,7 @@ class DepthNode(Node):
             )
             return
         self._gz_depth = arr.astype(np.float32, copy=False)
+        self._gz_arrival_t = time.time()  # ≈ frame capture time (wall clock)
 
     def _gz_depth_timer_cb(self):
         """Republish the newest native depth frame (no ML inference)."""
@@ -369,7 +371,15 @@ class DepthNode(Node):
                 "No depth frame from Gazebo yet – is the depth camera rendering?"
             )
             return
-        self._publish_depth(self._gz_depth, self.get_clock().now().to_msg())
+        # Stamp with the frame's ARRIVAL time, not "now": Detection looks
+        # up the drone's yaw at this time, so blocks are painted at the
+        # heading the camera actually had when the frame was captured.
+        stamp = self.get_clock().now().to_msg()
+        if self._gz_arrival_t is not None:
+            t = self._gz_arrival_t
+            stamp.sec = int(t)
+            stamp.nanosec = int((t - int(t)) * 1e9)
+        self._publish_depth(self._gz_depth, stamp)
 
     # ==================================================================
     # Callbacks

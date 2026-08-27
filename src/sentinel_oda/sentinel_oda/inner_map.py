@@ -7,10 +7,12 @@ Runs on the drone.  Only operates while drone_state == "oda".
 Responsibilities:
   1. Accumulate Detection's obstacle_info reports into a world-fixed
      tile grid (default 200x200 tiles, 2 m each, centred on the EKF
-     origin).  Danger is one-way and permanent for the whole flight: a
-     tile needs `confirm_count` obstacle reports to become dangerous, and
-     its confirm counter resets if no report lands within
+     origin).  A tile needs `confirm_count` obstacle reports to become
+     dangerous, and its confirm counter resets if no report lands within
      `danger_count_timeout` (scattered mistakes can never add up).
+     A dangerous tile that receives no new report for
+     `danger_decay_timeout` is cleared again – the map self-heals from
+     false positives, but only while obstacles keep being re-observed.
   2. Whenever a NEW tile becomes dangerous (or a new target waypoint
      arrives), run A* from the drone's tile to the target waypoint tile.
      Moves are strictly vertical/horizontal between tile centres – no
@@ -58,6 +60,7 @@ Coordinate conventions:
     Tile centre: x = (ix - grid_tiles / 2) * tile_size + tile_size / 2.
 """
 
+from collections import deque
 import heapq
 import math
 
@@ -84,14 +87,18 @@ class InnerMap(Node):
         # ---- parameters ----
         self.declare_parameter("tile_size", 2.0)              # m per tile
         self.declare_parameter("grid_tiles", 200)             # NxN, EKF origin at the centre
-        self.declare_parameter("tile_safe_radius", 1.7)       # m, obstacle-to-tile-centre danger distance
+        self.declare_parameter("tile_safe_radius", 1.5)       # m, obstacle-to-tile-centre danger distance
         self.declare_parameter("danger_margin", 0.3)          # m, extension at each block end
-        self.declare_parameter("confirm_count", 5)           # reports needed to mark a tile dangerous
-        self.declare_parameter("danger_count_timeout", 2.5)   # s, gap that resets a tile's counter
+        self.declare_parameter("confirm_count", 3)           # reports needed to mark a tile dangerous
+        self.declare_parameter("danger_count_timeout", 4.0)   # s, gap that resets a tile's counter
+        self.declare_parameter("danger_decay_timeout", 15.0)  # s, unobserved danger tiles become safe again (0 = never)
         self.declare_parameter("segment_step", 0.25)          # m, sampling step along a block
         self.declare_parameter("show_map", False)             # pop-up tile-map window
         self.declare_parameter("map_rate", 5.0)               # Hz, map redraw rate
         self.declare_parameter("map_scale_px", 5)             # px per tile (window = grid_tiles * scale)
+        self.declare_parameter("max_yaw_rate_deg", 25.0)      # deg/s; drop obstacle_info while yawing faster
+        self.declare_parameter("yaw_gate_holdoff_sec", 0.5)   # s; keep gating after the slew (depth lag)
+        self.declare_parameter("yaw_window_sec", 0.35)        # s; window of the yaw-rate estimate
 
         self._tile = max(0.1, float(self.get_parameter("tile_size").value))
         self._n = max(4, int(self.get_parameter("grid_tiles").value))
@@ -100,11 +107,19 @@ class InnerMap(Node):
         self._margin = float(self.get_parameter("danger_margin").value)
         self._confirm = max(1, int(self.get_parameter("confirm_count").value))
         self._timeout = float(self.get_parameter("danger_count_timeout").value)
+        self._decay = max(0.0, float(self.get_parameter("danger_decay_timeout").value))
         self._step = max(0.05, float(self.get_parameter("segment_step").value))
         self._show_map = bool(self.get_parameter("show_map").value)
         self._map_seen = False  # window actually shown at least once (X-close detection)
         map_rate = max(1.0, float(self.get_parameter("map_rate").value))
         self._map_scale = max(1, int(self.get_parameter("map_scale_px").value))
+        self._max_yaw_rate = float(self.get_parameter("max_yaw_rate_deg").value)
+        self._gate_holdoff = float(self.get_parameter("yaw_gate_holdoff_sec").value)
+        self._yaw_window = max(0.1, float(self.get_parameter("yaw_window_sec").value))
+        self._yaw_hist = deque(maxlen=64)   # (stamp_seconds, yaw) pose samples
+        self._yaw_rate = 0.0                # deg/s, window estimate
+        self._gate_until = 0.0              # node-clock s; drop obstacle_info until then
+        self._gate_logged = False           # log the drop once per slew burst
 
         # ---- grid (world-fixed, EKF-origin-centred, local NED) ----
         self._counts = np.zeros((self._n, self._n), dtype=np.uint16)
@@ -178,6 +193,28 @@ class InnerMap(Node):
         # ENU (x=E, y=N, z=U) -> NED (x=N, y=E, z=D)
         self._pose_ned = (float(p.y), float(p.x), float(-p.z))
 
+        # Yaw-rate estimate (deg/s) over a short pose-history window.
+        # Used to gate obstacle registration during ODA sweep slews:
+        # Gazebo depth frames lag the heading by up to ~0.5 s, so blocks
+        # seen while the drone rotates fast get painted at stale bearings
+        # and smear danger tiles around the drone.
+        q = msg.pose.orientation
+        siny = 2.0 * (q.w * q.z + q.x * q.y)
+        cosy = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
+        yaw = math.atan2(siny, cosy)
+        t = float(msg.header.stamp.sec) + float(msg.header.stamp.nanosec) * 1e-9
+        self._yaw_hist.append((t, yaw))
+        while len(self._yaw_hist) > 1 and self._yaw_hist[0][0] < t - self._yaw_window:
+            self._yaw_hist.popleft()
+        if len(self._yaw_hist) >= 2:
+            t0, y0 = self._yaw_hist[0]
+            dt = t - t0
+            if dt >= 0.05:
+                dy = (yaw - y0 + math.pi) % (2.0 * math.pi) - math.pi
+                self._yaw_rate = math.degrees(dy / dt)
+                if self._max_yaw_rate > 0.0 and abs(self._yaw_rate) > self._max_yaw_rate:
+                    self._gate_until = max(self._gate_until, self._now() + self._gate_holdoff)
+
     def _target_cb(self, msg: PoseStamped):
         p = msg.pose.position
         self._target_wp = (float(p.x), float(p.y), float(p.z))
@@ -197,7 +234,21 @@ class InnerMap(Node):
             )
             return
 
-        self._expire_counters()
+        # Yaw-slew gate: blocks are only trustworthy when the heading was
+        # stable at depth-frame capture time.  While the ODA sweep slews
+        # (or right after – pipeline lag), drop the report instead of
+        # painting tiles at a stale bearing.
+        if self._max_yaw_rate > 0.0 and self._now() < self._gate_until:
+            if not self._gate_logged:
+                self.get_logger().info(
+                    "obstacle_info dropped – yaw slew detected "
+                    f"(|rate| > {self._max_yaw_rate:.0f} deg/s)"
+                )
+                self._gate_logged = True
+            return
+        self._gate_logged = False
+
+        decayed = self._expire_counters()
 
         # Blocks list is the primary input; fall back to the legacy
         # single-obstacle fields if the list is empty.
@@ -213,7 +264,7 @@ class InnerMap(Node):
         for d, left, width in blocks:
             new_danger |= self._mark_block(theta, d, left, width)
 
-        if new_danger:
+        if new_danger or decayed > 0:
             self._plan_and_publish()
 
     # ==================================================================
@@ -223,13 +274,37 @@ class InnerMap(Node):
     def _now(self) -> float:
         return self.get_clock().now().nanoseconds / 1e9
 
-    def _expire_counters(self):
-        """Reset confirm counters not re-validated within the timeout."""
+    def _expire_counters(self) -> int:
+        """Reset confirm counters not re-validated within the timeout, and
+        decay dangerous tiles that have not been re-observed within
+        danger_decay_timeout.  Returns how many tiles became safe again."""
         now = self._now()
-        stale = (~np.isnan(self._last_hit)) & (now - self._last_hit > self._timeout)
+        stale = (
+            ~np.isnan(self._last_hit)
+            & (now - self._last_hit > self._timeout)
+            & ~self._dangerous   # dangerous tiles keep their last_hit for decay
+        )
         if np.any(stale):
             self._counts[stale] = 0
             self._last_hit[stale] = np.nan
+        decayed = 0
+        if self._decay > 0.0:
+            unobs = (
+                self._dangerous
+                & (~np.isnan(self._last_hit))
+                & (now - self._last_hit > self._decay)
+            )
+            if np.any(unobs):
+                decayed = int(np.count_nonzero(unobs))
+                self._dangerous[unobs] = False
+                self._counts[unobs] = 0
+                self._last_hit[unobs] = np.nan
+                self._danger_tiles -= decayed
+                self.get_logger().info(
+                    f"Decayed {decayed} danger tile(s) – not re-observed for "
+                    f"{self._decay:.1f} s ({self._danger_tiles} remain)"
+                )
+        return decayed
 
     def _mark_block(self, theta: float, d: float, left: float, width: float) -> bool:
         """Mark the tiles covered by one obstacle block.
@@ -276,6 +351,10 @@ class InnerMap(Node):
         for iy in range(iy_min, iy_max + 1):
             for ix in range(ix_min, ix_max + 1):
                 if self._dangerous[iy, ix]:
+                    # Already dangerous – a fresh hit still re-validates
+                    # it, so decay only clears tiles that have stopped
+                    # being observed.
+                    self._last_hit[iy, ix] = now
                     continue
                 cx = (ix - self._half) * self._tile + self._tile / 2.0
                 cy = (iy - self._half) * self._tile + self._tile / 2.0
@@ -479,6 +558,12 @@ class InnerMap(Node):
         msg.header.frame_id = "map"
         msg.poses = poses
         self._path_pub.publish(msg)
+        # Keep the map window's green polyline in sync with the last
+        # published path (also clears the polyline when poses is empty).
+        self._path_xy = [
+            (float(pose.pose.position.x), float(pose.pose.position.y))
+            for pose in poses
+        ]
 
     def _report_dead_end(self, reason: str):
         """No path exists – hand the problem to the Emergency Node."""

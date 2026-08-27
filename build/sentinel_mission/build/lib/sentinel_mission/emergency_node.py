@@ -73,6 +73,8 @@ class EmergencyNode(Node):
         self.get_logger().info(
             f"Emergency node ready – battery < {self.battery_threshold*100:.0f}%, "
             f"heartbeat timeout {self.heartbeat_timeout}s"
+            f"PC nodes heartbeat timeout"
+            f"Inner map dead end triggered"
         )
 
     # ---- Callbacks ----
@@ -99,6 +101,7 @@ class EmergencyNode(Node):
             self.get_logger().error(
                 f"Heartbeat lost for {elapsed:.1f}s (timeout={self.heartbeat_timeout}s)"
             )
+            self.get_logger().info(f"It was the heartbeat from the fcu")
             self._activate_emergency()
             return
 
@@ -115,6 +118,7 @@ class EmergencyNode(Node):
                     self.get_logger().error(
                         f"PC node '{label}' heartbeat lost for {silent:.1f}s"
                     )
+                    self.get_logger().info(f"It was the heartbeat from the fcu")
                     self._activate_emergency()
                     return
 
@@ -137,6 +141,7 @@ class EmergencyNode(Node):
             self.get_logger().error(
                 "Dead end reported by Inner Map – activating emergency"
             )
+            self.get_logger().info(f"It was the dead end")
             self._activate_emergency()
 
     # ---- PC-node heartbeat tracking ----
@@ -152,6 +157,7 @@ class EmergencyNode(Node):
     # ---- Emergency activation ----
     def _activate_emergency(self):
         """Start publishing emergency continuously."""
+        self.get_logger().info(f"####It has passed through _activate_emergency####")
         self.emergency_active = True
         self._publish_timer.reset()
         self.get_logger().error("EMERGENCY ACTIVATED")
@@ -164,6 +170,7 @@ class EmergencyNode(Node):
 
         msg = Bool()
         msg.data = True
+        self.get_logger().info(f"If it publishes without having passed through _activate_emergency, the issue is in the declaration of the timer !")
         self._emergency_pub.publish(msg)
 
         # Stop when drone enters landing state (emergency landing in progress)

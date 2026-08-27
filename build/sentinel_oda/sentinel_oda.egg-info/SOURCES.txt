@@ -13,6 +13,7 @@ resource/sentinel_oda
 sentinel_oda/__init__.py
 sentinel_oda/depth_node.py
 sentinel_oda/detection_node.py
+sentinel_oda/guided_node.py
 sentinel_oda/inner_map.py
 sentinel_oda/oda_maneuvers.py
 sentinel_oda.egg-info/PKG-INFO

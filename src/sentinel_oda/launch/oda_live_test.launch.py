@@ -12,6 +12,8 @@ Starts:
   - depth_node             – Depth Anything V2 on the UDP camera stream,
                              or native Gazebo depth (depth_source:=gazebo_depth)
   - detection_node         – obstacle detection + block segmentation
+  - inner_map              – drone-side planner: tile grid + A* safe path
+  - guided                 – drone-side pilot: executes the safe path
 
 This file also enables the Gazebo camera stream: GstCameraPlugin only
 starts pushing MPEG-TS to udp://127.0.0.1:5600 after it receives an
@@ -219,13 +221,13 @@ def generate_launch_description():
                 "drone_width": 0.363,
                 "drone_height": 0.363,
                 "box_margin": 0.2,
-                "confirm_frames": 10,       # one-way validation, no clearing
+                "confirm_frames": 5,       # one-way validation, no clearing
                 # With the native Gazebo depth camera the depth is exact
                 # metric, so 10 m means 10 m.  With the ML pipeline the
                 # numbers are model-reported metres (tune against the
                 # preview + "closest depth" logs if the model is off).
                 "mission_obstacle_threshold": 40.0,
-                "oda_obstacle_threshold": 0.8,
+                "oda_obstacle_threshold": 4.5,
                 "depth_margin": 0.5,
                 # Altitude-plane filter: only obstacles near the drone's
                 # altitude can validate the trigger, so the ground cannot
@@ -236,9 +238,14 @@ def generate_launch_description():
                 # Takeoff protection: validation is suppressed for this
                 # long after leaving standby (timer, not altitude gate).
                 "standby_suppress_sec": 10.0,
+                # After a sweep ends the trigger stays silent this long,
+                # so GUIDED can fly the path away before detection can
+                # re-arm the sweep (the drone is usually right next to
+                # the obstacle it just swept).
+                "post_sweep_cooldown_sec": 10.0,
                 # HUD: preview + trigger box + altitude-plane grid.
                 "show_hud": True,
-                "hud_rate": 15.0,
+                "hud_rate": 30.0,
             }
         ],
     )
@@ -252,6 +259,21 @@ def generate_launch_description():
         parameters=[
             {
                 "show_map": True,   # pop-up tile-map window (X/q/ESC to close)
+            }
+        ],
+    )
+
+    # ---- GUIDED node (drone-side pilot: walks Inner Map's safe path) ----
+    guided_node = Node(
+        package="sentinel_oda",
+        executable="guided",
+        name="guided",
+        output="screen",
+        parameters=[
+            {
+                "reach_tolerance_m": 0.5,   # advance when within this (horizontal)
+                "resend_timeout": 1.0,      # keepalive resend of the current target
+                "tick_rate": 10.0,
             }
         ],
     )
@@ -292,5 +314,6 @@ def generate_launch_description():
             depth_node,
             detection_node,
             inner_map_node,
+            guided_node,
         ]
     )

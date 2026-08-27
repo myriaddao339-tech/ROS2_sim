@@ -19,7 +19,7 @@ from rclpy.time import Duration
 from std_msgs.msg import Bool, Int32, String
 from geometry_msgs.msg import PoseStamped
 from mavros_msgs.msg import State
-from mavros_msgs.srv import CommandBool, SetMode, CommandTOL, WaypointPush
+from mavros_msgs.srv import CommandBool, SetMode, CommandTOL, WaypointPush, ParamSetV2
 from sentinel_mission_msgs.srv import GetMission
 
 from transitions import Machine
@@ -50,6 +50,7 @@ class DroneNode(Node):
         self.declare_parameter("state_publish_rate", 1.0)
         self.declare_parameter("takeoff_settle_sec", 2.0)
         self.declare_parameter("takeoff_retry_interval", 2.0)
+        self.declare_parameter("rtl_altitude_m", 100.0)
 
         self._takeoff_alt = self.get_parameter("takeoff_altitude").value
         self._prearm_timeout = self.get_parameter("prearm_check_timeout").value
@@ -59,12 +60,14 @@ class DroneNode(Node):
         self._wp_upload_timeout = self.get_parameter("waypoint_upload_timeout").value
         self._takeoff_settle_sec = self.get_parameter("takeoff_settle_sec").value
         self._takeoff_retry_interval = self.get_parameter("takeoff_retry_interval").value
+        self._rtl_alt_m = self.get_parameter("rtl_altitude_m").value
 
         # --- MAVROS service clients ---
         self._arm_cli = self.create_client(CommandBool, "/mavros/cmd/arming")
         self._takeoff_cli = self.create_client(CommandTOL, "/mavros/cmd/takeoff")
         self._mode_cli = self.create_client(SetMode, "/mavros/set_mode")
         self._wp_push_cli = self.create_client(WaypointPush, "/mavros/mission/push")
+        self._param_cli = self.create_client(ParamSetV2, "/mavros/param/set")
 
         self._waypoints_future = None
         self._arm_future = None
@@ -73,6 +76,8 @@ class DroneNode(Node):
         self._guided_mode_future = None
         self._auto_mode_future = None
         self._rtl_mode_future = None
+        self._param_future = None      # pending ParamSetV2(RTL_ALT_M) future
+        self._param_ok = False         # RTL_ALT_M raise confirmed for this landing
         self._guided_ok_since = None
         self._takeoff_backoff_until = None
         self._takeoff_accepted = False
@@ -132,7 +137,7 @@ class DroneNode(Node):
             after="_on_enter_oda",
         )
         self._sm.add_transition(
-            trigger="do_mission_finished", source="mission", dest="landing",
+            trigger="do_mission_finished", source=["mission", "oda"], dest="landing",
             after="_on_enter_landing",
         )
         self._sm.add_transition(
@@ -202,7 +207,7 @@ class DroneNode(Node):
             self.do_start()
         elif name == "obstacle_detected" and current == "mission":
             self.do_obstacle()
-        elif name == "mission_finished" and current == "mission":
+        elif name == "mission_finished" and current in ("mission", "oda"):
             self.do_mission_finished()
         elif name == "emergency" and current in ("mission", "oda"):
             self.do_emergency()
@@ -636,15 +641,77 @@ class DroneNode(Node):
 
     def _on_enter_landing(self, event):
         self.get_logger().info("=== LANDING: RTL + touchdown sequence ===")
+        # Raise RTL_ALT_M to rtl_altitude_m BEFORE requesting RTL, or the
+        # return path would clip the obstacle course (the FCU's default
+        # RTL altitude is lower than the walls).
+        self._landing_step = 0
+        self._param_future = None
+        self._param_ok = False
+        self._rtl_mode_future = None
         self._landing_timer_start = self.get_clock().now()
         self.landing_timer = self.create_timer(0.2, self.rtl_landing)
         self._set_state("landing")
         return 
 
     def rtl_landing(self):
+        # The timer is only cancelled once RTL is confirmed; if the state
+        # machine left landing (e.g. forced standby on a timeout), stop.
+        if self._current_state != "landing":
+            self.landing_timer.cancel()
+            return
         # elapsed is a Duration-derived float, NOT a Time – the old code
         # compared a Time against 10 and crashed with a TypeError.
         elapsed = (self.get_clock().now() - self._landing_timer_start).nanoseconds / 1e9
+
+        if self._landing_step == 0:
+            self._step_set_rtl_alt(elapsed)
+        else:
+            self._step_switch_rtl(elapsed)
+
+    def _step_set_rtl_alt(self, elapsed):
+        """Step 0: set RTL_ALT_M to rtl_altitude_m before the RTL switch."""
+        if not self._param_ok:
+            if self._param_future is None:
+                if not self._param_cli.wait_for_service(timeout_sec=2.0):
+                    if elapsed > 20.0:
+                        self.get_logger().error(
+                            "ParamSet service unavailable – cannot raise RTL altitude"
+                        )
+                        self._force_standby()
+                    return
+
+                req = ParamSetV2.Request()
+                req.force_set = True   # bypass the param-cache checks (the FCU param sync can be incomplete)
+                req.param_id = "RTL_ALT_M"   # ArduPilot 4.x name (metres, float)
+                req.value.type = 3           # PARAMETER_DOUBLE
+                req.value.double_value = float(self._rtl_alt_m)
+                self._param_future = self._param_cli.call_async(req)
+                self.get_logger().info(
+                    f"Raising RTL_ALT_M to {self._rtl_alt_m:.0f} m before the RTL switch"
+                )
+                return
+
+            if not self._param_future.done():
+                if elapsed > 20.0:
+                    self.get_logger().error("RTL_ALT_M param set timed out – no response")
+                    self._param_future = None
+                    self._force_standby()
+                return
+
+            res = self._param_future.result()
+            self._param_future = None
+            if res is not None and res.success:
+                self._param_ok = True
+                self.get_logger().info(f"RTL_ALT_M = {self._rtl_alt_m:.0f} m confirmed")
+            elif elapsed > 20.0:
+                self.get_logger().error("Failed to set RTL_ALT_M")
+                self._force_standby()
+            return
+
+        self._landing_step = 1
+
+    def _step_switch_rtl(self, elapsed):
+        """Step 1: switch the FCU to RTL and confirm the mode change."""
         self.get_logger().info("Switching to RTL mode...")
 
         if not self._rtl_mode_future:

@@ -9,9 +9,10 @@ Flow:
      switch) and commands a zero-velocity body offset so the drone
      brakes to a position hold for 10 s.
   2. GUIDED confirmed + brake done -> the sweep runs as a sequence of
-     discrete yaw legs, one commanded every 5 s (`self.yaws`, popped
-     LIFO: +90 deg, four -45 deg steps across the 180 deg fan, then
-     +90 deg back to the start heading).  Each leg is a single
+     discrete yaw legs, one commanded every `leg_duration_sec` (default
+     10 s) (`self.yaws`, popped LIFO: +90 deg, four -45 deg steps across
+     the 180 deg fan, then +90 deg back to the start heading).  Each leg
+     is a single
      SET_POSITION_TARGET_LOCAL_NED command in FRAME_BODY_OFFSET_NED:
      position (0, 0, 0) = hold the current spot, and the yaw field
      carries a heading offset RELATIVE to the current heading (ArduPilot
@@ -94,10 +95,12 @@ class OdaManeuvers(Node):
         # ---- parameters ----
         self.declare_parameter("tick_rate", 10.0)                 # Hz, state-machine tick
         self.declare_parameter("mode_switch_retry_interval", 2.0) # s, SetMode backoff
+        self.declare_parameter("leg_duration_sec", 5.0)          # s, hold per sweep leg
 
         tick_rate = max(1.0, float(self.get_parameter("tick_rate").value))
         self._tick_period = 1.0 / tick_rate
         self._mode_retry_interval = float(self.get_parameter("mode_switch_retry_interval").value)
+        self._leg_dur = Duration(seconds=max(1.0, float(self.get_parameter("leg_duration_sec").value)))
 
         # ---- state ----
         self._drone_state = "standby"
@@ -328,15 +331,15 @@ class OdaManeuvers(Node):
         return True
 
     def _do_sweep(self) -> bool:
-        """Command the next leg of the yaw fan, one leg per 5 s window.
+        """Command the next leg of the yaw fan, one per leg_duration_sec.
 
         Returns True after commanding a leg, falsy while waiting out the
-        5 s hold between legs (or once the fan is finished).
+        leg hold between legs (or once the fan is finished).
         """
         self._publish_sweeping(True)
 
-        if self.get_clock().now() - self._sweep_start_time < Duration(seconds=5.0):
-            return  # wait out the 5 s leg hold
+        if self.get_clock().now() - self._sweep_start_time < self._leg_dur:
+            return  # wait out the leg hold
 
         if len(self.yaws) == 0:
             self._finish_sweep()

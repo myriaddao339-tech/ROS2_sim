@@ -103,6 +103,10 @@ def expect(cond, label):
 def main():
     rclpy.init()
     inner = InnerMap()
+    # The ring geometry below was written for the legacy 1.7 m radius;
+    # the production default is now 0.5 m.  Pin the legacy value so the
+    # test keeps exercising the ring/dead-end logic.
+    inner._safe_r = 1.7
     h = Harness()
     executor = SingleThreadedExecutor()
     executor.add_node(inner)

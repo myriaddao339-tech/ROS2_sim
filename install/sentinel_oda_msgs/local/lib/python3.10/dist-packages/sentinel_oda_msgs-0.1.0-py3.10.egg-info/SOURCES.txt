@@ -1,1 +1,6 @@
-/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/ament_cmake_python/sentinel_oda_msgs/sentinel_oda_msgs.egg-info/SOURCES.txt
+setup.py
+sentinel_oda_msgs/__init__.py
+sentinel_oda_msgs.egg-info/PKG-INFO
+sentinel_oda_msgs.egg-info/SOURCES.txt
+sentinel_oda_msgs.egg-info/dependency_links.txt
+sentinel_oda_msgs.egg-info/top_level.txt

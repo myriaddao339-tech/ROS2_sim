@@ -4,6 +4,3 @@ sentinel_oda_msgs.egg-info/PKG-INFO
 sentinel_oda_msgs.egg-info/SOURCES.txt
 sentinel_oda_msgs.egg-info/dependency_links.txt
 sentinel_oda_msgs.egg-info/top_level.txt
-sentinel_oda_msgs/msg/__init__.py
-sentinel_oda_msgs/msg/_obstacle_block.py
-sentinel_oda_msgs/msg/_obstacle_info.py

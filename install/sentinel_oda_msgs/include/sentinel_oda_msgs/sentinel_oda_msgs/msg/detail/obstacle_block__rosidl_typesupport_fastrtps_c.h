@@ -1,1 +1,37 @@
-/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/rosidl_typesupport_fastrtps_c/sentinel_oda_msgs/msg/detail/obstacle_block__rosidl_typesupport_fastrtps_c.h
+// generated from rosidl_typesupport_fastrtps_c/resource/idl__rosidl_typesupport_fastrtps_c.h.em
+// with input from sentinel_oda_msgs:msg/ObstacleBlock.idl
+// generated code does not contain a copyright notice
+#ifndef SENTINEL_ODA_MSGS__MSG__DETAIL__OBSTACLE_BLOCK__ROSIDL_TYPESUPPORT_FASTRTPS_C_H_
+#define SENTINEL_ODA_MSGS__MSG__DETAIL__OBSTACLE_BLOCK__ROSIDL_TYPESUPPORT_FASTRTPS_C_H_
+
+
+#include <stddef.h>
+#include "rosidl_runtime_c/message_type_support_struct.h"
+#include "rosidl_typesupport_interface/macros.h"
+#include "sentinel_oda_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h"
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+ROSIDL_TYPESUPPORT_FASTRTPS_C_PUBLIC_sentinel_oda_msgs
+size_t get_serialized_size_sentinel_oda_msgs__msg__ObstacleBlock(
+  const void * untyped_ros_message,
+  size_t current_alignment);
+
+ROSIDL_TYPESUPPORT_FASTRTPS_C_PUBLIC_sentinel_oda_msgs
+size_t max_serialized_size_sentinel_oda_msgs__msg__ObstacleBlock(
+  bool & full_bounded,
+  bool & is_plain,
+  size_t current_alignment);
+
+ROSIDL_TYPESUPPORT_FASTRTPS_C_PUBLIC_sentinel_oda_msgs
+const rosidl_message_type_support_t *
+ROSIDL_TYPESUPPORT_INTERFACE__MESSAGE_SYMBOL_NAME(rosidl_typesupport_fastrtps_c, sentinel_oda_msgs, msg, ObstacleBlock)();
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  // SENTINEL_ODA_MSGS__MSG__DETAIL__OBSTACLE_BLOCK__ROSIDL_TYPESUPPORT_FASTRTPS_C_H_

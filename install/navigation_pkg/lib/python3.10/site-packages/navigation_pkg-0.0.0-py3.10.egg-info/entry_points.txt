@@ -1,3 +1,0 @@
-[console_scripts]
-navigation_node = navigation_pkg.navigation_node:main
-offboard_node = navigation_pkg.offboard_node:main

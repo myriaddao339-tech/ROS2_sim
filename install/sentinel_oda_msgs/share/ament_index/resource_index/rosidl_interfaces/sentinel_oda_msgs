@@ -1,1 +1,4 @@
-/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/ament_cmake_index/share/ament_index/resource_index/rosidl_interfaces/sentinel_oda_msgs
+msg/ObstacleBlock.idl
+msg/ObstacleBlock.msg
+msg/ObstacleInfo.idl
+msg/ObstacleInfo.msg

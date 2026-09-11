@@ -1,2 +1,0 @@
-[console_scripts]
-mock_landing_node = sentinel_landing.mock_landing_node:main

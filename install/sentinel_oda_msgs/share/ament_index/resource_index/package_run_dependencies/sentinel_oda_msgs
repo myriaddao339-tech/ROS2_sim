@@ -1,1 +1,1 @@
-/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/ament_cmake_index/share/ament_index/resource_index/package_run_dependencies/sentinel_oda_msgs
+rosidl_default_runtime;std_msgs

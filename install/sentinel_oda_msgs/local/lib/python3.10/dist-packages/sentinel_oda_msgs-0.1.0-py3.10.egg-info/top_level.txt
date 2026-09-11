@@ -1,1 +1,1 @@
-/home/ubuntu/Desktop/ROS2_sim/build/sentinel_oda_msgs/ament_cmake_python/sentinel_oda_msgs/sentinel_oda_msgs.egg-info/top_level.txt
+sentinel_oda_msgs

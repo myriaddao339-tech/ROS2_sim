@@ -1,0 +1,3 @@
+This is just an initial readme file, it will be expanded in the future.
+This is just an additional line to test my automatic authentication to git.
+This is just another line to test something, don´t mind it...
